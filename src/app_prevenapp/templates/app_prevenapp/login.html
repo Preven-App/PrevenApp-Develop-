@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+
+    <!-- Botón para volver al inicio -->
+    <a href="{% url 'landing' %}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
+
+    <div class="login-container">
+        <div class="login-card">
+            
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+                </div>
+                <h2>Bienvenido de nuevo</h2>
+                <p>Ingresa a tu cuenta para continuar</p>
+            </div>
+
+            <!-- Selector de Roles (Tabs) -->
+            <div class="role-selector">
+                <input type="radio" name="role" id="role-user" checked>
+                <label for="role-user">Usuario</label>
+
+                <input type="radio" name="role" id="role-pro">
+                <label for="role-pro">Profesional</label>
+
+                <input type="radio" name="role" id="role-admin">
+                <label for="role-admin">Admin</label>
+            </div>
+
+            <!-- Formulario -->
+            <form method="POST" action="">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Correo electrónico" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="password" id="password" placeholder="Contraseña" required>
+                    <i class="fa-regular fa-eye toggle-password" onclick="togglePassword()"></i>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember"> Recordarme
+                    </label>
+                    <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn-submit">Iniciar Sesión</button>
+            </form>
+
+            <div class="divider">
+                <span>o continúa con</span>
+            </div>
+
+            <!-- Botón de Google -->
+            <a href="#" class="btn-google">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
+                Iniciar sesión con Google
+            </a>
+
+            <p class="register-link">
+                ¿No tienes una cuenta? <a href="{% url 'register' %}">Regístrate aquí</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Pequeño script para mostrar/ocultar la contraseña
+        function togglePassword() {
+            var passwordInput = document.getElementById("password");
+            var icon = document.querySelector(".toggle-password");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
+</body>
+</html>

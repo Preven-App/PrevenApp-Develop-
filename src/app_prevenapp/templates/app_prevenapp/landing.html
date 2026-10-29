@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrevenApp - Tu espacio de información y cuidado</title>
+    <!-- Fuentes de Google para un look moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Iconos de FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Enlace a tu archivo CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+    <!-- Barra de Navegación -->
+    <header class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#recursos">Recursos</a>
+            <a href="#orientacion">Orientación</a>
+            <a href="#ayuda">Líneas de Ayuda</a>
+        </nav>
+        <div class="nav-actions">
+            <!-- Botón de Iniciar Sesión (Requerimiento) -->
+            <a href="{% url 'login' %}" class="btn btn-login">Iniciar Sesión</a>
+        </div>
+    </header>
+
+    <!-- Sección Principal (Hero) -->
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="animate-up">Tu futuro, tus decisiones, <br><span class="highlight">tu bienestar.</span></h1>
+                <p class="animate-up delay-1">Información confiable, apoyo emocional y herramientas interactivas diseñadas para ti. Un espacio seguro para resolver tus dudas sobre salud sexual y prevención.</p>
+                
+                <div class="hero-buttons animate-up delay-2">
+                    <!-- Botón de Acceso Anónimo (RF-NU-007) -->
+                     <a href="{% url 'register' %}" class="btn btn-primary">Explorar Anónimamente</a>
+    <a href="#recursos" class="btn btn-secondary">Conocer más</a>
+                </div>
+            </div>
+            
+            <!-- Formas decorativas de fondo -->
+            <div class="hero-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </section>
+
+        <!-- Sección de Características (Tarjetas) -->
+        <section class="features" id="recursos">
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-book-medical"></i>
+                </div>
+                <h3>Información Real</h3>
+                <p>Artículos, tips y consejos validados por profesionales de la salud para cuidar de ti.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <h3>Apoyo 24/7</h3>
+                <p>Chatea de forma segura y confidencial con nuestro asistente o profesionales asignados.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                </div>
+                <h3>Actividades y Cuidado</h3>
+                <p>Participa en actividades lúdicas y accede a herramientas de autocuidado y bienestar.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Botón Flotante de Emergencia (RF-NU-005) -->
+    <a href="#" class="btn-emergency" title="Atención Inmediata">
+        <i class="fa-solid fa-phone-volume"></i>
+        <span>Ayuda Urgente</span>
+    </a>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>&copy; 2026 PrevenApp. Diseñado para proteger y empoderar a los adolescentes.</p>
+    </footer>
+
+</body>
+</html>

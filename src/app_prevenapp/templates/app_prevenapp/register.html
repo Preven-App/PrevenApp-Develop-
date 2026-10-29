@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+
+    <a href="{% url 'landing' %}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
+
+    <div class="register-container">
+        <div class="register-card">
+            
+            <div class="register-header">
+                <div class="logo">
+                    <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+                </div>
+                <h2>Crea tu cuenta</h2>
+                <p>Únete a nuestra comunidad segura</p>
+            </div>
+
+            <!-- Selector de Roles -->
+            <div class="role-selector">
+                <input type="radio" name="role_select" id="role-user" checked onchange="toggleFields()">
+                <label for="role-user">Adolescente</label>
+
+                <input type="radio" name="role_select" id="role-pro" onchange="toggleFields()">
+                <label for="role-pro">Profesional</label>
+            </div>
+
+            <form method="POST" action="">
+                {% csrf_token %}
+                
+                <!-- Campos Comunes -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="first_name" placeholder="Nombres completos" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="last_name" placeholder="Apellidos completos" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Correo electrónico" required>
+                </div>
+
+                <!-- Campos exclusivos para Usuarios (Adolescentes) -->
+                <div id="fields-user" class="dynamic-fields">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" name="phone" placeholder="Número de teléfono">
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-cake-candles"></i>
+                            <input type="number" name="age" placeholder="Edad (13-17)" min="13" max="17">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-droplet"></i>
+                        <select name="rh_factor">
+                            <option value="" disabled selected>Selecciona tu Factor RH</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Campos exclusivos para Profesionales de la Salud -->
+                <div id="fields-pro" class="dynamic-fields" style="display: none;">
+                    <div class="input-group">
+                        <i class="fa-solid fa-stethoscope"></i>
+                        <input type="text" name="specialty" placeholder="Especialidad (Ej: Psicología, Medicina)">
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <i class="fa-regular fa-id-card"></i>
+                            <input type="text" name="document_id" placeholder="Número de documento">
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-certificate"></i>
+                            <input type="text" name="license" placeholder="Credencial / Tarjeta Profesional">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                </div>
+                <small class="password-hint">Mín. 10 caracteres, 1 mayúscula, 5 números, 1 símbolo.</small>
+
+                <button type="submit" class="btn-submit">Registrarse</button>
+            </form>
+
+            <div class="divider">
+                <span>o regístrate con</span>
+            </div>
+
+            <!-- Botón Google (Visual por ahora) -->
+            <a href="#" class="btn-google">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
+                Registrarse con Google
+            </a>
+
+            <p class="login-link">
+                ¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia Sesión aquí</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function toggleFields() {
+            var userFields = document.getElementById("fields-user");
+            var proFields = document.getElementById("fields-pro");
+            var isUser = document.getElementById("role-user").checked;
+
+            if (isUser) {
+                userFields.style.display = "block";
+                proFields.style.display = "none";
+                // Quitar required a los del pro y poner a los del user
+                document.querySelectorAll('#fields-pro input').forEach(el => el.required = false);
+            } else {
+                userFields.style.display = "none";
+                proFields.style.display = "block";
+                document.querySelectorAll('#fields-user input, #fields-user select').forEach(el => el.required = false);
+            }
+        }
+    </script>
+</body>
+</html>
