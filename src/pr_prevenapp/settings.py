@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
     'app_prevenapp',
 ]
 
@@ -144,3 +143,5 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
+
+AUTH_USER_MODEL = 'app_prevenapp.Usuario'

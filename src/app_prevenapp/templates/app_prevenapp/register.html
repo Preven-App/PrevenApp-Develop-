@@ -16,7 +16,7 @@
     <div class="register-container">
         <div class="register-card">
             
-            <div class="register-header">
+                        <div class="register-header">
                 <div class="logo">
                     <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
                 </div>
@@ -24,17 +24,32 @@
                 <p>Únete a nuestra comunidad segura</p>
             </div>
 
-            <!-- Selector de Roles -->
-            <div class="role-selector">
-                <input type="radio" name="role_select" id="role-user" checked onchange="toggleFields()">
-                <label for="role-user">Adolescente</label>
-
-                <input type="radio" name="role_select" id="role-pro" onchange="toggleFields()">
-                <label for="role-pro">Profesional</label>
+                      <!-- Contenedor de Notificaciones Flotantes -->
+            {% if messages %}
+            <div id="toast-container">
+                {% for message in messages %}
+                    <div class="toast {% if message.tags == 'error' %}toast-error{% else %}toast-success{% endif %}">
+                        <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
             </div>
+            {% endif %}
 
-            <form method="POST" action="">
+
+
+            <form method="POST" action="{% url 'register' %}">
                 {% csrf_token %}
+
+                <div class="role-selector">
+    <!-- value="usuario" -->
+    <input type="radio" name="role_select" id="role-user" value="usuario" checked onchange="toggleFields()">
+    <label for="role-user">Adolescente</label>
+
+    <!-- value="profesional" -->
+    <input type="radio" name="role_select" id="role-pro" value="profesional" onchange="toggleFields()">
+    <label for="role-pro">Profesional</label>
+</div>
                 
                 <!-- Campos Comunes -->
                 <div class="form-row">
@@ -142,6 +157,22 @@
                 document.querySelectorAll('#fields-user input, #fields-user select').forEach(el => el.required = false);
             }
         }
+    </script>
+
+        <script>
+        // Función para ocultar las notificaciones después de 4 segundos
+        document.addEventListener("DOMContentLoaded", function() {
+            const toasts = document.querySelectorAll('.toast');
+            
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.classList.add('hiding'); // Inicia la animación de salida
+                    setTimeout(() => {
+                        toast.remove(); // Lo borra del HTML
+                    }, 400); // Espera a que termine la animación
+                }, 4000); // 4 segundos en pantalla
+            });
+        });
     </script>
 </body>
 </html>
