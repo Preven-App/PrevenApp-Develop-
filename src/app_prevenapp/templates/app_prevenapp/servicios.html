@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Prevención - Servicios Disponibles</title>
+    <!-- Hoja de estilos externa -->
+    <link rel="stylesheet" href="{% static 'css/servicios.css' %}">
+    <!-- Íconos de FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Menú Lateral (Sidebar) -->
+    <aside class="sidebar">
+        <div>
+            <div class="brand">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <h1>Sistema de Prevención</h1>
+            </div>
+
+            <nav class="nav-list">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-house"></i> Inicio
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-pen-to-square"></i> Registrar Tip
+                </a>
+                <a href="{% url 'servicios' %}" class="nav-item active">
+                    <i class="fa-solid fa-briefcase"></i> Servicios
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Estadísticas
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-calendar-check"></i> Citas
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-book"></i> Recursos
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i> Ajustes
+                </a>
+            </nav>
+        </div>
+
+        <div class="sidebar-card">
+            <div class="sidebar-card-header">
+                <i class="fa-regular fa-bell"></i> Notificación
+            </div>
+            <p>Nuevos recursos educativos disponibles para compartir con adolescentes.</p>
+            <a href="#">Ver recursos</a>
+        </div>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <div class="main-wrapper">
+        
+        <!-- Header Superior -->
+        <header class="header">
+            <div class="header-buttons">
+                <button class="btn-pill primary">Notificaciones</button>
+                <button class="btn-pill">Button</button>
+                <button class="btn-pill">Button</button>
+                <button class="btn-pill">Button</button>
+            </div>
+
+            <div class="header-user">
+                <div class="user-profile">
+                    <div class="avatar">
+                        {{ user.username|slice:":2"|upper }}
+                    </div>
+                    <div class="user-info">
+                        <p>{% if user.is_authenticated %}{{ user.username }}{% else %}Dr. Roberto{% endif %}</p>
+                        <span>Profesional de salud</span>
+                    </div>
+                </div>
+                <a href="{% url 'account_logout' %}" class="btn-logout">Cerrar sesión</a>
+            </div>
+        </header>
+
+        <!-- Área de Contenido -->
+        <main class="content">
+            <div class="page-header">
+                <h2>Servicios disponibles</h2>
+                <p>Encuentra servicios de apoyo para adolescentes en tu localidad</p>
+            </div>
+
+            <!-- Buscador -->
+            <div class="search-container">
+                <input type="text" placeholder="Buscar servicios..." class="search-input">
+                <button class="btn-search">Filtrar</button>
+            </div>
+
+            <!-- Categorías -->
+            <div class="tags-container">
+                <span class="tag active">Orientación psicológica</span>
+                <span class="tag">Atención médica</span>
+                <span class="tag">Educación sexual</span>
+                <span class="tag">Talleres presenciales</span>
+            </div>
+
+            <!-- Grilla de Tarjetas -->
+            <div class="services-grid">
+                
+                <!-- Tarjeta 1 -->
+                <div class="card">
+                    <div>
+                        <div class="card-header">
+                            <h3 class="card-title">Centro de Apoyo Psicológico</h3>
+                            <span class="badge virtual">Virtual</span>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" alt="Apoyo" class="card-img">
+                        <p class="card-description">Servicio de orientación psicológica para adolescentes con profesionales especializados.</p>
+                        <p class="card-schedule"><i class="fa-regular fa-clock"></i> Lunes a Viernes: 8:00 - 01:00</p>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn

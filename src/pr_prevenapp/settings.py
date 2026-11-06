@@ -142,6 +142,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'servicios'
+LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'app_prevenapp.Usuario'

@@ -1,7 +1,8 @@
 import re
 
 from django.contrib import messages
-from django.db import transaction  # <-- IMPORTANTE: Importar esto
+from django.contrib.auth import authenticate, login
+from django.db import transaction
 from django.shortcuts import redirect, render
 
 from .models import Especialidad, Profesional, Rol, Usuario
@@ -10,7 +11,22 @@ from .models import Especialidad, Profesional, Rol, Usuario
 def landing_page(request):
     return render(request, 'app_prevenapp/landing.html')
 
+
 def login_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Autenticar usando el backend configurado
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('servicios')
+        else:
+            messages.error(request, 'Correo o contraseña incorrectos.')
+            return redirect('login')
+
     return render(request, 'app_prevenapp/login.html')
 
 
@@ -22,7 +38,6 @@ def register_view(request):
         last_name = request.POST.get('last_name')
         role_select = request.POST.get('role_select') 
         
-        # 🚨 IMPRIMIR EN CONSOLA PARA DEBUGGEAR
         print(f"DEBUG: El rol seleccionado es -> {role_select}")
 
         if Usuario.objects.filter(email=email).exists():
@@ -45,7 +60,7 @@ def register_view(request):
                 nuevo_usuario = Usuario(
                     username=email,
                     email=email,
-                    correo=email, # <--- ¡AQUÍ ESTÁ LA SOLUCIÓN AL CORREO VACÍO!
+                    correo=email,
                     nombres=first_name,
                     apellidos=last_name,
                     rol=rol_db,
@@ -54,12 +69,10 @@ def register_view(request):
                 nuevo_usuario.set_password(password)
 
                 if role_select == 'usuario' or role_select is None:
-                        # Capturamos los datos
                     telefono = request.POST.get('phone')
                     edad = request.POST.get('age')
                     rh = request.POST.get('rh_factor')
 
-                    # Si el dato viene vacío, guardamos None. Si trae número, lo convertimos a entero.
                     nuevo_usuario.telefono = telefono if telefono else None
                     nuevo_usuario.edad = int(edad) if edad and edad.isdigit() else None 
                     nuevo_usuario.rh = rh if rh else None
@@ -86,8 +99,10 @@ def register_view(request):
                     )
                     nuevo_profesional.save()
 
-            messages.success(request, '¡Registro exitoso! Ya puedes iniciar sesión.')
-            return redirect('login')
+            # Autenticamos al usuario inmediatamente después del registro y lo redirigimos a 'servicios'
+            login(request, nuevo_usuario)
+            messages.success(request, '¡Registro exitoso!')
+            return redirect('servicios')
 
         except Exception as e:
             messages.error(request, f'Ocurrió un error al registrarse: {str(e)}')
