@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot Inteligente - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Asistente PrevenApp</div>
+        
+        <div class="chat-box" id="chat-box">
+            <div class="msg msg-bot">¡Hola! Soy la IA de PrevenApp. Puedes preguntarme sobre métodos anticonceptivos, salud sexual o riesgos de forma natural. ¿En qué te ayudo?</div>
+            
+            {% if user_msg %}
+                <div class="msg msg-user">{{ user_msg }}</div>
+                <div class="msg msg-bot">{{ bot_msg }}</div>
+            {% endif %}
+        </div>
+
+        <form method="POST" class="chat-input-area">
+            {% csrf_token %}
+            <input type="text" name="mensaje" placeholder="Escribe tu duda aquí..." required autocomplete="off">
+            <button type="submit" class="btn-send">Enviar</button>
+        </form>
+    </div>
+    
+    <script>
+        // Mantiene el scroll siempre abajo al cargar nuevos mensajes
+        const chatBox = document.getElementById('chat-box');
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
