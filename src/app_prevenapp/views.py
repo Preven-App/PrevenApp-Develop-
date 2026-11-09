@@ -5,7 +5,7 @@ from django.db import transaction  # <-- IMPORTANTE: Importar esto
 from django.shortcuts import redirect, render
 
 from .models import Especialidad, Profesional, Rol, Usuario
-
+from django.contrib.auth.decorators import login_required
 
 def landing_page(request):
     return render(request, 'app_prevenapp/landing.html')
@@ -69,6 +69,10 @@ def login_view(request):
             return redirect('login')
 
     return render(request, 'app_prevenapp/login.html')
+
+@login_required(login_url='login') # Protege la vista
+def dashboard_profesional(request):
+    return render(request, 'app_prevenapp/dashboard_profesional.html')
 
 
 def register_view(request):
@@ -151,3 +155,8 @@ def register_view(request):
             return redirect('register')
 
     return render(request, 'app_prevenapp/register.html')
+
+
+def dashboard_profesional(request):
+    # Aquí luego irá la lógica para verificar si el usuario es realmente un profesional
+    return render(request, 'app_prevenapp/dashboard_profesional.html')
