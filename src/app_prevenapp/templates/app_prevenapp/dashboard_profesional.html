@@ -65,24 +65,28 @@
                     <i class="fa-regular fa-bell"></i>
                     <span class="badge">3</span>
                 </div>
-                <div class="profile-info">
+                            <div class="profile-info">
                     <div class="text">
-                        <span class="name">Dra. María Gómez</span>
-                        <span class="specialty">Psicología</span>
+                        <!-- Accedemos a los campos de tu modelo Usuario -->
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <!-- Accedemos a la relación con el modelo Profesional y su Especialidad -->
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
                     </div>
-                    <!-- Icono de Usuario Superior Derecha -->
                     <div class="avatar">
                         <i class="fa-solid fa-user-doctor"></i>
                     </div>
+                </div>
+                    
                 </div>
             </div>
         </header>
 
         <!-- ÁREA DE TRABAJO (DASHBOARD) -->
         <div class="dashboard-container">
-            <div class="welcome-banner animate-up">
+                       <div class="welcome-banner animate-up">
                 <div>
-                    <h1>¡Buen día, Dra. Gómez!</h1>
+                    <!-- Mostramos solo el primer nombre o el nombre completo -->
+                    <h1>¡Buen día, {{ request.user.nombres }}!</h1>
                     <p>Tienes 2 citas programadas y 3 mensajes nuevos de adolescentes hoy.</p>
                 </div>
                 <i class="fa-solid fa-hand-holding-medical banner-icon"></i>
