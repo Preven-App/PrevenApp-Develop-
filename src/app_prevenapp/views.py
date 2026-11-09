@@ -10,7 +10,64 @@ from .models import Especialidad, Profesional, Rol, Usuario
 def landing_page(request):
     return render(request, 'app_prevenapp/landing.html')
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+
 def login_view(request):
+    if request.method == 'POST':
+        email_input = request.POST.get('email') # Lo que el usuario escribió
+        password = request.POST.get('password')
+        
+        print(f"--> Intentando iniciar sesión con: {email_input}")
+        
+        # 1. Intentar autenticar (Django buscará en el campo 'username')
+        user = authenticate(request, username=email_input, password=password)
+        
+        # 2. Si falla, es posible que hayan escrito su correo y el username sea diferente
+        if user is None:
+            from .models import Usuario
+            try:
+                # Buscamos al usuario por el campo 'correo'
+                user_obj = Usuario.objects.get(correo=email_input)
+                # Intentamos autenticar con su 'username' real
+                user = authenticate(request, username=user_obj.username, password=password)
+            except Usuario.DoesNotExist:
+                pass
+
+        if user is not None:
+            login(request, user)
+            print(f"--> Usuario autenticado: {user.username}")
+            print(f"--> ¿Es superuser?: {user.is_superuser}")
+            print(f"--> ¿Es staff?: {user.is_staff}")
+            
+            # Lógica de redirección
+            if user.is_superuser or user.is_staff:
+                print("--> Redirigiendo a /admin/")
+                return redirect('/admin/')
+                
+            elif user.rol and user.rol.nombre.lower() in ['administrador', 'admin']:
+                if user.is_staff:
+                    print("--> Redirigiendo a /admin/ (por rol)")
+                    return redirect('/admin/')
+                else:
+                    print("--> Error: Tiene rol admin pero no es staff")
+                    messages.error(request, 'No tienes permisos de Staff. Contacta al superadmin.')
+                    return redirect('login')
+                    
+            elif user.rol and user.rol.nombre.lower() == 'profesional':
+                print("--> Redirigiendo a dashboard profesional")
+                return redirect('dashboard_profesional')
+                
+            else:
+                print("--> Redirigiendo a landing (usuario normal)")
+                messages.success(request, '¡Bienvenido!')
+                return redirect('landing')
+        else:
+            print("--> ERROR: Credenciales inválidas")
+            messages.error(request, 'Correo o contraseña incorrectos. Intenta de nuevo.')
+            return redirect('login')
+
     return render(request, 'app_prevenapp/login.html')
 
 
