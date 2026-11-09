@@ -151,3 +151,8 @@ def register_view(request):
             return redirect('register')
 
     return render(request, 'app_prevenapp/register.html')
+
+
+def dashboard_profesional(request):
+    # Aquí luego irá la lógica para verificar si el usuario es realmente un profesional
+    return render(request, 'app_prevenapp/dashboard_profesional.html')

@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Profesional - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active">
+                    <a href="#"><i class="fa-solid fa-chart-pie"></i> Resumen</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-calendar-days"></i> Mi Horario</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar paciente, recurso o reporte...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="profile-info">
+                    <div class="text">
+                        <span class="name">Dra. María Gómez</span>
+                        <span class="specialty">Psicología</span>
+                    </div>
+                    <!-- Icono de Usuario Superior Derecha -->
+                    <div class="avatar">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ÁREA DE TRABAJO (DASHBOARD) -->
+        <div class="dashboard-container">
+            <div class="welcome-banner animate-up">
+                <div>
+                    <h1>¡Buen día, Dra. Gómez!</h1>
+                    <p>Tienes 2 citas programadas y 3 mensajes nuevos de adolescentes hoy.</p>
+                </div>
+                <i class="fa-solid fa-hand-holding-medical banner-icon"></i>
+            </div>
+
+            <!-- Tarjetas de Estadísticas (KPIs) -->
+            <div class="stats-grid">
+                <div class="stat-card animate-up delay-1">
+                    <div class="stat-icon bg-blue">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Citas Hoy</h3>
+                        <p class="stat-number">5</p>
+                    </div>
+                </div>
+                <div class="stat-card animate-up delay-2">
+                    <div class="stat-icon bg-green">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Pacientes Activos</h3>
+                        <p class="stat-number">24</p>
+                    </div>
+                </div>
+                <div class="stat-card animate-up delay-3">
+                    <div class="stat-icon bg-purple">
+                        <i class="fa-solid fa-comment-dots"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Mensajes Nuevos</h3>
+                        <p class="stat-number">3</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones Principales -->
+            <h2 class="section-title animate-up delay-3">Acciones Rápidas</h2>
+            <div class="actions-grid">
+                <a href="#" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-clock"></i>
+                    <h3>Gestionar Horario</h3>
+                    <p>Define tus días y horas de disponibilidad para citas.</p>
+                </a>
+                
+                <a href="#" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <h3>Crear Sala de Chat</h3>
+                    <p>Abre un espacio seguro para orientar a los usuarios.</p>
+                </a>
+
+                <a href="#" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <h3>Publicar un Tip</h3>
+                    <p>Comparte información verificada sobre salud y prevención.</p>
+                </a>
+
+                <a href="#" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <h3>Nuevo Reporte</h3>
+                    <p>Registra observaciones e indicadores de riesgo de un paciente.</p>
+                </a>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
