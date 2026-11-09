@@ -5,33 +5,316 @@
     <meta charset="UTF-8">
     <title>Chatbot Inteligente - PrevenApp</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- ESTILOS MODERNOS Y PROFESIONALES DE PREVENAPP --- */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --user-bubble: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --bot-bubble: #f3f4f6;
+            --bg-chat: #f9fafb;
+            --text-main: #1f2937;
+            --white: #ffffff;
+            --shadow-elevation: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Botón flotante circular */
+        .chatbot-toggler {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--primary-gradient);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-toggler:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.6);
+        }
+
+        /* Contenedor principal del chat flotante */
+        .chat-container {
+            position: fixed;
+            bottom: 105px;
+            right: 25px;
+            width: 380px;
+            height: 540px;
+            max-height: 80vh;
+            z-index: 999;
+            display: none; /* Oculto por defecto */
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-elevation);
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            font-family: 'Poppins', sans-serif;
+            animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scaleUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Clase para mostrar el chat con transición */
+        .chat-container.show {
+            display: flex;
+        }
+
+        /* Cabecera del chat */
+        .chat-header {
+            background: var(--primary-gradient);
+            color: var(--white);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.05rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Botón de cerrar (X) */
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: var(--white);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Área de mensajes con scroll estético */
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--bg-chat);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 10px;
+        }
+
+        /* Estilo de las burbujas de texto */
+        .chat-box .msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            word-break: break-word;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Burbuja del Bot */
+        .chat-box .msg-bot {
+            background: var(--bot-bubble);
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Burbuja del Usuario */
+        .chat-box .msg-user {
+            background: var(--user-bubble);
+            color: var(--white);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Área inferior de entrada de texto */
+        .chat-input-area {
+            padding: 14px 18px;
+            background: var(--white);
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            background: #fdfdfd;
+            border-radius: 30px;
+            outline: none;
+            font-size: 0.92rem;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input-area input:focus {
+            border-color: #10b981;
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+        }
+
+        .chat-input-area button {
+            background: var(--primary-gradient);
+            color: var(--white);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .chat-input-area button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+        }
+    </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">Asistente PrevenApp</div>
+
+    <!-- Botón circular flotante para abrir el chat -->
+    <button class="chatbot-toggler" onclick="toggleChat()" title="Abrir Asistente">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+
+    <!-- Contenedor principal del chat flotante -->
+    <div class="chat-container" id="chatContainer">
         
+        <!-- Cabecera moderna con degradado -->
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="background: rgba(255,255,255,0.2); padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px;"><i class="fa-solid fa-robot" style="font-size: 0.9rem;"></i></span>
+                <span>Asistente PrevenApp</span>
+            </div>
+            <button class="close-btn" onclick="toggleChat()" title="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <!-- Caja de mensajes -->
         <div class="chat-box" id="chat-box">
-            <div class="msg msg-bot">¡Hola! Soy la IA de PrevenApp. Puedes preguntarme sobre métodos anticonceptivos, salud sexual o riesgos de forma natural. ¿En qué te ayudo?</div>
-            
-            {% if user_msg %}
-                <div class="msg msg-user">{{ user_msg }}</div>
-                <div class="msg msg-bot">{{ bot_msg }}</div>
-            {% endif %}
+            <div class="msg msg-bot">
+                {{ bot_msg|default:"¡Hola! Soy el asistente virtual de PrevenApp. ¿Qué duda tienes sobre salud sexual o prevención?" }}
+            </div>
         </div>
 
-        <form method="POST" class="chat-input-area">
-            {% csrf_token %}
-            <input type="text" name="mensaje" placeholder="Escribe tu duda aquí..." required autocomplete="off">
-            <button type="submit" class="btn-send">Enviar</button>
-        </form>
+        <!-- Área de escritura libre -->
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Escribe tu duda aquí..." autocomplete="off">
+            <button type="button" onclick="enviarMensajeLibre()" title="Enviar mensaje">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
     </div>
     
     <script>
-        // Mantiene el scroll siempre abajo al cargar nuevos mensajes
+        function toggleChat() {
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.classList.toggle('show');
+            if (chatContainer.classList.contains('show')) {
+                document.getElementById('userInput').focus();
+            }
+        }
+
         const chatBox = document.getElementById('chat-box');
         if (chatBox) {
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function enviarMensajeLibre() {
+            const input = document.getElementById('userInput');
+            const mensaje = input.value.trim();
+
+            if (!mensaje) return;
+
+            chatBox.innerHTML += `<div class="msg msg-user"><strong>Tú:</strong> ${mensaje}</div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ mensaje: mensaje })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    chatBox.innerHTML += `<div class="msg msg-bot"><strong>Asistente:</strong> ${data.respuesta}</div>`;
+                } else {
+                    chatBox.innerHTML += `<div class="msg msg-bot" style="color: #e63946;"><strong>Error:</strong> ${data.respuesta || 'No se pudo procesar la solicitud.'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+                chatBox.innerHTML += `<div class="msg msg-bot" style="color: #e63946;"><strong>Error:</strong> Sin conexión con el servidor.</div>`;
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                enviarMensajeLibre();
+            }
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 </body>

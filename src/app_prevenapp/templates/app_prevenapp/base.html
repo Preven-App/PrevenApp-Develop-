@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Variables y reset del chatbot flotante */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --white: #FFFFFF;
+            --text-dark: #1F2937;
+            --border-color: #E5E7EB;
+        }
+
+        /* Botón circular flotante */
+        .chatbot-toggler {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            z-index: 1000;
+            transition: transform 0.2s ease, background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-toggler:hover {
+            transform: scale(1.08);
+            background: var(--primary-hover);
+        }
+
+        /* Ventana del chat flotante */
+        .chat-container {
+            position: fixed;
+            bottom: 95px;
+            right: 25px;
+            width: 350px;
+            max-width: 90vw;
+            height: 480px;
+            max-height: 75vh;
+            z-index: 999;
+            display: none;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .chat-container.show {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 16px 20px;
+            background: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #FAFAFA;
+        }
+
+        .msg-bot {
+            background: var(--white);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            border-radius: 15px;
+            border-bottom-left-radius: 2px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Área y estilo de botones interactivos */
+        .chat-options-area {
+            padding: 12px 15px;
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .btn-option {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
+        }
+
+        .btn-option:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Botón Flotante -->
+    <button class="chatbot-toggler" id="btnToggleChat">💬</button>
+
+    <!-- Ventana del Chat Flotante -->
+    <div class="chat-container" id="floatingChat">
+        <div class="chat-header">
+            <span>Asistente PrevenApp</span>
+            <button class="close-btn" id="btnCloseChat">✖</button>
+        </div>
+        
+        <div class="chat-box" id="chatBox"></div>
+
+        <div class="chat-options-area" id="chatOptions"></div>
+    </div>
+
+    <!-- Árbol de decisiones y lógica en JS -->
+    <script>
+        const opcionesNiveles = {
+            "inicio": {
+                "mensaje": "¡Hola! Soy la IA de PrevenApp. Selecciona un tema para guiarte:",
+                "opciones": [
+                    {"texto": "1. Métodos Anticonceptivos", "clave": "cat_metodos"},
+                    {"texto": "2. Prevención del Embarazo", "clave": "cat_embarazo"},
+                    {"texto": "3. Salud Sexual e ITS", "clave": "cat_its"},
+                    {"texto": "4. ¿Para qué sirve esta app?", "clave": "que_es_app"}
+                ]
+            },
+            "cat_metodos": {
+                "mensaje": "¿Sobre qué método anticonceptivo necesitas información?",
+                "opciones": [
+                    {"texto": "Preservativo / Condón", "clave": "ans_condon"},
+                    {"texto": "Pastillas Anticonceptivas", "clave": "ans_pastillas"},
+                    {"texto": "Implante / DIU", "clave": "ans_larc"},
+                    {"texto": "Pastilla del Día Después", "clave": "ans_postday"},
+                    {"texto": "« Volver al Inicio", "clave": "inicio"}
+                ]
+            },
+            "cat_embarazo": {
+                "mensaje": "Selecciona tu duda sobre prevención de embarazo:",
+                "opciones": [
+                    {"texto": "¿Puedo quedar embarazada en la 1ra vez?", "clave": "ans_primera_vez"},
+                    {"texto": "¿Qué son los días fértiles?", "clave": "ans_dias_fertiles"},
+                    {"texto": "¿Cuándo hacer una prueba de embarazo?", "clave": "ans_test_embarazo"},
+                    {"texto": "« Volver al Inicio", "clave": "inicio"}
+                ]
+            },
+            "cat_its": {
+                "mensaje": "Selecciona la duda sobre Salud Sexual e Infecciones:",
+                "opciones": [
+                    {"texto": "¿Qué son las ITS y cómo prevenirlas?", "clave": "ans_que_son_its"},
+                    {"texto": "Síntomas comunes de una ITS", "clave": "ans_sintomas_its"},
+                    {"texto": "« Volver al Inicio", "clave": "inicio"}
+                ]
+            },
+            "que_es_app": {
+                "mensaje": "PrevenApp es un espacio seguro y confidencial diseñado para educar e informar a adolescentes sobre salud sexual y reproductiva.",
+                "opciones": [{"texto": "« Volver al Inicio", "clave": "inicio"}]
+            },
+            "ans_condon": {
+                "mensaje": "El condón es una funda de látex que impide el paso del semen. Evita embarazos e Infecciones de Transmisión Sexual (ITS).",
+                "opciones": [{"texto": "« Volver a Métodos", "clave": "cat_metodos"}, {"texto": "« Inicio", "clave": "inicio"}]
+            },
+            "ans_pastillas": {
+                "mensaje": "Son pastillas de uso diario que impiden la ovulación. Deben tomarse a la misma hora todos los días.",
+                "opciones": [{"texto": "« Volver a Métodos", "clave": "cat_metodos"}, {"texto": "« Inicio", "clave": "inicio"}]
+            },
+            "ans_larc": {
+                "mensaje": "El implante y el DIU duran entre 3 y 10 años, ofreciendo más del 99% de efectividad. Los coloca un profesional médico.",
+                "opciones": [{"texto": "« Volver a Métodos", "clave": "cat_metodos"}, {"texto": "« Inicio", "clave": "inicio"}]
+            },
+            "ans_postday": {
+                "mensaje": "La pastilla de emergencia ayuda a prevenir un embarazo si se toma dentro de las primeras 72 horas tras una relación sin protección.",
+                "opciones": [{"texto": "« Volver a Métodos", "clave": "cat_metodos"}, {"texto": "« Inicio", "clave": "inicio"}]
+            },
+            "ans_primera_vez": {
+                "mensaje": "Sí, es totalmente posible quedar embarazada en la primera relación sexual si no se utiliza un método anticonceptivo.",
+                "opciones": [{"texto": "« Volver a Embarazo", "clave": "cat_embarazo"}, {"texto": "« Inicio", "clave": "inicio"}]
+            },
+            "ans_dias_fertiles": {
+                "mensaje": "Son los días del ciclo menstrual con mayor probabilidad de embarazo. En adolescentes los ciclos varían, así que no es un método seguro.",
+                "opciones": [{"texto": "« Volver a Embarazo", "clave": "cat_embarazo"}, {"texto": "« Inicio", "clave": "inicio"}]
+            },
+            "ans_test_embarazo": {
+                "mensaje": "Una prueba de embarazo en orina es confiable a partir del primer día de retraso menstrual o 15 días después del acto sexual sin protección.",
+                "opciones": [{"texto": "« Volver a Embarazo", "clave": "cat_embarazo"}, {"texto": "« Inicio", "clave": "inicio"}]
+            },
+            "ans_que_son_its": {
+                "mensaje": "Las ITS son infecciones transmitidas por contacto sexual (VIH, VPH, sífilis, etc.). El uso correcto del condón previene su contagio.",
+                "opciones": [{"texto": "« Volver a Salud Sexual", "clave": "cat_its"}, {"texto": "« Inicio", "clave": "inicio"}]
+            },
+            "ans_sintomas_its": {
+                "mensaje": "Pueden incluir ardor al orinar, secreciones inusuales, verrugas o llagas en la zona genital. Ante cualquier síntoma, acude a un centro de salud.",
+                "opciones": [{"texto": "« Volver a Salud Sexual", "clave": "cat_its"}, {"texto": "« Inicio", "clave": "inicio"}]
+            }
+        };
+
+        const chatBox = document.getElementById('chatBox');
+        const chatOptions = document.getElementById('chatOptions');
+        
+        function cargarOpcion(clave) {
+            const nodo = opcionesNiveles[clave] || opcionesNiveles['inicio'];
+            chatBox.innerHTML = `<div class="msg-bot">${nodo.mensaje}</div>`;
+            chatOptions.innerHTML = '';
+            
+            nodo.opciones.forEach(btn => {
+                const button = document.createElement('button');
+                button.className = 'btn-option';
+                button.innerHTML = `📌 ${btn.texto}`;
+                button.onclick = () => cargarOpcion(btn.clave); 
+                chatOptions.appendChild(button);
+            });
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById('btnToggleChat').addEventListener('click', () => {
+            const chat = document.getElementById('floatingChat');
+            chat.classList.toggle('show');
+            if (chat.classList.contains('show')) {
+                cargarOpcion('inicio');
+            }
+        });
+
+        document.getElementById('btnCloseChat').addEventListener('click', () => {
+            document.getElementById('floatingChat').classList.remove('show');
+        });
+    </script>
+</body>
+</html>

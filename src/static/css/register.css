@@ -42,7 +42,7 @@ body {
 
 .register-container {
     width: 100%;
-    max-width: 500px; /* Un poco más ancho que el login */
+    max-width: 500px;
 }
 
 .register-card {
