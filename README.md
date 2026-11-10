@@ -1,5 +1,5 @@
 # PrevenApp
-
+.
 Guía de configuración y colaboración para el desarrollo de PrevenApp.
 
 ## Contenido

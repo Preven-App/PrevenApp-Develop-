@@ -4,43 +4,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - PrevenApp</title>
+    <title>Acceso - PrevenApp</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
 
-    <!-- Botón para volver al inicio -->
+    <!-- Sistema de Notificaciones (Toasts) -->
+    {% if messages %}
+    <div id="toast-container">
+        {% for message in messages %}
+            <div class="toast {% if message.tags == 'error' %}toast-error{% else %}toast-success{% endif %}">
+                <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <a href="{% url 'landing' %}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
 
-    <div class="login-container">
-        <div class="login-card">
-            
-            <div class="login-header">
-                <div class="logo">
-                    <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
-                </div>
-                <h2>Bienvenido de nuevo</h2>
-                <p>Ingresa a tu cuenta para continuar</p>
-            </div>
-
-            <!-- Selector de Roles (Tabs) -->
-            <div class="role-selector">
-                <input type="radio" name="role" id="role-user" checked>
-                <label for="role-user">Usuario</label>
-
-                <input type="radio" name="role" id="role-pro">
-                <label for="role-pro">Profesional</label>
-
-                <input type="radio" name="role" id="role-admin">
-                <label for="role-admin">Admin</label>
-            </div>
-
-            <!-- Formulario -->
-            <form method="POST" action="">
+    <!-- Contenedor Principal Deslizante -->
+    <div class="container" id="container">
+        
+        <!-- ==========================================
+             FORMULARIO DE REGISTRO (Inicialmente Oculto)
+             ========================================== -->
+        <div class="form-container sign-up-container">
+            <form method="POST" action="{% url 'register' %}">
                 {% csrf_token %}
+                <h2>Crear Cuenta</h2>
+                <p class="subtitle">Únete a nuestra comunidad segura</p>
+
+                <!-- Selector de Roles -->
+                <div class="role-selector">
+                    <input type="radio" name="role_select" id="role-user" value="usuario" checked onchange="toggleFields()">
+                    <label for="role-user">Adolescente</label>
+
+                    <input type="radio" name="role_select" id="role-pro" value="profesional" onchange="toggleFields()">
+                    <label for="role-pro">Profesional</label>
+                </div>
+
+                <!-- Campos Comunes -->
+                <div class="form-row">
+                    <div class="input-group">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="first_name" placeholder="Nombres" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="last_name" placeholder="Apellidos" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Correo electrónico" required>
+                </div>
+
+                <!-- Campos para Usuarios (Adolescentes) -->
+                <div id="fields-user" class="dynamic-fields">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" name="phone" placeholder="Teléfono">
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-cake-candles"></i>
+                            <input type="number" name="age" placeholder="Edad (13-17)" min="13" max="17">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-droplet"></i>
+                        <select name="rh_factor">
+                            <option value="" disabled selected>Factor RH</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Campos para Profesionales -->
+                <div id="fields-pro" class="dynamic-fields" style="display: none;">
+                    <div class="input-group">
+                        <i class="fa-solid fa-stethoscope"></i>
+                        <input type="text" name="specialty" placeholder="Especialidad">
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <i class="fa-regular fa-id-card"></i>
+                            <input type="text" name="document_id" placeholder="Documento">
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-certificate"></i>
+                            <input type="text" name="license" placeholder="Credencial">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                </div>
+                <small class="password-hint">Mín. 10 caracteres, 1 mayúscula, 5 números, 1 símbolo.</small>
+
+                <button type="submit" class="btn-main">Registrarse</button>
                 
+                <div class="mobile-toggle">
+                    ¿Ya tienes cuenta? <a href="#" onclick="togglePanel(); return false;">Inicia Sesión</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- ==========================================
+             FORMULARIO DE INICIO DE SESIÓN (Visible por defecto)
+             ========================================== -->
+        <div class="form-container sign-in-container">
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="login-header">
+                    <div class="logo">
+                        <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+                    </div>
+                    <h2>Bienvenido de nuevo</h2>
+                    <p>Ingresa a tu cuenta para continuar</p>
+                </div>
+
+                <!-- Selector de Roles (Pestañas) -->
+                <div class="role-tabs">
+                    <input type="radio" name="role_tab" id="tab-user" checked>
+                    <label for="tab-user">Usuario</label>
+
+                    <input type="radio" name="role_tab" id="tab-pro">
+                    <label for="tab-pro">Profesional</label>
+
+                    <input type="radio" name="role_tab" id="tab-admin">
+                    <label for="tab-admin">Admin</label>
+                </div>
+
                 <div class="input-group">
                     <i class="fa-regular fa-envelope"></i>
                     <input type="email" name="email" placeholder="Correo electrónico" required>
@@ -59,27 +168,58 @@
                     <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
                 </div>
 
-                <button type="submit" class="btn-submit">Iniciar Sesión</button>
+                <button type="submit" class="btn-main">Iniciar Sesión</button>
+
+                <div class="divider">
+                    <span>o continúa con</span>
+                </div>
+
+               <a href="#" class="btn-google">
+    <!-- SVG Oficial de Google -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px">
+        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+    </svg>
+    <span>Continuar con Google</span>
+</a>
+</a>
+
+                <div class="mobile-toggle">
+                    ¿No tienes cuenta? <a href="#" onclick="togglePanel(); return false;">Regístrate</a>
+                </div>
             </form>
+        </div>
 
-            <div class="divider">
-                <span>o continúa con</span>
+        <!-- ==========================================
+             PANEL SUPERPUESTO (Overlay)
+             ========================================== -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h2>¡Hola de nuevo!</h2>
+                    <p>Para mantenerte conectado con nosotros, inicia sesión con tu información personal.</p>
+                    <button class="btn-ghost" id="signIn" onclick="togglePanel()">Iniciar Sesión</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h2>¡Hola, amigo!</h2>
+                    <p>Ingresa tus datos personales y comienza tu viaje con nosotros.</p>
+                    <button class="btn-ghost" id="signUp" onclick="togglePanel()">Crear Cuenta</button>
+                </div>
             </div>
-
-            <!-- Botón de Google -->
-            <a href="#" class="btn-google">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
-                Iniciar sesión con Google
-            </a>
-
-            <p class="register-link">
-                ¿No tienes una cuenta? <a href="{% url 'register' %}">Regístrate aquí</a>
-            </p>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script>
-        // Pequeño script para mostrar/ocultar la contraseña
+        // 1. Lógica para deslizar los paneles
+        function togglePanel() {
+            const container = document.getElementById('container');
+            container.classList.toggle('right-panel-active');
+        }
+
+        // 2. Mostrar/ocultar contraseña
         function togglePassword() {
             var passwordInput = document.getElementById("password");
             var icon = document.querySelector(".toggle-password");
@@ -93,6 +233,34 @@
                 icon.classList.add("fa-eye");
             }
         }
+
+        // 3. Mostrar/ocultar campos de Profesional en Registro
+        function toggleFields() {
+            var userFields = document.getElementById("fields-user");
+            var proFields = document.getElementById("fields-pro");
+            var isUser = document.getElementById("role-user").checked;
+
+            if (isUser) {
+                userFields.style.display = "block";
+                proFields.style.display = "none";
+                document.querySelectorAll('#fields-pro input').forEach(el => el.required = false);
+            } else {
+                userFields.style.display = "none";
+                proFields.style.display = "block";
+                document.querySelectorAll('#fields-user input, #fields-user select').forEach(el => el.required = false);
+            }
+        }
+
+        // 4. Auto-ocultar notificaciones Toast
+        document.addEventListener("DOMContentLoaded", function() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { toast.remove(); }, 400);
+                }, 4000);
+            });
+        });
     </script>
 </body>
 </html>
