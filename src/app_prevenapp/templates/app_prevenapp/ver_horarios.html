@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Horarios - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ver_horarios.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a>
+                </li>
+                <!-- IMPORTANTE: Aquí puedes tener un submenú o dos enlaces separados -->
+                <li class="active">
+                    <a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar paciente, recurso o reporte...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="profile-info">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ÁREA DE TRABAJO -->
+        <div class="dashboard-container">
+            
+            <div class="page-header animate-up">
+                <div>
+                    <h1>Mis Horarios Configurados</h1>
+                    <p>Revisa, edita o elimina tus bloques de disponibilidad.</p>
+                </div>
+                <a href="{% url 'configurar_horario' %}" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Nuevo Horario
+                </a>
+            </div>
+
+            <div class="horarios-list animate-up delay-1">
+                
+                
+                
+                <!-- Tarjeta de Horario 1 -->
+                <div class="horario-card">
+                    <div class="horario-info">
+                        <div class="horario-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="horario-details">
+                            <h3>Lunes a Viernes</h3>
+                            <p><i class="fa-regular fa-calendar"></i> Vigencia: 01 Nov 2026 - 31 Dic 2026</p>
+                            <div class="tags">
+                                <span class="tag"><i class="fa-solid fa-hourglass-half"></i> 08:00 AM - 05:00 PM</span>
+                                <span class="tag"><i class="fa-solid fa-users"></i> Máx. 5 citas/día</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horario-actions">
+                        <!-- Botón Editar -->
+                        <a href="{% url 'configurar_horario' %}" class="btn-icon btn-edit" title="Editar">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <!-- Botón Eliminar -->
+                        <button onclick="confirmarEliminacion()" class="btn-icon btn-delete" title="Eliminar">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Horario 2 -->
+                <div class="horario-card">
+                    <div class="horario-info">
+                        <div class="horario-icon bg-purple-light">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="horario-details">
+                            <h3>Sábados</h3>
+                            <p><i class="fa-regular fa-calendar"></i> Vigencia: Permanente</p>
+                            <div class="tags">
+                                <span class="tag"><i class="fa-solid fa-hourglass-half"></i> 08:00 AM - 12:00 PM</span>
+                                <span class="tag"><i class="fa-solid fa-users"></i> Máx. 3 citas/día</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horario-actions">
+                        <a href="{% url 'configurar_horario' %}" class="btn-icon btn-edit" title="Editar">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <button onclick="confirmarEliminacion()" class="btn-icon btn-delete" title="Eliminar">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ESTADO VACÍO (Se muestra si no hay horarios) -->
+                <!-- 
+                <div class="empty-state">
+                    <i class="fa-regular fa-calendar-xmark"></i>
+                    <h3>No tienes horarios configurados</h3>
+                    <p>Agrega tu primer bloque de disponibilidad para que los usuarios puedan agendar citas.</p>
+                    <a href="{% url 'configurar_horario' %}" class="btn btn-primary">Crear Horario</a>
+                </div> 
+                -->
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Script para confirmar eliminación -->
+    <script>
+        function confirmarEliminacion() {
+            if (confirm("¿Estás seguro de que deseas eliminar este horario? Esta acción no se puede deshacer.")) {
+                // Aquí iría la lógica para enviar el formulario de eliminación a Django
+                alert("Horario eliminado (Simulación)");
+            }
+        }
+    </script>
+</body>
+</html>

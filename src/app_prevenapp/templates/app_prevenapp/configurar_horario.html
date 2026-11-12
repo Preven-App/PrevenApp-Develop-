@@ -1,0 +1,309 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Horario - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/configurar_horario.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a>
+                </li>
+                <li class="active">
+                    <a href="{% url 'configurar_horario' %}"><i class="fa-solid fa-calendar-days"></i> Mi Horario</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <!-- CORREGIDO: Se arregló la etiqueta <a> y se puso la URL correcta de allauth -->
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar paciente, recurso o reporte...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="profile-info">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ÁREA DE CONFIGURACIÓN -->
+        <div class="dashboard-container">
+            <div class="page-header animate-up">
+                <div>
+                    <h1>Gestión de Horarios</h1>
+                    <p>Define tu disponibilidad para que los adolescentes puedan agendar citas contigo.</p>
+                </div>
+            </div>
+
+            <form method="POST" action="" class="schedule-form animate-up delay-1">
+                {% csrf_token %}
+                
+                <!-- Configuración Global (Fechas) -->
+                <div class="card global-settings">
+                    <h2><i class="fa-solid fa-calendar-check"></i> Vigencia del Horario</h2>
+                    <p class="card-desc">Establece desde cuándo aplicará este horario.</p>
+                    
+                    <div class="form-row">
+                        <div class="input-field">
+                            <label>Fecha de Inicio</label>
+                            <input type="date" name="fecha_inicio" required>
+                        </div>
+                        <div class="input-field">
+                            <label>Fecha de Fin (Opcional)</label>
+                            <input type="date" name="fecha_fin">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestión Semanal -->
+                <div class="card weekly-schedule">
+                    <h2><i class="fa-solid fa-clock"></i> Disponibilidad Semanal</h2>
+                    <p class="card-desc">Activa los días en los que atenderás y define los bloques de tiempo.</p>
+
+                    <div class="days-container">
+                        <!-- Lunes -->
+                        <div class="day-row">
+                            <div class="day-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" name="lunes_activo" value="1">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="day-name">Lunes</span>
+                            </div>
+                            <div class="time-inputs disabled">
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="lunes_inicio" value="08:00" disabled>
+                                </div>
+                                <span>a</span>
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="lunes_fin" value="17:00" disabled>
+                                </div>
+                                <div class="input-number">
+                                    <i class="fa-solid fa-users"></i>
+                                    <input type="number" name="lunes_citas" value="5" min="1" placeholder="Citas" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Martes -->
+                        <div class="day-row">
+                            <div class="day-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" name="martes_activo" value="1">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="day-name">Martes</span>
+                            </div>
+                            <div class="time-inputs disabled">
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="martes_inicio" value="08:00" disabled>
+                                </div>
+                                <span>a</span>
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="martes_fin" value="17:00" disabled>
+                                </div>
+                                <div class="input-number">
+                                    <i class="fa-solid fa-users"></i>
+                                    <input type="number" name="martes_citas" value="5" min="1" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Miércoles -->
+                        <div class="day-row">
+                            <div class="day-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" name="miercoles_activo" value="1">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="day-name">Miércoles</span>
+                            </div>
+                            <div class="time-inputs disabled">
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="miercoles_inicio" value="08:00" disabled>
+                                </div>
+                                <span>a</span>
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="miercoles_fin" value="17:00" disabled>
+                                </div>
+                                <div class="input-number">
+                                    <i class="fa-solid fa-users"></i>
+                                    <input type="number" name="miercoles_citas" value="5" min="1" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Jueves -->
+                        <div class="day-row">
+                            <div class="day-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" name="jueves_activo" value="1">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="day-name">Jueves</span>
+                            </div>
+                            <div class="time-inputs disabled">
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="jueves_inicio" value="08:00" disabled>
+                                </div>
+                                <span>a</span>
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="jueves_fin" value="17:00" disabled>
+                                </div>
+                                <div class="input-number">
+                                    <i class="fa-solid fa-users"></i>
+                                    <input type="number" name="jueves_citas" value="5" min="1" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Viernes -->
+                        <div class="day-row">
+                            <div class="day-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" name="viernes_activo" value="1">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="day-name">Viernes</span>
+                            </div>
+                            <div class="time-inputs disabled">
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="viernes_inicio" value="08:00" disabled>
+                                </div>
+                                <span>a</span>
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="viernes_fin" value="17:00" disabled>
+                                </div>
+                                <div class="input-number">
+                                    <i class="fa-solid fa-users"></i>
+                                    <input type="number" name="viernes_citas" value="5" min="1" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sábado -->
+                        <div class="day-row">
+                            <div class="day-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" name="sabado_activo" value="1">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="day-name">Sábado</span>
+                            </div>
+                            <div class="time-inputs disabled">
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="sabado_inicio" value="08:00" disabled>
+                                </div>
+                                <span>a</span>
+                                <div class="input-time">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <input type="time" name="sabado_fin" value="12:00" disabled>
+                                </div>
+                                <div class="input-number">
+                                    <i class="fa-solid fa-users"></i>
+                                    <input type="number" name="sabado_citas" value="3" min="1" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="form-actions animate-up delay-2">
+                    <a href="{% url 'dashboard_profesional' %}" class="btn btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Horario
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- Script para habilitar/deshabilitar los campos de tiempo -->
+    <script>
+        document.querySelectorAll('.switch input[type="checkbox"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                // Encontramos el contenedor de los inputs de tiempo del mismo día
+                const timeInputs = this.closest('.day-row').querySelector('.time-inputs');
+                
+                // Buscamos todos los inputs dentro de ese contenedor
+                const inputs = timeInputs.querySelectorAll('input');
+                
+                if (this.checked) {
+                    timeInputs.classList.remove('disabled');
+                    inputs.forEach(input => input.disabled = false);
+                } else {
+                    timeInputs.classList.add('disabled');
+                    inputs.forEach(input => input.disabled = true);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

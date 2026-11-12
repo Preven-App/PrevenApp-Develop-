@@ -160,3 +160,37 @@ def register_view(request):
 def dashboard_profesional(request):
     # Aquí luego irá la lógica para verificar si el usuario es realmente un profesional
     return render(request, 'app_prevenapp/dashboard_profesional.html')
+
+@login_required(login_url='login')
+def configurar_horario(request):
+    # Aquí a futuro irá la lógica para guardar el horario en la BD
+    return render(request, 'app_prevenapp/configurar_horario.html')
+
+@login_required(login_url='login')
+def ver_horarios(request):
+    return render(request, 'app_prevenapp/ver_horarios.html')
+
+@login_required(login_url='login')
+def perfil_profesional(request):
+    if request.method == 'POST':
+        # 1. Obtenemos el usuario actual
+        usuario = request.user
+        
+        # 2. Actualizamos los campos de texto
+        usuario.nombres = request.POST.get('nombres')
+        usuario.apellidos = request.POST.get('apellidos')
+        usuario.correo = request.POST.get('correo')
+        usuario.telefono = request.POST.get('telefono')
+        
+        # 3. Verificamos si el usuario subió una nueva foto
+        # request.FILES es vital para manejar archivos
+        if 'foto_perfil' in request.FILES:
+            usuario.foto_perfil = request.FILES['foto_perfil']
+
+        # 4. Guardamos los cambios en la Base de Datos
+        usuario.save()
+        
+        messages.success(request, '¡Tu perfil ha sido actualizado exitosamente!')
+        return redirect('perfil_profesional')
+
+    return render(request, 'app_prevenapp/perfil_profesional.html')
