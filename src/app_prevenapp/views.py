@@ -21,7 +21,7 @@ def salas_chat_view(request):
 
 # --- MÓDULO DE INTELIGENCIA ARTIFICIAL (GROQ API) ---
 # Se lee de forma segura desde el sistema para proteger tu clave en GitHub
-client = Groq(api_key="") #COLOCAR TU CLAVE DE API AQUÍ ary 
+client = Groq(api_key="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")
 
 def chatbot_view(request):
     """
