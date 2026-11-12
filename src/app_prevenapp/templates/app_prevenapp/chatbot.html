@@ -8,14 +8,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- ESTILOS MODERNOS Y PROFESIONALES DE PREVENAPP --- */
+        /* --- ESTILOS MODERNOS Y PROFESIONALES DE PREVENAPP (ÍNDIGO) --- */
         :root {
-            --primary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            --user-bubble: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            --bot-bubble: #f3f4f6;
-            --bg-chat: #f9fafb;
-            --text-main: #1f2937;
-            --white: #ffffff;
+            --primary-gradient: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+            --user-bubble: #4F46E5;
+            --bot-bubble: #FFFFFF;
+            --bg-chat: #F3F4F6;
+            --text-main: #1F2937;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
             --shadow-elevation: 0 12px 35px rgba(0, 0, 0, 0.15);
         }
 
@@ -32,7 +33,7 @@
             height: 65px;
             font-size: 26px;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
             z-index: 1000;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
             display: flex;
@@ -42,7 +43,7 @@
 
         .chatbot-toggler:hover {
             transform: scale(1.1);
-            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 12px 30px rgba(79, 70, 229, 0.6);
         }
 
         /* Contenedor principal del chat flotante */
@@ -60,7 +61,7 @@
             box-shadow: var(--shadow-elevation);
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid rgba(229, 231, 235, 0.8);
+            border: 1px solid var(--border-color);
             font-family: 'Poppins', sans-serif;
             animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -151,7 +152,7 @@
             color: var(--text-main);
             align-self: flex-start;
             border-bottom-left-radius: 4px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border-color);
         }
 
         /* Burbuja del Usuario */
@@ -166,7 +167,7 @@
         .chat-input-area {
             padding: 14px 18px;
             background: var(--white);
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid var(--border-color);
             display: flex;
             gap: 12px;
             align-items: center;
@@ -175,18 +176,19 @@
         .chat-input-area input {
             flex: 1;
             padding: 12px 16px;
-            border: 1px solid #d1d5db;
+            border: 1px solid var(--border-color);
             background: #fdfdfd;
             border-radius: 30px;
             outline: none;
             font-size: 0.92rem;
+            color: var(--text-main);
             transition: all 0.2s ease;
         }
 
         .chat-input-area input:focus {
-            border-color: #10b981;
+            border-color: #4F46E5;
             background: var(--white);
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
         }
 
         .chat-input-area button {
@@ -201,12 +203,12 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
 
         .chat-input-area button:hover {
             transform: scale(1.08);
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.45);
         }
     </style>
 </head>
@@ -223,7 +225,7 @@
         <!-- Cabecera moderna con degradado -->
         <div class="chat-header">
             <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="background: rgba(255,255,255,0.2); padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px;"><i class="fa-solid fa-robot" style="font-size: 0.9rem;"></i></span>
+                <span style="background: rgba(255,255,255,0.2); padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px;"><i class="fa-solid fa-shield-heart" style="font-size: 0.9rem; color: #10B981;"></i></span>
                 <span>Asistente PrevenApp</span>
             </div>
             <button class="close-btn" onclick="toggleChat()" title="Cerrar">

@@ -6,33 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PrevenApp</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    {% block chatbot %}
     <style>
-        /* Variables y reset del chatbot flotante */
+        /* Estilos del Chatbot Inteligente adaptados al diseño de la App */
         :root {
-            --primary-color: #4F46E5;
-            --primary-hover: #4338CA;
-            --white: #FFFFFF;
-            --text-dark: #1F2937;
-            --border-color: #E5E7EB;
+            --chat-primary: #4F46E5;      /* Color principal (Índigo) */
+            --chat-primary-hover: #4338CA; /* Hover principal */
+            --chat-secondary: #10B981;    /* Color secundario (Verde) */
+            --chat-bg: #F3F4F6;           /* Fondo general app */
+            --chat-text: #1F2937;         /* Texto oscuro */
+            --chat-text-light: #6B7280;   /* Texto claro */
+            --chat-white: #FFFFFF;
+            --chat-border: #E5E7EB;       /* Bordes */
         }
 
-        /* Botón circular flotante */
         .chatbot-toggler {
             position: fixed;
             bottom: 25px;
             right: 25px;
-            background: var(--primary-color);
-            color: var(--white);
+            background: var(--chat-primary);
+            color: var(--chat-white);
             border: none;
             border-radius: 50%;
             width: 60px;
             height: 60px;
             font-size: 26px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3); /* Sombra índigo */
             z-index: 1000;
-            transition: transform 0.2s ease, background 0.2s ease;
+            transition: transform 0.2s, background 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -40,26 +44,25 @@
 
         .chatbot-toggler:hover {
             transform: scale(1.08);
-            background: var(--primary-hover);
+            background: var(--chat-primary-hover);
         }
 
-        /* Ventana del chat flotante */
         .chat-container {
             position: fixed;
             bottom: 95px;
             right: 25px;
-            width: 350px;
+            width: 380px;
             max-width: 90vw;
-            height: 480px;
-            max-height: 75vh;
+            height: 500px;
             z-index: 999;
+            background: var(--chat-white);
+            border-radius: 20px; /* Bordes más redondeados como tus tarjetas */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); /* Sombra suave como login */
             display: none;
-            background: var(--white);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
             flex-direction: column;
             overflow: hidden;
             font-family: 'Poppins', sans-serif;
+            border: 1px solid var(--chat-border);
         }
 
         .chat-container.show {
@@ -67,78 +70,112 @@
         }
 
         .chat-header {
-            padding: 16px 20px;
-            background: var(--primary-color);
-            color: var(--white);
-            font-weight: 600;
-            font-size: 1.05rem;
+            background: var(--chat-primary);
+            color: var(--chat-white);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-weight: 600;
         }
 
-        .close-btn {
-            background: none;
+        .chat-header .close-btn {
+            background: rgba(255,255,255,0.2);
             border: none;
-            color: var(--white);
-            font-size: 1.2rem;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
             cursor: pointer;
-            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .chat-header .close-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .chat-box {
             flex: 1;
-            padding: 15px;
+            padding: 20px;
             overflow-y: auto;
+            background: var(--chat-bg);
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            background: #FAFAFA;
+            gap: 15px;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: var(--chat-text);
         }
 
         .msg-bot {
-            background: var(--white);
-            color: var(--text-dark);
-            border: 1px solid var(--border-color);
-            padding: 12px 14px;
-            border-radius: 15px;
-            border-bottom-left-radius: 2px;
-            font-size: 0.9rem;
-            line-height: 1.4;
+            background: var(--chat-white);
+            border-radius: 15px 15px 15px 2px;
+            align-self: flex-start;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid var(--chat-border);
         }
 
-        /* Área y estilo de botones interactivos */
-        .chat-options-area {
-            padding: 12px 15px;
-            background: var(--white);
-            border-top: 1px solid var(--border-color);
+        .msg-user {
+            background: var(--chat-primary);
+            color: var(--chat-white);
+            border-radius: 15px 15px 2px 15px;
+            align-self: flex-end;
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: var(--chat-white);
+            border-top: 1px solid var(--chat-border);
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 220px;
-            overflow-y: auto;
+            gap: 10px;
         }
 
-        .btn-option {
-            background: var(--primary-color);
-            color: var(--white);
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--chat-border);
+            border-radius: 10px; /* Igual que tus inputs */
+            outline: none;
+            font-family: inherit;
+            color: var(--chat-text);
+            transition: all 0.3s ease;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--chat-primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .chat-input-area button {
+            background: var(--chat-primary);
+            color: var(--chat-white);
             border: none;
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 0.88rem;
-            font-weight: 500;
+            width: 48px;
+            height: 48px;
+            border-radius: 10px; /* Consistente con los botones */
             cursor: pointer;
-            text-align: left;
-            transition: all 0.2s ease;
-            width: 100%;
-            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
 
-        .btn-option:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
+        .chat-input-area button:hover {
+            background: var(--chat-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
         }
     </style>
+    {% endblock %}
 </head>
 <body>
 
@@ -147,132 +184,110 @@
         {% endblock %}
     </main>
 
+    {% block chatbot_html %}
     <!-- Botón Flotante -->
-    <button class="chatbot-toggler" id="btnToggleChat">💬</button>
+    <button class="chatbot-toggler" id="btnToggleChat"><i class="fa-solid fa-message"></i></button>
 
     <!-- Ventana del Chat Flotante -->
     <div class="chat-container" id="floatingChat">
         <div class="chat-header">
-            <span>Asistente PrevenApp</span>
-            <button class="close-btn" id="btnCloseChat">✖</button>
+            <div>
+                <i class="fa-solid fa-shield-heart" style="color: var(--chat-secondary); margin-right: 5px;"></i> Asistente PrevenApp
+            </div>
+            <button class="close-btn" id="btnCloseChat"><i class="fa-solid fa-xmark"></i></button>
         </div>
         
-        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-box" id="chatBox">
+            <div class="msg msg-bot">
+                ¡Hola! Soy el asistente virtual de PrevenApp. ¿Qué duda tienes sobre salud sexual o prevención?
+            </div>
+        </div>
 
-        <div class="chat-options-area" id="chatOptions"></div>
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Escribe tu duda aquí..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
     </div>
 
-    <!-- Árbol de decisiones y lógica en JS -->
     <script>
-        const opcionesNiveles = {
-            "inicio": {
-                "mensaje": "¡Hola! Soy la IA de PrevenApp. Selecciona un tema para guiarte:",
-                "opciones": [
-                    {"texto": "1. Métodos Anticonceptivos", "clave": "cat_metodos"},
-                    {"texto": "2. Prevención del Embarazo", "clave": "cat_embarazo"},
-                    {"texto": "3. Salud Sexual e ITS", "clave": "cat_its"},
-                    {"texto": "4. ¿Para qué sirve esta app?", "clave": "que_es_app"}
-                ]
-            },
-            "cat_metodos": {
-                "mensaje": "¿Sobre qué método anticonceptivo necesitas información?",
-                "opciones": [
-                    {"texto": "Preservativo / Condón", "clave": "ans_condon"},
-                    {"texto": "Pastillas Anticonceptivas", "clave": "ans_pastillas"},
-                    {"texto": "Implante / DIU", "clave": "ans_larc"},
-                    {"texto": "Pastilla del Día Después", "clave": "ans_postday"},
-                    {"texto": "« Volver al Inicio", "clave": "inicio"}
-                ]
-            },
-            "cat_embarazo": {
-                "mensaje": "Selecciona tu duda sobre prevención de embarazo:",
-                "opciones": [
-                    {"texto": "¿Puedo quedar embarazada en la 1ra vez?", "clave": "ans_primera_vez"},
-                    {"texto": "¿Qué son los días fértiles?", "clave": "ans_dias_fertiles"},
-                    {"texto": "¿Cuándo hacer una prueba de embarazo?", "clave": "ans_test_embarazo"},
-                    {"texto": "« Volver al Inicio", "clave": "inicio"}
-                ]
-            },
-            "cat_its": {
-                "mensaje": "Selecciona la duda sobre Salud Sexual e Infecciones:",
-                "opciones": [
-                    {"texto": "¿Qué son las ITS y cómo prevenirlas?", "clave": "ans_que_son_its"},
-                    {"texto": "Síntomas comunes de una ITS", "clave": "ans_sintomas_its"},
-                    {"texto": "« Volver al Inicio", "clave": "inicio"}
-                ]
-            },
-            "que_es_app": {
-                "mensaje": "PrevenApp es un espacio seguro y confidencial diseñado para educar e informar a adolescentes sobre salud sexual y reproductiva.",
-                "opciones": [{"texto": "« Volver al Inicio", "clave": "inicio"}]
-            },
-            "ans_condon": {
-                "mensaje": "El condón es una funda de látex que impide el paso del semen. Evita embarazos e Infecciones de Transmisión Sexual (ITS).",
-                "opciones": [{"texto": "« Volver a Métodos", "clave": "cat_metodos"}, {"texto": "« Inicio", "clave": "inicio"}]
-            },
-            "ans_pastillas": {
-                "mensaje": "Son pastillas de uso diario que impiden la ovulación. Deben tomarse a la misma hora todos los días.",
-                "opciones": [{"texto": "« Volver a Métodos", "clave": "cat_metodos"}, {"texto": "« Inicio", "clave": "inicio"}]
-            },
-            "ans_larc": {
-                "mensaje": "El implante y el DIU duran entre 3 y 10 años, ofreciendo más del 99% de efectividad. Los coloca un profesional médico.",
-                "opciones": [{"texto": "« Volver a Métodos", "clave": "cat_metodos"}, {"texto": "« Inicio", "clave": "inicio"}]
-            },
-            "ans_postday": {
-                "mensaje": "La pastilla de emergencia ayuda a prevenir un embarazo si se toma dentro de las primeras 72 horas tras una relación sin protección.",
-                "opciones": [{"texto": "« Volver a Métodos", "clave": "cat_metodos"}, {"texto": "« Inicio", "clave": "inicio"}]
-            },
-            "ans_primera_vez": {
-                "mensaje": "Sí, es totalmente posible quedar embarazada en la primera relación sexual si no se utiliza un método anticonceptivo.",
-                "opciones": [{"texto": "« Volver a Embarazo", "clave": "cat_embarazo"}, {"texto": "« Inicio", "clave": "inicio"}]
-            },
-            "ans_dias_fertiles": {
-                "mensaje": "Son los días del ciclo menstrual con mayor probabilidad de embarazo. En adolescentes los ciclos varían, así que no es un método seguro.",
-                "opciones": [{"texto": "« Volver a Embarazo", "clave": "cat_embarazo"}, {"texto": "« Inicio", "clave": "inicio"}]
-            },
-            "ans_test_embarazo": {
-                "mensaje": "Una prueba de embarazo en orina es confiable a partir del primer día de retraso menstrual o 15 días después del acto sexual sin protección.",
-                "opciones": [{"texto": "« Volver a Embarazo", "clave": "cat_embarazo"}, {"texto": "« Inicio", "clave": "inicio"}]
-            },
-            "ans_que_son_its": {
-                "mensaje": "Las ITS son infecciones transmitidas por contacto sexual (VIH, VPH, sífilis, etc.). El uso correcto del condón previene su contagio.",
-                "opciones": [{"texto": "« Volver a Salud Sexual", "clave": "cat_its"}, {"texto": "« Inicio", "clave": "inicio"}]
-            },
-            "ans_sintomas_its": {
-                "mensaje": "Pueden incluir ardor al orinar, secreciones inusuales, verrugas o llagas en la zona genital. Ante cualquier síntoma, acude a un centro de salud.",
-                "opciones": [{"texto": "« Volver a Salud Sexual", "clave": "cat_its"}, {"texto": "« Inicio", "clave": "inicio"}]
-            }
-        };
-
-        const chatBox = document.getElementById('chatBox');
-        const chatOptions = document.getElementById('chatOptions');
-        
-        function cargarOpcion(clave) {
-            const nodo = opcionesNiveles[clave] || opcionesNiveles['inicio'];
-            chatBox.innerHTML = `<div class="msg-bot">${nodo.mensaje}</div>`;
-            chatOptions.innerHTML = '';
-            
-            nodo.opciones.forEach(btn => {
-                const button = document.createElement('button');
-                button.className = 'btn-option';
-                button.innerHTML = `📌 ${btn.texto}`;
-                button.onclick = () => cargarOpcion(btn.clave); 
-                chatOptions.appendChild(button);
-            });
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
+        // Lógica para abrir/cerrar el chat
         document.getElementById('btnToggleChat').addEventListener('click', () => {
-            const chat = document.getElementById('floatingChat');
-            chat.classList.toggle('show');
-            if (chat.classList.contains('show')) {
-                cargarOpcion('inicio');
-            }
+            document.getElementById('floatingChat').classList.toggle('show');
         });
 
         document.getElementById('btnCloseChat').addEventListener('click', () => {
             document.getElementById('floatingChat').classList.remove('show');
         });
+
+        // Lógica de comunicación con el backend de Django
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const inputField = document.getElementById("userInput");
+            const userMessage = inputField.value.trim();
+            const chatBox = document.getElementById("chatBox");
+
+            if (userMessage === "") return;
+
+            // 1. Mostrar mensaje del usuario
+            const userDiv = document.createElement("div");
+            userDiv.className = "msg msg-user";
+            userDiv.innerText = userMessage;
+            chatBox.appendChild(userDiv);
+
+            // Limpiar input y hacer scroll
+            inputField.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 2. Mostrar indicador de "escribiendo"
+            const botDiv = document.createElement("div");
+            botDiv.className = "msg msg-bot";
+            botDiv.innerText = "Consultando a la IA...";
+            chatBox.appendChild(botDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 3. Enviar al backend (URL directa a tu vista)
+            fetch('/api/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar el texto del bot con la respuesta real
+                botDiv.innerText = data.reply;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                botDiv.innerText = "Lo siento, hubo un error de conexión.";
+                console.error('Error:', error);
+            });
+        }
+
+        // Función auxiliar para obtener el CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
+    {% endblock %}
+
 </body>
 </html>
