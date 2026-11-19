@@ -12,4 +12,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('dashboard/profesional/mis-horarios/', views.ver_horarios, name='ver_horarios'),
     path('dashboard/profesional/perfil/', views.perfil_profesional, name='perfil_profesional'),
+    path('dashboard/profesional/horario/eliminar/<int:id>/', views.eliminar_horario, name='eliminar_horario'),
 ]

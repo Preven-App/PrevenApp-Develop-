@@ -180,11 +180,16 @@ class Cita(models.Model):
 class HorarioProfesional(models.Model):
     idHorario_Profesional = models.AutoField(primary_key=True)
     profesional = models.ForeignKey(Profesional, on_delete=models.CASCADE, db_column='Profesional_idProfesional')
+    fecha_inicio = models.DateField(null=True, blank=True) # <-- Nuevo campo
+    fecha_fin = models.DateField(null=True, blank=True)    # <-- Nuevo campo
     dias_semana = models.CharField(max_length=100, null=True, blank=True)
     hora_inicio = models.TimeField(null=True, blank=True)
     hora_fin = models.TimeField(null=True, blank=True)
     num_citas = models.IntegerField(null=True, blank=True)
     notificaciones_activas = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.dias_semana} - {self.profesional.usuario.nombres}"
 
 # ==========================================
 # 5. INQUIETUDES Y REPORTES

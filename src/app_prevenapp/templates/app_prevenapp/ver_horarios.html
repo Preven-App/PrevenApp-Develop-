@@ -90,67 +90,75 @@
                 
                 
                 
-                <!-- Tarjeta de Horario 1 -->
+                            <div class="horarios-list animate-up delay-1">
+                
+                <!-- Bucle de Django para mostrar los horarios reales -->
+                {% for horario in horarios %}
                 <div class="horario-card">
                     <div class="horario-info">
-                        <div class="horario-icon">
+                        <div class="horario-icon {% if forloop.counter|divisibleby:2 %}bg-purple-light{% endif %}">
                             <i class="fa-solid fa-clock"></i>
                         </div>
                         <div class="horario-details">
-                            <h3>Lunes a Viernes</h3>
-                            <p><i class="fa-regular fa-calendar"></i> Vigencia: 01 Nov 2026 - 31 Dic 2026</p>
+                            <!-- Mostramos el día -->
+                            <h3>{{ horario.dias_semana }}</h3>
+                            
+                            <!-- Formateamos las fechas -->
+                            <p>
+                                <i class="fa-regular fa-calendar"></i> 
+                                Vigencia: 
+                                {% if horario.fecha_inicio %}
+                                    {{ horario.fecha_inicio|date:"d M Y" }} 
+                                    {% if horario.fecha_fin %} - {{ horario.fecha_fin|date:"d M Y" }}{% else %} - Permanente{% endif %}
+                                {% else %}
+                                    Permanente
+                                {% endif %}
+                            </p>
+                            
                             <div class="tags">
-                                <span class="tag"><i class="fa-solid fa-hourglass-half"></i> 08:00 AM - 05:00 PM</span>
-                                <span class="tag"><i class="fa-solid fa-users"></i> Máx. 5 citas/día</span>
+                                <!-- Formateamos las horas a formato AM/PM -->
+                                <span class="tag">
+                                    <i class="fa-solid fa-hourglass-half"></i> 
+                                    {{ horario.hora_inicio|time:"h:i A" }} - {{ horario.hora_fin|time:"h:i A" }}
+                                </span>
+                                <span class="tag">
+                                    <i class="fa-solid fa-users"></i> 
+                                    Máx. {{ horario.num_citas }} citas/día
+                                </span>
                             </div>
                         </div>
                     </div>
+                    
                     <div class="horario-actions">
-                        <!-- Botón Editar -->
+                        <!-- Botón Editar (Puedes pasar el ID del horario en la URL para editarlo en un futuro) -->
                         <a href="{% url 'configurar_horario' %}" class="btn-icon btn-edit" title="Editar">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
-                        <!-- Botón Eliminar -->
-                        <button onclick="confirmarEliminacion()" class="btn-icon btn-delete" title="Eliminar">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        
+                        <!-- Botón Eliminar usando un formulario POST (Más seguro) -->
+                        <form action="{% url 'eliminar_horario' horario.idHorario_Profesional %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-icon btn-delete" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este horario?');">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
-
-                <!-- Tarjeta de Horario 2 -->
-                <div class="horario-card">
-                    <div class="horario-info">
-                        <div class="horario-icon bg-purple-light">
-                            <i class="fa-solid fa-clock"></i>
-                        </div>
-                        <div class="horario-details">
-                            <h3>Sábados</h3>
-                            <p><i class="fa-regular fa-calendar"></i> Vigencia: Permanente</p>
-                            <div class="tags">
-                                <span class="tag"><i class="fa-solid fa-hourglass-half"></i> 08:00 AM - 12:00 PM</span>
-                                <span class="tag"><i class="fa-solid fa-users"></i> Máx. 3 citas/día</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="horario-actions">
-                        <a href="{% url 'configurar_horario' %}" class="btn-icon btn-edit" title="Editar">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
-                        <button onclick="confirmarEliminacion()" class="btn-icon btn-delete" title="Eliminar">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- ESTADO VACÍO (Se muestra si no hay horarios) -->
-                <!-- 
+                {% empty %}
+                
+                <!-- ESTADO VACÍO: Se muestra si la lista 'horarios' está vacía -->
                 <div class="empty-state">
                     <i class="fa-regular fa-calendar-xmark"></i>
                     <h3>No tienes horarios configurados</h3>
                     <p>Agrega tu primer bloque de disponibilidad para que los usuarios puedan agendar citas.</p>
                     <a href="{% url 'configurar_horario' %}" class="btn btn-primary">Crear Horario</a>
-                </div> 
-                -->
+                </div>
+                
+                {% endfor %}
+
+            
+
+             
 
             </div>
         </div>
