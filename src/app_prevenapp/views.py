@@ -4,8 +4,9 @@ from django.contrib import messages
 from django.db import transaction  # <-- IMPORTANTE: Importar esto
 from django.shortcuts import redirect, render
 
-from .models import Especialidad, Profesional, Rol, Usuario
+from .models import Especialidad, HorarioProfesional, Profesional, Rol, Usuario
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 
 def landing_page(request):
     return render(request, 'app_prevenapp/landing.html')
@@ -160,3 +161,99 @@ def register_view(request):
 def dashboard_profesional(request):
     # Aquí luego irá la lógica para verificar si el usuario es realmente un profesional
     return render(request, 'app_prevenapp/dashboard_profesional.html')
+
+@login_required(login_url='login')
+def configurar_horario(request):
+    
+    # Obtenemos el perfil del profesional logueado
+    profesional = request.user.profesional
+
+    if request.method == 'POST':
+        # 1. Capturamos las fechas globales
+        fecha_inicio = request.POST.get('fecha_inicio')
+        fecha_fin = request.POST.get('fecha_fin')
+        
+        # Si la fecha fin viene vacía, guardamos None en la BD
+        if not fecha_fin:
+            fecha_fin = None
+
+        # 2. Definimos los días de la semana para iterar
+        dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']
+        dias_guardados = 0
+
+        # 3. Iteramos sobre cada día
+        for dia in dias:
+            # Verificamos si el checkbox de ese día fue marcado (envía "1")
+            if request.POST.get(f'{dia}_activo') == '1':
+                hora_inicio = request.POST.get(f'{dia}_inicio')
+                hora_fin = request.POST.get(f'{dia}_fin')
+                num_citas = request.POST.get(f'{dia}_citas')
+
+                # Guardamos el día en la base de datos
+                HorarioProfesional.objects.create(
+                    profesional=profesional,
+                    fecha_inicio=fecha_inicio,
+                    fecha_fin=fecha_fin,
+                    dias_semana=dia.capitalize(), # Ej: "Lunes"
+                    hora_inicio=hora_inicio,
+                    hora_fin=hora_fin,
+                    num_citas=num_citas
+                )
+                dias_guardados += 1
+
+        # 4. Mostramos mensaje de éxito
+        if dias_guardados > 0:
+            messages.success(request, f'¡Éxito! Se guardaron {dias_guardados} días de disponibilidad.')
+            return redirect('ver_horarios') # Redirigimos a la lista de horarios
+        else:
+            messages.error(request, 'Debes activar al menos un día para guardar un horario.')
+            return redirect('configurar_horario')
+
+    return render(request, 'app_prevenapp/configurar_horario.html')
+
+@login_required(login_url='login')
+def ver_horarios(request):
+    try:
+        # Obtenemos el perfil del profesional
+        profesional = request.user.profesional
+        
+        # Buscamos todos sus horarios en la BD (ordenados por ID)
+        horarios = HorarioProfesional.objects.filter(profesional=profesional).order_by('idHorario_Profesional')
+    except Exception:
+        # Si por alguna razón no tiene perfil de profesional, enviamos una lista vacía
+        horarios = []
+
+    # Enviamos la variable 'horarios' al HTML
+    return render(request, 'app_prevenapp/ver_horarios.html', {'horarios': horarios})
+
+
+@login_required(login_url='login')
+def eliminar_horario(request, id):
+    horario = get_object_or_404(HorarioProfesional, idHorario_Profesional=id, profesional=request.user.profesional)
+    horario.delete()
+    return redirect('ver_horarios')
+
+@login_required(login_url='login')
+def perfil_profesional(request):
+    if request.method == 'POST':
+        # 1. Obtenemos el usuario actual
+        usuario = request.user
+        
+        # 2. Actualizamos los campos de texto
+        usuario.nombres = request.POST.get('nombres')
+        usuario.apellidos = request.POST.get('apellidos')
+        usuario.correo = request.POST.get('correo')
+        usuario.telefono = request.POST.get('telefono')
+        
+        # 3. Verificamos si el usuario subió una nueva foto
+        # request.FILES es vital para manejar archivos
+        if 'foto_perfil' in request.FILES:
+            usuario.foto_perfil = request.FILES['foto_perfil']
+
+        # 4. Guardamos los cambios en la Base de Datos
+        usuario.save()
+        
+        messages.success(request, '¡Tu perfil ha sido actualizado exitosamente!')
+        return redirect('perfil_profesional')
+
+    return render(request, 'app_prevenapp/perfil_profesional.html')

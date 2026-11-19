@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/perfil_profesional.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li><a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li><a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li class="active"><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar...">
+            </div>
+            <div class="user-profile">
+                <div class="profile-info">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        <!-- Si el usuario tiene foto, la mostramos en el topbar -->
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="page-header animate-up">
+                <h1>Mi Perfil Profesional</h1>
+                <p>Mantén tu información actualizada para brindar una mejor atención.</p>
+            </div>
+
+            <div class="perfil-grid animate-up delay-1">
+                <!-- Tarjeta Izquierda: Foto actual -->
+                <div class="perfil-card profile-pic-card">
+                    <div class="current-avatar">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Foto de perfil">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
+                    </div>
+                    <h2>{{ request.user.nombres }} {{ request.user.apellidos }}</h2>
+                    <p class="text-muted">{{ request.user.profesional.especialidad.nombre }}</p>
+                    <div class="badge-verified">
+                        <i class="fa-solid fa-circle-check"></i> Profesional Verificado
+                    </div>
+                </div>
+
+                <!-- Tarjeta Derecha: Formulario de Edición -->
+                <div class="perfil-card form-card">
+                    <h3><i class="fa-solid fa-pen-to-square"></i> Editar Información</h3>
+                    
+                    <!-- NOTA EL ENCTYPE, ES VITAL PARA SUBIR FOTOS -->
+                    <form method="POST" action="{% url 'perfil_profesional' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label>Foto de Perfil</label>
+                            <input type="file" name="foto_perfil" accept="image/*" class="file-input">
+                            <small>Formatos permitidos: JPG, PNG. Máx 2MB.</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombres</label>
+                                <input type="text" name="nombres" value="{{ request.user.nombres }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos</label>
+                                <input type="text" name="apellidos" value="{{ request.user.apellidos }}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" name="correo" value="{{ request.user.correo }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono</label>
+                                <input type="tel" name="telefono" value="{{ request.user.telefono|default:'' }}">
+                            </div>
+                        </div>
+
+                        <!-- Campo de solo lectura (No se puede editar desde aquí) -->
+                        <div class="form-group">
+                            <label>Especialidad (Validada por Admin)</label>
+                            <input type="text" value="{{ request.user.profesional.especialidad.nombre }}" disabled class="input-disabled">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-save">
+                                <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
