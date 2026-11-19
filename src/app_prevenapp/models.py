@@ -29,6 +29,28 @@ class Usuario(AbstractUser):
     estado = models.CharField(max_length=20, null=True, blank=True)
     foto_perfil = models.ImageField(upload_to='perfiles/', null=True, blank=True)
 
+    ESTADOS_USUARIO = [
+        ('Activo', 'Activo'),
+        ('Inactivo', 'Inactivo'),
+        ('Suspendido', 'Suspendido'),
+    ]
+    estado = models.CharField(max_length=20, choices=ESTADOS_USUARIO, default='Activo', null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+            # Si el usuario no tiene un rol asignado, le damos uno por defecto
+        if not self.rol_id:
+            try:
+                # Buscamos el rol de Adolescente
+                rol_default = Rol.objects.get(nombre__iexact='Adolescente')
+            except Rol.DoesNotExist:
+                # Si no existe (por si acaso), lo creamos
+                rol_default = Rol.objects.create(nombre='Adolescente')
+            
+            self.rol = rol_default
+        
+        # Finalmente, guardamos el usuario
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.nombres} {self.apellidos} ({self.correo})"
 
@@ -46,6 +68,13 @@ class Profesional(models.Model):
     documento_identidad = models.CharField(max_length=20)
     credencial_profesional = models.CharField(max_length=50)
     estado = models.CharField(max_length=20, null=True, blank=True)
+
+    ESTADOS = [
+        ('Pendiente', 'Pendiente'),
+        ('Activo', 'Activo'),
+        ('Inactivo', 'Inactivo'),
+    ]
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='Pendiente', null=True, blank=True)
 
     def __str__(self):
         return f"Profesional: {self.usuario.nombres} {self.usuario.apellidos}"

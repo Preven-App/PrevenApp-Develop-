@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.landing_page, name='landing'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
+    path('accounts/', include('allauth.urls')),
     path('dashboard/profesional/', views.dashboard_profesional, name='dashboard_profesional'),
     path('dashboard/profesional/horario/', views.configurar_horario, name='configurar_horario'),
     path('accounts/', include('allauth.urls')),

@@ -136,8 +136,9 @@ def register_view(request):
 
                     if not nombre_especialidad or not documento or not licencia:
                         raise ValueError("Los campos de profesional están incompletos. Revisa el formulario.")
-
-                    especialidad_db, _ = Especialidad.objects.get_or_create(nombre=nombre_especialidad)
+                    
+                    nombre_especialidad_limpio = nombre_especialidad.strip().capitalize()
+                    especialidad_db, _ = Especialidad.objects.get_or_create(nombre=nombre_especialidad_limpio)
                     
                     nuevo_profesional = Profesional(
                         usuario=nuevo_usuario,

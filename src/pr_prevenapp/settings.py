@@ -2,6 +2,7 @@
 Django settings for pr_prevenapp project.
 """
 from pathlib import Path
+
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -20,6 +21,7 @@ ALLOWED_HOSTS = []
 # Application definition
 INSTALLED_APPS = [
     'unfold', # <-- Debe ir antes de django.contrib.admin
+     'app_prevenapp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -32,10 +34,10 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.google', # Descomenta cuando configures Google
+    'allauth.socialaccount.providers.google', # Descomenta cuando configures Google
     
     # Apps propias
-    'app_prevenapp',
+   
 ]
 
 MIDDLEWARE = [
@@ -50,6 +52,22 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'pr_prevenapp.urls'
+# settings.py
+SOCIALACCOUNT_ADAPTER = 'app_prevenapp.adapters.MySocialAccountAdapter'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],  
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+            "prompt": "select_account",
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
 
 TEMPLATES = [
     {
@@ -106,7 +124,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-SITE_ID = 1
+SITE_ID = 4
 LOGIN_REDIRECT_URL = '/'
 
 AUTH_USER_MODEL = 'app_prevenapp.Usuario'
@@ -114,40 +132,37 @@ AUTH_USER_MODEL = 'app_prevenapp.Usuario'
 # ==========================================
 # CONFIGURACIÓN DE DJANGO UNFOLD
 # ==========================================
+# settings.py
 UNFOLD = {
+    "DASHBOARD_CALLBACK": "app_prevenapp.dashboard.callback",
+    "STYLES": [  # <-- Esto debe ser una lista, no un diccionario
+        lambda request: static("css/custom_admin.css"),
+    ],
     "SITE_TITLE": "PrevenApp Admin",
     "SITE_HEADER": "PrevenApp",
     "SITE_SUBHEADER": "Panel de Administración",
-    "SITE_SYMBOL": "health_and_safety", # Icono de Material Symbols
+    "SITE_SYMBOL": "health_and_safety",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
     "THEME": "auto", 
     "COLORS": {
-        "primary": {
-            "50": "250 245 255",
-            "100": "243 232 255",
-            "200": "233 213 255",
-            "300": "216 180 254",
-            "400": "192 132 252",
-            "500": "168 85 247",
-            "600": "147 51 234",
-            "700": "126 34 206",
-            "800": "107 33 168",
-            "900": "88 28 135",
-            "950": "59 7 100",
-        },
-         "base": {
-            "50": "oklch(98.5% .002 247.839)",  # Fondo muy claro (para modo light)
+        "base": {
+            "50": "oklch(98.5% .002 247.839)",
             "100": "oklch(96.7% .003 264.542)",
             "200": "oklch(92.8% .006 264.531)",
             "300": "oklch(87.2% .01 258.338)",
             "400": "oklch(70.7% .022 261.325)",
             "500": "oklch(55.1% .027 264.364)",
-            "600": "oklch(44.6% .03 256.802)",   # Gris medio
-            "700": "oklch(37.3% .034 259.733)",  # Gris oscuro
-            "800": "oklch(27.8% .033 256.848)",  # Fondo de tarjetas en modo oscuro
-            "900": "oklch(21% .034 264.665)",    # Fondo principal en modo oscuro
-            "950": "oklch(13% .028 261.692)",    # Fondo más profundo (sidebar)
+            "600": "oklch(44.6% .03 256.802)",
+            "700": "oklch(37.3% .034 259.733)",
+            "800": "oklch(27.8% .033 256.848)",
+            "900": "oklch(21% .034 264.665)",
+            "950": "oklch(13% .028 261.692)",
+        },
+        "primary": {
+            "500": "168 85 247",
+            "600": "147 51 234",
+            "700": "126 34 206",
         },
     },
     "SIDEBAR": {
@@ -202,4 +217,4 @@ UNFOLD = {
             },
         ],
     },
-}
+} 
