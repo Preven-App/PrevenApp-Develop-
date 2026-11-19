@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursos Educativos - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/recursos_profesional.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li><a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li><a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
+                <li class="active"><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
+                <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar recurso, guía o artículo...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <!-- ÁREA DE TRABAJO -->
+        <div class="dashboard-container">
+            <div class="page-header animate-up">
+                <div>
+                    <h1>Biblioteca de Recursos</h1>
+                    <p>Explora material verificado para apoyar tus consultas y recomendar a tus pacientes.</p>
+                </div>
+            </div>
+
+            <!-- Filtros y Búsqueda -->
+            <div class="filters-bar animate-up delay-1">
+                <div class="filter-pills">
+                    <button class="pill active">Todos</button>
+                    <button class="pill">Artículos</button>
+                    <button class="pill">Guías PDF</button>
+                    <button class="pill">Infografías</button>
+                    <button class="pill">Videos</button>
+                </div>
+                <select class="category-select">
+                    <option>Todas las categorías</option>
+                    <option>Métodos Anticonceptivos</option>
+                    <option>Infecciones (ITS)</option>
+                    <option>Prevención del Embarazo</option>
+                    <option>Salud Mental</option>
+                </select>
+            </div>
+
+            <!-- Grid de Recursos -->
+            <div class="recursos-grid animate-up delay-2">
+                
+                <!-- Recurso 1 -->
+                <div class="recurso-card">
+                    <div class="recurso-image bg-blue-light">
+                        <i class="fa-regular fa-file-pdf"></i>
+                    </div>
+                    <div class="recurso-content">
+                        <span class="recurso-category">Guía PDF</span>
+                        <h3>Guía Completa de Métodos Anticonceptivos</h3>
+                        <p>Documento detallado sobre eficacia, uso y efectos secundarios de cada método.</p>
+                        <div class="recurso-footer">
+                            <span><i class="fa-regular fa-clock"></i> 5 min de lectura</span>
+                            <button class="btn-download" title="Descargar"><i class="fa-solid fa-download"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recurso 2 -->
+                <div class="recurso-card">
+                    <div class="recurso-image bg-purple-light">
+                        <i class="fa-solid fa-photo-film"></i>
+                    </div>
+                    <div class="recurso-content">
+                        <span class="recurso-category">Video</span>
+                        <h3>¿Cómo hablar de consentimiento con adolescentes?</h3>
+                        <p>Video corto con estrategias de comunicación y empatía para profesionales.</p>
+                        <div class="recurso-footer">
+                            <span><i class="fa-regular fa-clock"></i> 4 min de video</span>
+                            <button class="btn-download" title="Ver Video"><i class="fa-solid fa-play"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recurso 3 -->
+                <div class="recurso-card">
+                    <div class="recurso-image bg-green-light">
+                        <i class="fa-regular fa-newspaper"></i>
+                    </div>
+                    <div class="recurso-content">
+                        <span class="recurso-category">Artículo</span>
+                        <h3>Mitos y realidades sobre las ITS</h3>
+                        <p>Artículo informativo para desmentir creencias comunes entre los jóvenes.</p>
+                        <div class="recurso-footer">
+                            <span><i class="fa-regular fa-clock"></i> 3 min de lectura</span>
+                            <button class="btn-download" title="Leer"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Recurso 4 -->
+                 <div class="recurso-card">
+                    <div class="recurso-image bg-orange-light">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
+                    <div class="recurso-content">
+                        <span class="recurso-category">Infografía</span>
+                        <h3>Rutas de Atención y Líneas de Ayuda</h3>
+                        <p>Mapa visual con los contactos de emergencia y centros de salud amigables.</p>
+                        <div class="recurso-footer">
+                            <span><i class="fa-regular fa-image"></i> JPG / PNG</span>
+                            <button class="btn-download" title="Descargar"><i class="fa-solid fa-download"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</body>
+</html>

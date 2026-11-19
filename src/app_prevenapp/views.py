@@ -257,3 +257,11 @@ def perfil_profesional(request):
         return redirect('perfil_profesional')
 
     return render(request, 'app_prevenapp/perfil_profesional.html')
+
+@login_required(login_url='login')
+def reportes_profesional(request):
+    return render(request, 'app_prevenapp/reportes_profesional.html')
+
+@login_required(login_url='login')
+def recursos_profesional(request):
+    return render(request, 'app_prevenapp/recursos_profesional.html')

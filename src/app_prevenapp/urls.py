@@ -13,4 +13,6 @@ urlpatterns = [
     path('dashboard/profesional/mis-horarios/', views.ver_horarios, name='ver_horarios'),
     path('dashboard/profesional/perfil/', views.perfil_profesional, name='perfil_profesional'),
     path('dashboard/profesional/horario/eliminar/<int:id>/', views.eliminar_horario, name='eliminar_horario'),
+    path('dashboard/profesional/reportes/', views.reportes_profesional, name='reportes_profesional'),
+    path('dashboard/profesional/recursos/', views.recursos_profesional, name='recursos_profesional'),
 ]

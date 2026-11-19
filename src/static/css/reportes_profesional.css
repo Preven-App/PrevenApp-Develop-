@@ -1,0 +1,180 @@
+/* ==========================================
+   KPIs Y FILTROS
+   ========================================== */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kpi-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid var(--border-color);
+}
+
+.kpi-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+.bg-red { background: #FEE2E2; color: #EF4444; }
+.bg-orange { background: #FFEDD5; color: #EA580C; }
+
+.kpi-data h3 { font-size: 0.85rem; color: var(--text-light); font-weight: 500; }
+.kpi-data p { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); }
+
+/* Filtros */
+.filters-container {
+    display: flex;
+    gap: 20px;
+    background: var(--white);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid var(--border-color);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.form-select {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-dark);
+    outline: none;
+    cursor: pointer;
+    min-width: 200px;
+}
+
+/* ==========================================
+   LISTA DE PACIENTES
+   ========================================== */
+.pacientes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.paciente-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.paciente-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.paciente-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.paciente-avatar {
+    width: 60px;
+    height: 60px;
+    background: #F1F5F9;
+    color: #64748B;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+.paciente-info {
+    flex: 1;
+}
+
+.paciente-info h3 {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.paciente-info p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+/* Badges de Riesgo */
+.riesgo-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.riesgo-badge.alto { background: #FEE2E2; color: #EF4444; }
+.riesgo-badge.medio { background: #FEF3C7; color: #D97706; }
+.riesgo-badge.bajo { background: #D1FAE5; color: #059669; }
+
+/* Botones de Acción */
+.paciente-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-action {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background: #F8FAFC;
+    color: var(--text-dark);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.btn-action:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filters-container { flex-direction: column; }
+    .paciente-header { flex-direction: column; text-align: center; }
+    .paciente-actions { flex-direction: column; }
+    .btn-action { justify-content: center; }
+}

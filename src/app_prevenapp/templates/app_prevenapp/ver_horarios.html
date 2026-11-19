@@ -13,7 +13,7 @@
 <body>
 
     <!-- BARRA LATERAL (SIDEBAR) -->
-    <aside class="sidebar">
+       <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo">
                 <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
@@ -23,19 +23,14 @@
 
         <nav class="sidebar-nav">
             <ul>
-                <li>
-                    <a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a>
-                </li>
-                <!-- IMPORTANTE: Aquí puedes tener un submenú o dos enlaces separados -->
-                <li class="active">
-                    <a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
-                </li>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li class="active"><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li><a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li><a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <!-- OPCIONES FALTANTES AGREGADAS AQUÍ -->
+                <li><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
+                <li><a href="#"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
+                <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
             </ul>
         </nav>
 
@@ -50,7 +45,7 @@
     <main class="main-content">
         
         <!-- BARRA SUPERIOR (TOPBAR) -->
-        <header class="topbar">
+               <header class="topbar">
             <div class="search-bar">
                 <i class="fa-solid fa-search"></i>
                 <input type="text" placeholder="Buscar paciente, recurso o reporte...">
@@ -61,15 +56,21 @@
                     <i class="fa-regular fa-bell"></i>
                     <span class="badge">3</span>
                 </div>
-                <div class="profile-info">
+                
+                <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
                     <div class="text">
                         <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
                         <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
                     </div>
                     <div class="avatar">
-                        <i class="fa-solid fa-user-doctor"></i>
+                        <!-- Mostrar foto real si existe -->
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
                     </div>
-                </div>
+                </a>
             </div>
         </header>
 

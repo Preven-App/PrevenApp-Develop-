@@ -35,10 +35,10 @@
                     <a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a>
+                    <a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a>
+                    <a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a>
                 </li>
                 <!-- Añadido: Enlace al perfil en el menú -->
                 <li>
@@ -151,7 +151,7 @@
                     <p>Comparte información verificada sobre salud y prevención.</p>
                 </a>
 
-                <a href="#" class="action-card animate-up delay-4">
+                <a href="{% url 'reportes_profesional' %}" class="action-card animate-up delay-4">
                     <i class="fa-solid fa-clipboard-list"></i>
                     <h3>Nuevo Reporte</h3>
                     <p>Registra observaciones e indicadores de riesgo de un paciente.</p>
