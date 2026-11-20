@@ -1,29 +1,105 @@
 import re
 
 from django.contrib import messages
-from django.db import transaction  # <-- IMPORTANTE: Importar esto
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.shortcuts import redirect, render
 
 from .models import (
+    Categoria,
+    Cita,
+    ContactoEmergencia,
     Especialidad,
-    HorarioProfesional,
     Profesional,
+    Recurso,
     Rol,
-    Usuario,
     Tip,
-    Categoria
+    Usuario,
+    Reporte,
+    HorarioProfesional,
 )
 
-from django.views.decorators.http import require_POST
+
+@login_required
+def listar_tips_view(request):
+    tips_aprobados = Tip.objects.filter(estado='Aprobado')
+    return render(request, 'app_prevenapp/listar_tips.html', {'tips': tips_aprobados})
+
+
+@login_required
+def registrar_tip(request):
+    categorias = Categoria.objects.all()
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        contenido = request.POST.get('contenido')
+        categoria_id = request.POST.get('categoria')
+
+        if titulo and contenido:
+            categoria_obj = Categoria.objects.filter(idCategoria=categoria_id).first() if categoria_id else None
+            Tip.objects.create(
+                titulo=titulo,
+                contenido=contenido,
+                categoria=categoria_obj,
+                autor=request.user,
+                estado='Pendiente'
+            )
+            messages.success(request, '¡Tip registrado con éxito! Queda en espera de verificación por el administrador o un profesional.')
+            return redirect('registrar_tip')
+        else:
+            messages.error(request, 'Por favor completa los campos obligatorios.')
+
+    return render(request, 'app_prevenapp/registrar_tip.html', {'categorias': categorias})
+
+
+@login_required
+def estadisticas(request):
+    return render(request, 'app_prevenapp/estadisticas.html')
+
+
+@login_required
+def servicios_view(request):
+    return render(request, 'app_prevenapp/servicios.html')
+
+from .models import Especialidad, HorarioProfesional, Profesional, Rol, Usuario
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 def landing_page(request):
     return render(request, 'app_prevenapp/landing.html')
 
+
+def login_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Autenticar usando el backend configurado
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('servicios')
+        else:
+            messages.error(request, 'Correo o contraseña incorrectos.')
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+
+#-----------------------------------------------------------
+from django.utils import timezone
+from .models import (
+    Chat,
+    Especialidad,
+    HorarioProfesional,
+    Mensaje,
+    Profesional,
+    Rol,
+    SalaChat,
+    Usuario,
+    UsuarioChat,
+)
+#-------------------------------------------------------------
 
 def login_view(request):
     if request.method == 'POST':
@@ -92,9 +168,8 @@ def register_view(request):
         password = request.POST.get('password')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-        role_select = request.POST.get('role_select') 
-        
-        # 🚨 IMPRIMIR EN CONSOLA PARA DEBUGGEAR
+        role_select = request.POST.get('role_select')
+
         print(f"DEBUG: El rol seleccionado es -> {role_select}")
 
         if Usuario.objects.filter(email=email).exists():
@@ -117,7 +192,7 @@ def register_view(request):
                 nuevo_usuario = Usuario(
                     username=email,
                     email=email,
-                    correo=email, # <--- ¡AQUÍ ESTÁ LA SOLUCIÓN AL CORREO VACÍO!
+                    correo=email,
                     nombres=first_name,
                     apellidos=last_name,
                     rol=rol_db,
@@ -126,14 +201,12 @@ def register_view(request):
                 nuevo_usuario.set_password(password)
 
                 if role_select == 'usuario' or role_select is None:
-                        # Capturamos los datos
                     telefono = request.POST.get('phone')
                     edad = request.POST.get('age')
                     rh = request.POST.get('rh_factor')
 
-                    # Si el dato viene vacío, guardamos None. Si trae número, lo convertimos a entero.
                     nuevo_usuario.telefono = telefono if telefono else None
-                    nuevo_usuario.edad = int(edad) if edad and edad.isdigit() else None 
+                    nuevo_usuario.edad = int(edad) if edad and edad.isdigit() else None
                     nuevo_usuario.rh = rh if rh else None
 
                 nuevo_usuario.save()
@@ -148,7 +221,7 @@ def register_view(request):
                         raise ValueError("Los campos de profesional están incompletos. Revisa el formulario.")
 
                     especialidad_db, _ = Especialidad.objects.get_or_create(nombre=nombre_especialidad)
-                    
+
                     nuevo_profesional = Profesional(
                         usuario=nuevo_usuario,
                         especialidad=especialidad_db,
@@ -158,8 +231,10 @@ def register_view(request):
                     )
                     nuevo_profesional.save()
 
-            messages.success(request, '¡Registro exitoso! Ya puedes iniciar sesión.')
-            return redirect('login')
+            # Autenticamos al usuario inmediatamente después del registro y lo redirigimos a 'servicios'
+            login(request, nuevo_usuario, backend='django.contrib.auth.backends.ModelBackend')
+            messages.success(request, '¡Registro exitoso!')
+            return redirect('servicios')
 
         except Exception as e:
             messages.error(request, f'Ocurrió un error al registrarse: {str(e)}')
@@ -168,6 +243,124 @@ def register_view(request):
     return render(request, 'app_prevenapp/register.html')
 
 
+@login_required
+def citas_view(request):
+    if request.method == 'POST':
+        motivo = request.POST.get('motivo', '').strip()
+        fecha = request.POST.get('fecha')
+        hora = request.POST.get('hora')
+        notas = request.POST.get('notas', '').strip()
+
+        if motivo and fecha and hora:
+            Cita.objects.create(
+                usuario=request.user,
+                motivo=motivo,
+                fecha=fecha,
+                hora=hora,
+                notas=notas
+            )
+            messages.success(request, 'Tu cita ha sido registrada con estado Pendiente.')
+            return redirect('citas')
+        messages.error(request, 'Por favor completa el motivo, la fecha y la hora.')
+
+    citas = Cita.objects.filter(usuario=request.user)
+    return render(request, 'app_prevenapp/citas.html', {'citas': citas})
+
+
+@login_required
+def recursos_view(request):
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo', '').strip()
+        categoria_id = request.POST.get('categoria')
+        tipo = request.POST.get('tipo', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+
+        if titulo and categoria_id:
+            categoria = Categoria.objects.filter(pk=categoria_id).first()
+            if categoria:
+                Recurso.objects.create(
+                    categoria=categoria,
+                    titulo=titulo,
+                    tipo=tipo or 'Guía',
+                    descripcion=descripcion,
+                    creado_por=getattr(request.user, 'idUsuario', request.user.pk)
+                )
+                messages.success(request, 'El recurso educativo se registró correctamente.')
+                return redirect('recursos')
+        messages.error(request, 'Completa al menos el título y la categoría del recurso.')
+
+    buscar = request.GET.get('q', '').strip()
+    categoria_seleccionada = request.GET.get('categoria', '').strip()
+
+    recursos = Recurso.objects.select_related('categoria').order_by('-idRecurso')
+    if buscar:
+        recursos = recursos.filter(titulo__icontains=buscar) | recursos.filter(descripcion__icontains=buscar)
+    if categoria_seleccionada:
+        recursos = recursos.filter(categoria__idCategoria=categoria_seleccionada)
+
+    categorias = Categoria.objects.all()
+
+    return render(request, 'app_prevenapp/recursos.html', {
+        'recursos': recursos,
+        'categorias': categorias,
+        'buscar': buscar,
+        'categoria_seleccionada': categoria_seleccionada,
+    })
+
+
+@login_required
+def ajustes_view(request):
+    usuario = request.user
+    contacto = ContactoEmergencia.objects.filter(usuario=usuario).first()
+
+    if request.method == 'POST':
+        seccion = request.POST.get('seccion', 'perfil')
+
+        if seccion == 'perfil':
+            usuario.nombres = request.POST.get('nombres', '').strip()
+            usuario.apellidos = request.POST.get('apellidos', '').strip()
+            usuario.correo = request.POST.get('correo', '').strip()
+            usuario.telefono = request.POST.get('telefono', '').strip()
+            usuario.eps = request.POST.get('eps', '').strip()
+            usuario.rh = request.POST.get('rh', '').strip()
+
+            edad_raw = request.POST.get('edad', '').strip()
+            usuario.edad = int(edad_raw) if edad_raw.isdigit() else None
+
+            sexo_raw = request.POST.get('sexo', '').strip()
+            usuario.sexo = sexo_raw or None
+
+            usuario.save()
+            messages.success(request, 'Tu información de perfil se actualizó correctamente.')
+            return redirect('ajustes')
+
+        elif seccion == 'emergencia':
+            nombre_contacto = request.POST.get('contacto_nombre', '').strip()
+            telefono_contacto = request.POST.get('contacto_telefono', '').strip()
+            correo_contacto = request.POST.get('contacto_correo', '').strip()
+
+            if nombre_contacto or telefono_contacto or correo_contacto:
+                if contacto:
+                    contacto.nombre = nombre_contacto
+                    contacto.telefono = telefono_contacto
+                    contacto.correo = correo_contacto or None
+                    contacto.save()
+                else:
+                    ContactoEmergencia.objects.create(
+                        usuario=usuario,
+                        nombre=nombre_contacto,
+                        telefono=telefono_contacto,
+                        correo=correo_contacto or None
+                    )
+                messages.success(request, 'Tu contacto de emergencia se guardó correctamente.')
+            else:
+                messages.error(request, 'Ingresa al menos el nombre o teléfono del contacto de emergencia.')
+            return redirect('ajustes')
+
+    return render(request, 'app_prevenapp/ajustes.html', {
+        'usuario': usuario,
+        'contacto': contacto,
+    })
 def dashboard_profesional(request):
     # Aquí luego irá la lógica para verificar si el usuario es realmente un profesional
     return render(request, 'app_prevenapp/dashboard_profesional.html')
@@ -379,3 +572,130 @@ def eliminar_tip(request, id):
 
     messages.success(request, 'Tip eliminado correctamente.')
     return redirect('lista_tips')
+#------------------------------------------------------------------------------------
+@login_required(login_url='login')
+def salas_chat(request, sala_id=None):
+    salas = SalaChat.objects.select_related('profesional', 'profesional__usuario').order_by('-idSala_chat')
+
+    # Permitir crear una nueva sala si el usuario tiene perfil de Profesional
+    if request.method == 'POST' and request.POST.get('accion') == 'crear_sala':
+        tema = (request.POST.get('tema') or '').strip()
+        descripcion = (request.POST.get('descripcion') or '').strip()
+        profesional = getattr(request.user, 'profesional', None)
+
+        if not profesional:
+            messages.error(request, 'Solo los usuarios con perfil profesional pueden crear nuevas salas.')
+            return redirect('salas_chat')
+
+        if not tema:
+            messages.error(request, 'Debes escribir un tema para la sala.')
+            return redirect('salas_chat')
+
+        nueva_sala = SalaChat.objects.create(
+            profesional=profesional,
+            tema=tema,
+            descripcion=descripcion,
+            estado='Activa',
+            fecha=timezone.now(),
+        )
+        _obtener_o_crear_chat_de_sala(nueva_sala, request.user)
+        messages.success(request, 'Sala creada correctamente.')
+        return redirect('detalle_sala_chat', sala_id=nueva_sala.idSala_chat)
+
+    sala_activa = None
+    chat_activo = None
+    mensajes_sala = []
+
+    if sala_id is not None:
+        sala_activa = get_object_or_404(SalaChat, idSala_chat=sala_id)
+    elif salas.exists():
+        sala_activa = salas.first()
+
+    if sala_activa is not None:
+        chat_activo = _obtener_o_crear_chat_de_sala(sala_activa, request.user)
+
+        if request.method == 'POST' and request.POST.get('accion') == 'enviar_mensaje':
+            contenido = (request.POST.get('mensaje') or '').strip()
+            if contenido:
+                Mensaje.objects.create(
+                    chat=chat_activo,
+                    usuario=request.user,
+                    mensaje=contenido,
+                    fecha=timezone.now(),
+                )
+            return redirect('detalle_sala_chat', sala_id=sala_activa.idSala_chat)
+
+        mensajes_sala = (
+            Mensaje.objects.filter(chat=chat_activo)
+            .select_related('usuario')
+            .order_by('fecha', 'idMensaje')
+        )
+
+    contexto = {
+        'salas': salas,
+        'sala_activa': sala_activa,
+        'mensajes_sala': mensajes_sala,
+        'es_profesional': hasattr(request.user, 'profesional'),
+    }
+    return render(request, 'app_prevenapp/salas_chat.html', contexto)
+def _obtener_o_crear_chat_de_sala(sala, usuario):
+    """Obtiene o crea un Chat asociado a una SalaChat y vincula al usuario."""
+    titulo_sala = f"Sala #{sala.idSala_chat}: {sala.tema or 'General'}"
+    chat = Chat.objects.filter(titulo=titulo_sala, tipo='sala').first()
+
+    if chat is None:
+        creador_id = (
+            sala.profesional.usuario.idUsuario
+            if sala.profesional and sala.profesional.usuario
+            else None
+        )
+        chat = Chat.objects.create(
+            titulo=titulo_sala,
+            tipo='sala',
+            creado_por=creador_id,
+            fecha=timezone.now(),
+        )
+
+    if usuario.is_authenticated:
+        UsuarioChat.objects.get_or_create(chat=chat, usuario=usuario)
+
+    return chat
+#-----------------------------------------------------------------------------------------------------
+
+
+@login_required(login_url='login')
+def reportes_profesional(request):
+    try:
+        # 1. Obtenemos el profesional logueado
+        profesional = request.user.profesional
+        
+        # 2. Traemos todos los reportes de este profesional
+        reportes = Reporte.objects.filter(profesional=profesional).select_related('usuario').order_by('-fecha')
+
+        # 3. Calculamos los KPIs (Tarjetas de resumen)
+        pacientes_asignados = reportes.values('usuario').distinct().count()
+        en_riesgo_alto = reportes.filter(nivel_riesgo='Alto').values('usuario').distinct().count()
+        reportes_pendientes = reportes.filter(observaciones__isnull=True).count()
+
+        kpis = {
+            'pacientes_asignados': pacientes_asignados,
+            'en_riesgo_alto': en_riesgo_alto,
+            'reportes_pendientes': reportes_pendientes,
+        }
+
+    except Profesional.DoesNotExist:
+        # Si el usuario logueado no es profesional o no tiene perfil
+        reportes = []
+        kpis = {'pacientes_asignados': 0, 'en_riesgo_alto': 0, 'reportes_pendientes': 0}
+
+    # Enviamos los datos al HTML
+    context = {
+        'reportes': reportes,
+        'kpis': kpis
+    }
+    return render(request, 'app_prevenapp/reportes_profesional.html', context)
+
+@login_required(login_url='login')
+def recursos_profesional(request):
+    # Esta función solo muestra el HTML de la biblioteca de recursos
+    return render(request, 'app_prevenapp/recursos_profesional.html')

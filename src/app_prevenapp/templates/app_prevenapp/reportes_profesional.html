@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes y Seguimiento - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/reportes_profesional.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li><a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li><a href="{% url 'registrar_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li class="active"><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
+                <li><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
+                <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar adolescente por nombre...">
+            </div>
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="page-header animate-up">
+                <div>
+                    <h1>Reportes y Seguimiento</h1>
+                    <p>Gestiona los expedientes y evalúa el nivel de riesgo de tus pacientes.</p>
+                </div>
+                <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo Reporte</button>
+            </div>
+
+            <!-- Tarjetas de Resumen (KPIs) -->
+            <div class="kpi-grid animate-up delay-1">
+                <div class="kpi-card">
+                    <div class="kpi-icon bg-blue"><i class="fa-solid fa-users"></i></div>
+                    <div class="kpi-data">
+                        <h3>Pacientes Asignados</h3>
+                        <p>{{ kpis.pacientes_asignados }}</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon bg-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="kpi-data">
+                        <h3>En Riesgo Alto</h3>
+                        <p>{{ kpis.en_riesgo_alto }}</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon bg-orange"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <div class="kpi-data">
+                        <h3>Reportes Pendientes</h3>
+                        <p>{{ kpis.reportes_pendientes }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Pacientes (Expedientes) -->
+            <div class="pacientes-list animate-up delay-3">
+                {% for reporte in reportes %}
+                <div class="paciente-card">
+                    <div class="paciente-header">
+                        <div class="paciente-avatar">
+                            {% if reporte.usuario.foto_perfil %}
+                                <img src="{{ reporte.usuario.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            {% else %}
+                                <i class="fa-solid fa-user"></i>
+                            {% endif %}
+                        </div>
+                        <div class="paciente-info">
+                            <h3>{{ reporte.usuario.nombres }} {{ reporte.usuario.apellidos }}</h3>
+                            <p>{{ reporte.usuario.edad|default:"-" }} años • Último reporte: {{ reporte.fecha|date:"d M Y" }}</p>
+                        </div>
+                        
+                        {% if reporte.nivel_riesgo == 'Alto' %}
+                            <div class="riesgo-badge alto">Riesgo Alto</div>
+                        {% elif reporte.nivel_riesgo == 'Medio' %}
+                            <div class="riesgo-badge medio">Riesgo Medio</div>
+                        {% elif reporte.nivel_riesgo == 'Bajo' %}
+                            <div class="riesgo-badge bajo">Riesgo Bajo</div>
+                        {% else %}
+                            <div class="riesgo-badge medio">Sin evaluar</div>
+                        {% endif %}
+                    </div>
+                    <div class="paciente-actions">
+                        <button class="btn-action"><i class="fa-solid fa-file-medical"></i> Crear Reporte</button>
+                        <button class="btn-action"><i class="fa-solid fa-clock-rotate-left"></i> Ver Historial</button>
+                        <button class="btn-action"><i class="fa-solid fa-calendar-plus"></i> Agendar Cita</button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state" style="text-align: center; padding: 40px; background: white; border-radius: 16px; border: 1px dashed #CBD5E1;">
+                    <i class="fa-regular fa-folder-open" style="font-size: 3rem; color: #94A3B8; margin-bottom: 15px;"></i>
+                    <h3 style="color: #1E293B; margin-bottom: 10px;">No hay reportes registrados</h3>
+                    <p style="color: #64748B;">Aún no has creado reportes de seguimiento para ningún adolescente.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>
