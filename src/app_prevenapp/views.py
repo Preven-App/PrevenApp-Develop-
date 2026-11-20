@@ -16,6 +16,8 @@ from .models import (
     Rol,
     Tip,
     Usuario,
+    Reporte,
+    HorarioProfesional,
 )
 
 
@@ -548,3 +550,41 @@ def _obtener_o_crear_chat_de_sala(sala, usuario):
 
     return chat
 #-----------------------------------------------------------------------------------------------------
+
+
+@login_required(login_url='login')
+def reportes_profesional(request):
+    try:
+        # 1. Obtenemos el profesional logueado
+        profesional = request.user.profesional
+        
+        # 2. Traemos todos los reportes de este profesional
+        reportes = Reporte.objects.filter(profesional=profesional).select_related('usuario').order_by('-fecha')
+
+        # 3. Calculamos los KPIs (Tarjetas de resumen)
+        pacientes_asignados = reportes.values('usuario').distinct().count()
+        en_riesgo_alto = reportes.filter(nivel_riesgo='Alto').values('usuario').distinct().count()
+        reportes_pendientes = reportes.filter(observaciones__isnull=True).count()
+
+        kpis = {
+            'pacientes_asignados': pacientes_asignados,
+            'en_riesgo_alto': en_riesgo_alto,
+            'reportes_pendientes': reportes_pendientes,
+        }
+
+    except Profesional.DoesNotExist:
+        # Si el usuario logueado no es profesional o no tiene perfil
+        reportes = []
+        kpis = {'pacientes_asignados': 0, 'en_riesgo_alto': 0, 'reportes_pendientes': 0}
+
+    # Enviamos los datos al HTML
+    context = {
+        'reportes': reportes,
+        'kpis': kpis
+    }
+    return render(request, 'app_prevenapp/reportes_profesional.html', context)
+
+@login_required(login_url='login')
+def recursos_profesional(request):
+    # Esta función solo muestra el HTML de la biblioteca de recursos
+    return render(request, 'app_prevenapp/recursos_profesional.html')

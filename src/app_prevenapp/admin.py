@@ -11,17 +11,7 @@ from .models import *
 # 1. PERSONALIZACIÓN DEL USUARIO
 # ==========================================
 @admin.register(Usuario)
-class UsuarioAdmin(UserAdmin):
-    list_display = ('username', 'nombres', 'apellidos', 'correo', 'rol', 'estado')
-    list_filter = ('rol', 'estado', 'is_staff')
-    search_fields = ('username', 'correo', 'nombres', 'apellidos')
-
-    fieldsets = UserAdmin.fieldsets + (
-        ('Información Adicional', {'fields': ('rol', 'nombres', 'apellidos', 'correo', 'telefono', 'edad', 'sexo', 'eps', 'rh', 'estado')}),
-    )
-    add_fieldsets = UserAdmin.add_fieldsets + (
-class UsuarioAdmin(BaseUserAdmin, ModelAdmin): # <-- Hereda de ambas clases
-    # Formularios de Unfold para que el diseño sea moderno y seguro
+class UsuarioAdmin(BaseUserAdmin, ModelAdmin): # <-- Hereda de BaseUserAdmin (el alias) y ModelAdmin
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
@@ -29,7 +19,9 @@ class UsuarioAdmin(BaseUserAdmin, ModelAdmin): # <-- Hereda de ambas clases
     list_display = ('username', 'nombres', 'apellidos', 'correo', 'rol', 'estado')
     list_filter = ('rol', 'estado', 'is_staff')
     search_fields = ('username', 'correo', 'nombres', 'apellidos')
-    
+    list_editable = ('rol', 'estado')
+    list_display_links = ('username',)
+
     fieldsets = BaseUserAdmin.fieldsets + (
         ('Información Adicional', {'fields': ('rol', 'nombres', 'apellidos', 'correo', 'telefono', 'edad', 'sexo', 'eps', 'rh', 'estado')}),
     )
@@ -41,24 +33,34 @@ class UsuarioAdmin(BaseUserAdmin, ModelAdmin): # <-- Hereda de ambas clases
 # 2. PERSONALIZACIÓN DEL PROFESIONAL
 # ==========================================
 @admin.register(Profesional)
-class ProfesionalAdmin(ModelAdmin): # <-- Hereda de Unfold
+class ProfesionalAdmin(ModelAdmin):
     list_display = ('usuario', 'especialidad', 'documento_identidad', 'estado')
     search_fields = ('usuario__nombres', 'usuario__apellidos', 'documento_identidad')
     list_filter = ('especialidad', 'estado')
+    list_editable = ('estado',)
+    list_display_links = ('usuario',)
 
 # ==========================================
 # 3. PERSONALIZACIÓN DEL TIP (Para moderación)
 # ==========================================
 @admin.register(Tip)
-class TipAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'autor', 'estado', 'fecha_creacion')
-    list_filter = ('estado', 'categoria')
-    search_fields = ('titulo', 'contenido', 'autor__username')
-    list_editable = ('estado',)
+class TipAdmin(ModelAdmin):
+    # Si el modelo Tip NO tiene el campo 'profesional', quítalo de aquí:
+    list_display = ('titulo', 'categoria', 'fecha') 
+    list_filter = ('categoria',)
+    search_fields = ('titulo', 'descripcion')
 
 # ==========================================
-# 4. REGISTRO DEL RESTO DE MODELOS
-# 3. REGISTRO DEL RESTO DE MODELOS CON UNFOLD
+# 4. PERSONALIZACIÓN DEL MODELO DE CITA
+# ==========================================
+@admin.register(Cita)
+class CitaAdmin(ModelAdmin): # <-- Cambiado a ModelAdmin de Unfold
+    list_display = ('usuario', 'profesional', 'fecha', 'hora', 'estado')
+    list_filter = ('estado', 'fecha')
+    search_fields = ('usuario__nombres', 'usuario__apellidos')
+
+# ==========================================
+# 5. REGISTRO DEL RESTO DE MODELOS CON UNFOLD
 # ==========================================
 modelos_a_registrar = [
     Rol, Especialidad, Categoria, Actividad, ParticipacionActividad,
@@ -70,14 +72,4 @@ modelos_a_registrar = [
 # Al pasarle ModelAdmin como segundo argumento, 
 # Unfold aplicará su diseño a estos modelos automáticamente.
 for modelo in modelos_a_registrar:
-    admin.site.register(modelo)
-
-# ==========================================
-# 5. PERSONALIZACIÓN DEL MODELO DE CITA
-# ==========================================
-@admin.register(Cita)
-class CitaAdmin(admin.ModelAdmin):
-    list_display = ('motivo', 'usuario', 'profesional', 'fecha', 'hora', 'estado')
-    list_filter = ('estado', 'fecha')
-    search_fields = ('motivo', 'usuario__username', 'usuario__correo')
     admin.site.register(modelo, ModelAdmin)

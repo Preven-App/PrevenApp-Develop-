@@ -26,15 +26,25 @@
                 <li>
                     <a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a>
                 </li>
-                <!-- IMPORTANTE: Aquí puedes tener un submenú o dos enlaces separados -->
                 <li class="active">
                     <a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a>
                 </li>
+                <!-- 🔴 CORREGIDO: Enlaces conectados -->
                 <li>
-                    <a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
+                    <a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
+                    <a href="{% url 'registrar_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
+                </li>
+                <li>
+                    <a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a>
+                </li>
+                <li>
+                    <a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a>
+                </li>
+                <!-- 🔴 AGREGADO: Faltaba Mi Perfil -->
+                <li>
+                    <a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a>
                 </li>
             </ul>
         </nav>
@@ -61,15 +71,20 @@
                     <i class="fa-regular fa-bell"></i>
                     <span class="badge">3</span>
                 </div>
-                <div class="profile-info">
+                <!-- 🔴 CORREGIDO: Enlace al perfil y foto dinámica -->
+                <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
                     <div class="text">
                         <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
                         <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
                     </div>
                     <div class="avatar">
-                        <i class="fa-solid fa-user-doctor"></i>
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
                     </div>
-                </div>
+                </a>
             </div>
         </header>
 
@@ -86,11 +101,8 @@
                 </a>
             </div>
 
+            <!-- 🔴 CORREGIDO: Se eliminó el <div> duplicado que rompía la estructura -->
             <div class="horarios-list animate-up delay-1">
-                
-                
-                
-                            <div class="horarios-list animate-up delay-1">
                 
                 <!-- Bucle de Django para mostrar los horarios reales -->
                 {% for horario in horarios %}
@@ -100,10 +112,8 @@
                             <i class="fa-solid fa-clock"></i>
                         </div>
                         <div class="horario-details">
-                            <!-- Mostramos el día -->
                             <h3>{{ horario.dias_semana }}</h3>
                             
-                            <!-- Formateamos las fechas -->
                             <p>
                                 <i class="fa-regular fa-calendar"></i> 
                                 Vigencia: 
@@ -116,7 +126,6 @@
                             </p>
                             
                             <div class="tags">
-                                <!-- Formateamos las horas a formato AM/PM -->
                                 <span class="tag">
                                     <i class="fa-solid fa-hourglass-half"></i> 
                                     {{ horario.hora_inicio|time:"h:i A" }} - {{ horario.hora_fin|time:"h:i A" }}
@@ -130,12 +139,11 @@
                     </div>
                     
                     <div class="horario-actions">
-                        <!-- Botón Editar (Puedes pasar el ID del horario en la URL para editarlo en un futuro) -->
                         <a href="{% url 'configurar_horario' %}" class="btn-icon btn-edit" title="Editar">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
                         
-                        <!-- Botón Eliminar usando un formulario POST (Más seguro) -->
+                        <!-- Formulario seguro para eliminar -->
                         <form action="{% url 'eliminar_horario' horario.idHorario_Profesional %}" method="POST" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn-icon btn-delete" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este horario?');">
@@ -156,22 +164,11 @@
                 
                 {% endfor %}
 
-            
-
-             
-
             </div>
         </div>
     </main>
 
-    <!-- Script para confirmar eliminación -->
-    <script>
-        function confirmarEliminacion() {
-            if (confirm("¿Estás seguro de que deseas eliminar este horario? Esta acción no se puede deshacer.")) {
-                // Aquí iría la lógica para enviar el formulario de eliminación a Django
-                alert("Horario eliminado (Simulación)");
-            }
-        }
-    </script>
+    <!-- 🔴 CORREGIDO: Se eliminó el script de "confirmarEliminacion" que era redundante y no hacía nada -->
+    
 </body>
 </html>

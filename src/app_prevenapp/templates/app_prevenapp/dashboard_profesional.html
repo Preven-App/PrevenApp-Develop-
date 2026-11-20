@@ -28,19 +28,21 @@
                 <li>
                     <a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a>
                 </li>
+                <!-- 🔴 CORREGIDO: Enlace a Salas de Chat -->
                 <li>
-                    <a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
+                    <a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
+                </li>
+                <!-- 🔴 CORREGIDO: Enlace a Publicar Tips -->
+                <li>
+                    <a href="{% url 'registrar_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
+                    <a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a>
                 </li>
+                <!-- 🔴 CORREGIDO: Enlace a Recursos Educativos -->
                 <li>
-                    <a href="#"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a>
+                    <a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a>
                 </li>
-                <li>
-                    <a href="#"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a>
-                </li>
-                <!-- Añadido: Enlace al perfil en el menú -->
                 <li>
                     <a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a>
                 </li>
@@ -70,14 +72,12 @@
                     <span class="badge">3</span>
                 </div>
                 
-                <!-- 🔴 MODIFICADO: Envolvemos el perfil en un enlace <a> -->
                 <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
                     <div class="text">
                         <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
                         <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
                     </div>
                     <div class="avatar">
-                        <!-- 🔴 MODIFICADO: Mostrar foto real si existe -->
                         {% if request.user.foto_perfil %}
                             <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                         {% else %}
@@ -139,19 +139,22 @@
                     <p>Define tus días y horas de disponibilidad para citas.</p>
                 </a>
                 
-                <a href="#" class="action-card animate-up delay-4">
+                <!-- 🔴 CORREGIDO: Enlace a Salas de Chat -->
+                <a href="{% url 'salas_chat' %}" class="action-card animate-up delay-4">
                     <i class="fa-solid fa-plus-circle"></i>
                     <h3>Crear Sala de Chat</h3>
                     <p>Abre un espacio seguro para orientar a los usuarios.</p>
                 </a>
 
-                <a href="#" class="action-card animate-up delay-4">
+                <!-- 🔴 CORREGIDO: Enlace a Publicar Tip -->
+                <a href="{% url 'registrar_tip' %}" class="action-card animate-up delay-4">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <h3>Publicar un Tip</h3>
                     <p>Comparte información verificada sobre salud y prevención.</p>
                 </a>
 
-                <a href="#" class="action-card animate-up delay-4">
+                <!-- 🔴 CORREGIDO: Enlace a Reportes -->
+                <a href="{% url 'reportes_profesional' %}" class="action-card animate-up delay-4">
                     <i class="fa-solid fa-clipboard-list"></i>
                     <h3>Nuevo Reporte</h3>
                     <p>Registra observaciones e indicadores de riesgo de un paciente.</p>
