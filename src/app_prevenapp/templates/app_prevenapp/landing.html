@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrevenApp - Tu espacio de información y cuidado</title>
-    <!-- Fuentes de Google para un look moderno -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>PrevenApp - Tu espacio seguro de información y cuidado</title>
+    
+    <!-- Tipografía Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Iconos de FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace a tu archivo CSS -->
@@ -14,71 +15,134 @@
 </head>
 <body>
 
-    <!-- Barra de Navegación -->
+    <!-- Formas decorativas globales de fondo -->
+    <div class="bg-shapes">
+        <div class="bg-shape shape-top-left"></div>
+        <div class="bg-shape shape-bottom-right"></div>
+    </div>
+
+    <!-- Barra de Navegación (Glassmorphism) -->
     <header class="navbar">
         <div class="logo">
             <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
         </div>
         <nav class="nav-links">
-            <a href="#recursos">Recursos</a>
-            <a href="#orientacion">Orientación</a>
-            <a href="#ayuda">Líneas de Ayuda</a>
+            <a href="#impacto">Impacto</a>
+            <a href="#temas">Temas</a>
+            <a href="#faq">Dudas Frecuentes</a>
         </nav>
         <div class="nav-actions">
-            <!-- Botón de Iniciar Sesión (Requerimiento) -->
             <a href="{% url 'login' %}" class="btn btn-login">Iniciar Sesión</a>
         </div>
     </header>
 
-    <!-- Sección Principal (Hero) -->
     <main>
+        <!-- Sección Hero -->
         <section class="hero">
             <div class="hero-content">
-                <h1 class="animate-up">Tu futuro, tus decisiones, <br><span class="highlight">tu bienestar.</span></h1>
-                <p class="animate-up delay-1">Información confiable, apoyo emocional y herramientas interactivas diseñadas para ti. Un espacio seguro para resolver tus dudas sobre salud sexual y prevención.</p>
+                <span class="badge-tag animate-up"><i class="fa-solid fa-lock"></i> 100% Confidencial y Seguro</span>
+                <h1 class="animate-up delay-1">Tu futuro, tus decisiones, <br><span class="text-gradient">tu bienestar.</span></h1>
+                <p class="animate-up delay-2">Información confiable, apoyo emocional y herramientas interactivas diseñadas para ti. Un espacio sin juicios para resolver tus dudas sobre salud sexual y prevención.</p>
                 
-                <div class="hero-buttons animate-up delay-2">
-                    <!-- Botón de Acceso Anónimo (RF-NU-007) -->
-                     <a href="{% url 'register' %}" class="btn btn-primary">Explorar Anónimamente</a>
-    <a href="#recursos" class="btn btn-secondary">Conocer más</a>
+                <div class="hero-buttons animate-up delay-3">
+                    <a href="{% url 'register' %}" class="btn btn-primary">
+                        Explorar Anónimamente <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="#temas" class="btn btn-secondary">Conocer más</a>
                 </div>
-            </div>
-            
-            <!-- Formas decorativas de fondo -->
-            <div class="hero-shapes">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
             </div>
         </section>
 
-        <!-- Sección de Características (Tarjetas) -->
-        <section class="features" id="recursos">
-            <div class="feature-card">
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-book-medical"></i>
-                </div>
-                <h3>Información Real</h3>
-                <p>Artículos, tips y consejos validados por profesionales de la salud para cuidar de ti.</p>
+        <!-- Sección de Categorías / Temas -->
+        <section class="features" id="temas">
+            <div class="section-header animate-up">
+                <h2>Explora nuestros temas</h2>
+                <p>Información clara y validada por expertos para que tomes decisiones seguras.</p>
             </div>
-            <div class="feature-card">
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-comments"></i>
+            
+            <div class="features-grid">
+                <div class="feature-card animate-up">
+                    <div class="icon-wrapper bg-teal">
+                        <i class="fa-solid fa-pills"></i>
+                    </div>
+                    <h3>Métodos Anticonceptivos</h3>
+                    <p>Aprende sobre las opciones disponibles, cómo funcionan y cuál se adapta mejor a ti.</p>
+                    <a href="#" class="card-link">Leer más <i class="fa-solid fa-chevron-right"></i></a>
                 </div>
-                <h3>Apoyo 24/7</h3>
-                <p>Chatea de forma segura y confidencial con nuestro asistente o profesionales asignados.</p>
+                
+                <div class="feature-card animate-up delay-1">
+                    <div class="icon-wrapper bg-purple">
+                        <i class="fa-solid fa-virus"></i>
+                    </div>
+                    <h3>Infecciones (ITS)</h3>
+                    <p>Conoce los síntomas, métodos de prevención y la importancia de los chequeos regulares.</p>
+                    <a href="#" class="card-link">Leer más <i class="fa-solid fa-chevron-right"></i></a>
+                </div>
+
+                <!-- Nueva Categoría 1 -->
+                <div class="feature-card animate-up delay-2">
+                    <div class="icon-wrapper bg-pink">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <h3>Prevención del Embarazo</h3>
+                    <p>Entiende los riesgos, desmiente mitos y descubre cómo proteger tu proyecto de vida.</p>
+                    <a href="#" class="card-link">Leer más <i class="fa-solid fa-chevron-right"></i></a>
+                </div>
+
+                <!-- Nueva Categoría 2 -->
+                <div class="feature-card animate-up delay-3">
+                    <div class="icon-wrapper bg-blue">
+                        <i class="fa-solid fa-hospital-user"></i>
+                    </div>
+                    <h3>Rutas de Atención</h3>
+                    <p>Encuentra las líneas de ayuda, centros de salud y profesionales disponibles cerca de ti.</p>
+                    <a href="#" class="card-link">Leer más <i class="fa-solid fa-chevron-right"></i></a>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-hand-holding-heart"></i>
-                </div>
-                <h3>Actividades y Cuidado</h3>
-                <p>Participa en actividades lúdicas y accede a herramientas de autocuidado y bienestar.</p>
+        </section>
+
+        <!-- Sección de Preguntas Frecuentes (FAQ) -->
+        <section class="faq-section" id="faq">
+            <div class="section-header animate-up">
+                <h2>Resolvemos tus dudas</h2>
+                <p>Preguntas frecuentes respondidas de forma clara y sin juicios.</p>
+            </div>
+            
+            <div class="faq-container animate-up">
+                <details class="faq-item">
+                    <summary>¿Mis datos están seguros si uso la app?</summary>
+                    <div class="faq-content">
+                        <p>Absolutamente. PrevenApp cuenta con altos estándares de seguridad. Puedes usar el modo anónimo si lo prefieres, y tus conversaciones con profesionales están cifradas.</p>
+                    </div>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>¿Puedo hablar con un profesional de la salud?</summary>
+                    <div class="faq-content">
+                        <p>Sí. Al registrarte, puedes agendar citas o unirte a salas de chat moderadas por psicólogos, médicos y orientadores validados por nuestro equipo.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Qué hago si tengo una emergencia?</summary>
+                    <div class="faq-content">
+                        <p>En cualquier pantalla de la app, encontrarás el botón rojo de "Ayuda Urgente" en la esquina inferior. Este botón te conecta de inmediato con líneas de atención o contactos de confianza que hayas configurado.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- Banner de Llamado a la Acción (CTA) Final -->
+        <section class="cta-banner animate-up">
+            <div class="cta-content">
+                <h2>Da el primer paso hacia tu bienestar hoy.</h2>
+                <p>Únete a miles de jóvenes que ya están tomando el control de su salud con información confiable.</p>
+                <a href="{% url 'login' %}" class="btn btn-cta">Crear mi cuenta gratis</a>
             </div>
         </section>
     </main>
 
-    <!-- Botón Flotante de Emergencia (RF-NU-005) -->
+    <!-- Botón Flotante de Emergencia -->
     <a href="#" class="btn-emergency" title="Atención Inmediata">
         <i class="fa-solid fa-phone-volume"></i>
         <span>Ayuda Urgente</span>
@@ -86,7 +150,12 @@
 
     <!-- Pie de página -->
     <footer>
-        <p>&copy; 2026 PrevenApp. Diseñado para proteger y empoderar a los adolescentes.</p>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p>&copy; 2026 PrevenApp. Diseñado para proteger y empoderar a los adolescentes.</p>
+        </div>
     </footer>
 
 </body>

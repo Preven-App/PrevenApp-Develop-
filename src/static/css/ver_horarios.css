@@ -1,0 +1,202 @@
+/* ==========================================
+   ESTILOS PARA LA VISTA DE HORARIOS
+   ========================================== */
+
+/* Reutilizamos .page-header de configurar_horario.css pero le añadimos flexbox para el botón */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
+}
+
+.horarios-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Tarjeta individual */
+.horario-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    transition: all 0.3s ease;
+}
+
+.horario-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transform: translateX(5px); /* Pequeño efecto al pasar el ratón */
+}
+
+.horario-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.horario-icon {
+    width: 60px;
+    height: 60px;
+    background: #EEF2FF; /* Azul claro */
+    color: var(--primary-color);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+/* Variante de color para diferenciar horarios */
+.bg-purple-light {
+    background: #F3E8FF;
+    color: #9333EA;
+}
+
+.horario-details h3 {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.horario-details p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Botones de acción (Editar / Eliminar) */
+.horario-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-edit {
+    background: #EFF6FF;
+    color: #3B82F6;
+}
+
+.btn-edit:hover {
+    background: #3B82F6;
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+.btn-delete {
+    background: #FEF2F2;
+    color: #EF4444;
+}
+
+.btn-delete:hover {
+    background: #EF4444;
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+/* Estado Vacío (Cuando no hay horarios) */
+.empty-state {
+    background: var(--white);
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 60px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #CBD5E1;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: var(--text-light);
+    margin-bottom: 25px;
+    max-width: 400px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .horario-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    
+    .horario-actions {
+        width: 100%;
+        justify-content: flex-end;
+        border-top: 1px solid var(--border-color);
+        padding-top: 15px;
+    }
+}
