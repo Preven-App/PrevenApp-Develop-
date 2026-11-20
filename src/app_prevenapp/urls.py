@@ -13,4 +13,6 @@ urlpatterns = [
     path('dashboard/profesional/mis-horarios/', views.ver_horarios, name='ver_horarios'),
     path('dashboard/profesional/perfil/', views.perfil_profesional, name='perfil_profesional'),
     path('dashboard/profesional/horario/eliminar/<int:id>/', views.eliminar_horario, name='eliminar_horario'),
+    path('salas/', views.salas_chat, name='salas_chat'),
+    path('salas/<int:sala_id>/', views.salas_chat, name='detalle_sala_chat'),
 ]
