@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Prevención - Citas</title>
+    <link rel="stylesheet" href="{% static 'css/interfazusuario.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="brand">
+                <img src="{% static 'images/logo.png' %}" alt="PrevenApp" style="height: 32px; object-fit: contain;">
+            </div>
+
+            <nav class="nav-list">
+                <a href="{% url 'listar_tips' %}" class="nav-item {% if request.resolver_match.url_name == 'listar_tips' %}active{% endif %}">
+                    <i class="fa-solid fa-lightbulb"></i> Tips Publicados
+                </a>
+                <a href="{% url 'landing' %}" class="nav-item">
+                    <i class="fa-solid fa-house"></i> Inicio
+                </a>
+                <a href="{% url 'registrar_tip' %}" class="nav-item {% if request.resolver_match.url_name == 'registrar_tip' %}active{% endif %}">
+                    <i class="fa-solid fa-pen-to-square"></i> Registrar Tip
+                </a>
+                <a href="{% url 'servicios' %}" class="nav-item {% if request.resolver_match.url_name == 'servicios' %}active{% endif %}">
+                    <i class="fa-solid fa-briefcase"></i> Servicios
+                </a>
+                <a href="{% url 'estadisticas' %}" class="nav-item {% if request.resolver_match.url_name == 'estadisticas' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-line"></i> Estadísticas
+                </a>
+                <a href="{% url 'citas' %}" class="nav-item {% if request.resolver_match.url_name == 'citas' %}active{% endif %}">
+                    <i class="fa-solid fa-calendar-check"></i> Citas
+                </a>
+                <a href="{% url 'recursos' %}" class="nav-item {% if request.resolver_match.url_name == 'recursos' %}active{% endif %}">
+                    <i class="fa-solid fa-book"></i> Recursos
+                </a>
+                <a href="{% url 'ajustes' %}" class="nav-item {% if request.resolver_match.url_name == 'ajustes' %}active{% endif %}">
+                    <i class="fa-solid fa-gear"></i> Ajustes
+                </a>
+            </nav>
+        </div>
+
+        <div class="sidebar-card">
+            <div class="sidebar-card-header">
+                <i class="fa-regular fa-bell"></i> Notificación
+            </div>
+            <p>Nuevos recursos educativos disponibles para compartir con adolescentes.</p>
+            <a href="#">Ver recursos</a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="header">
+            <div class="header-buttons">
+                <a href="#" class="btn-pill primary" style="text-decoration: none; display: inline-flex; align-items: center;">Notificaciones</a>
+                <a href="#" class="btn-pill" style="background-color: #fee2e2; color: #dc2626; text-decoration: none; display: inline-flex; align-items: center;">Botón Emergencia</a>
+            </div>
+
+            <div class="header-user">
+                <div class="user-profile">
+                    <div class="avatar">
+                        {{ user.username|slice:":2"|upper }}
+                    </div>
+                    <div class="user-info">
+                        <p>{% if user.is_authenticated %}{{ user.username }}{% else %}Dr. Roberto{% endif %}</p>
+                        <span>Profesional de salud</span>
+                    </div>
+                </div>
+                <a href="{% url 'login' %}" class="btn-logout">Cerrar sesión</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="main-content-card">
+                <div class="page-header">
+                    <h2>Gestión de Citas</h2>
+                    <p>Agenda una consulta o seguimiento y revisa el estado de tus citas programadas.</p>
+                </div>
+
+                {% if messages %}
+                    <div style="margin-bottom: 20px;">
+                        {% for message in messages %}
+                            <div style="padding: 12px; border-radius: 8px; background-color: #d1fae5; color: #065f46; margin-bottom: 8px; font-weight: 500;">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="POST" style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
+                    {% csrf_token %}
+
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="motivo" style="font-weight: 600; color: #374151;">Motivo de la cita</label>
+                        <input type="text" id="motivo" name="motivo" required placeholder="Ej. Orientación preventiva o consulta general" style="padding: 10px 15px; border: 1px solid #d1d5db; border-radius: 8px; outline: none;">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="fecha" style="font-weight: 600; color: #374151;">Fecha</label>
+                            <input type="date" id="fecha" name="fecha" required style="padding: 10px 15px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; background: white;">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="hora" style="font-weight: 600; color: #374151;">Hora</label>
+                            <input type="time" id="hora" name="hora" required style="padding: 10px 15px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; background: white;">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="notas" style="font-weight: 600; color: #374151;">Notas adicionales (opcional)</label>
+                        <textarea id="notas" name="notas" rows="3" placeholder="Detalles adicionales para el profesional..." style="padding: 10px 15px; border: 1px solid #d1d5db; border-radius: 8px; outline: none;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-pill primary" style="margin-top: 10px; border: none; cursor: pointer; padding: 12px; font-weight: 600; justify-content: center;">
+                        Solicitar Cita
+                    </button>
+                </form>
+
+                <div style="margin-top: 32px;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 14px;">Mis Citas</h3>
+
+                    <div class="services-grid">
+                        {% for cita in citas %}
+                            <div class="card service-card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                        <h4 style="font-size: 16px; font-weight: 700; color: #1f2937; margin: 0;">{{ cita.motivo }}</h4>
+                                        <span style="padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+                                            {% if cita.estado == 'Confirmada' %}
+                                                background-color: #d1fae5; color: #065f46;
+                                            {% elif cita.estado == 'Cancelada' %}
+                                                background-color: #fee2e2; color: #dc2626;
+                                            {% else %}
+                                                background-color: #fef3c7; color: #92400e;
+                                            {% endif %}
+                                        ">{{ cita.estado }}</span>
+                                    </div>
+                                    <p style="color: #4b5563; font-size: 14px; margin-bottom: 8px;">
+                                        <i class="fa-regular fa-calendar"></i> {{ cita.fecha|date:"d M, Y" }} &nbsp;|&nbsp;
+                                        <i class="fa-regular fa-clock"></i> {{ cita.hora|time:"H:i" }}
+                                    </p>
+                                    {% if cita.notas %}
+                                        <p style="color: #6b7280; font-size: 14px;">{{ cita.notas }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 28px; color: #6b7280;">
+                                <p>Aún no tienes citas registradas.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

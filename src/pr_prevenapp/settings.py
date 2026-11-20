@@ -124,8 +124,11 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Archivos multimedia (subidos por usuarios)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
+STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # O la ruta correspondiente dentro de tu estructura 'src/static'
+]
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration

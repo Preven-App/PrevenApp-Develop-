@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
 
 # ==========================================
 # 1. USUARIOS Y ROLES
@@ -13,20 +14,24 @@ class Rol(models.Model):
         return self.nombre or f"Rol {self.idRol}"
 
 class Usuario(AbstractUser):
-    # Al heredar de AbstractUser ya tienes: username, password, email, first_name, last_name, etc.
-    # Adaptamos los campos de tu BD:
     idUsuario = models.AutoField(primary_key=True)
-    rol = models.ForeignKey(Rol, on_delete=models.PROTECT, db_column='Rol_idRol')
+    rol = models.ForeignKey(Rol, on_delete=models.PROTECT, db_column='Rol_idRol', null=True, blank=True)
     nombres = models.CharField(max_length=45, null=True, blank=True)
     apellidos = models.CharField(max_length=45, null=True, blank=True)
     correo = models.EmailField(max_length=100, null=True, blank=True)
     telefono = models.CharField(max_length=20, null=True, blank=True)
     edad = models.IntegerField(null=True, blank=True)
     sexo = models.CharField(max_length=20, null=True, blank=True)
-    # nivel_educativo = models.CharField(max_length=45, null=True, blank=True) # Lo dejé comentado por tu instrucción
     eps = models.CharField(max_length=45, null=True, blank=True)
     rh = models.CharField(max_length=10, null=True, blank=True)
     estado = models.CharField(max_length=20, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.correo:
+            self.email = self.correo
+        elif self.email:
+            self.correo = self.email
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.nombres} {self.apellidos} ({self.correo})"
@@ -72,7 +77,7 @@ class Actividad(models.Model):
     frecuencia = models.CharField(max_length=45, null=True, blank=True)
     duracion = models.CharField(max_length=20, null=True, blank=True)
     fecha = models.DateField(null=True, blank=True)
-    creado_por = models.IntegerField(null=True, blank=True) # Podría ser un ForeignKey a Usuario si lo prefieres
+    creado_por = models.IntegerField(null=True, blank=True)
 
 class ParticipacionActividad(models.Model):
     idParticipacion_actividad = models.AutoField(primary_key=True)
@@ -97,17 +102,29 @@ class RecursoFavorito(models.Model):
     fecha_guardado = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('usuario', 'recurso') # Evita que un usuario guarde el mismo recurso dos veces
+        unique_together = ('usuario', 'recurso')
 
 class Tip(models.Model):
+    ESTADOS = [
+        ('Pendiente', 'Pendiente de aprobación'),
+        ('Aprobado', 'Aprobado'),
+        ('Rechazado', 'Rechazado'),
+    ]
+
     idTip = models.AutoField(primary_key=True)
-    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, db_column='Categoria_idCategoria')
-    profesional = models.ForeignKey(Profesional, on_delete=models.PROTECT, db_column='Profesional_idProfesional')
-    titulo = models.CharField(max_length=100, null=True, blank=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, db_column='Categoria_idCategoria', null=True, blank=True)
+    autor = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
+    titulo = models.CharField(max_length=200)
+    contenido = models.TextField() # Mapeado para el contenido del tip
     descripcion = models.TextField(null=True, blank=True)
     archivos_enlaces = models.CharField(max_length=255, null=True, blank=True)
     fuente = models.CharField(max_length=100, null=True, blank=True)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='Pendiente')
+    fecha_creacion = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     fecha = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.titulo} ({self.estado})"
 
 class Servicio(models.Model):
     idServicio = models.AutoField(primary_key=True)
@@ -169,12 +186,38 @@ class ContactoEmergencia(models.Model):
     correo = models.EmailField(max_length=100, null=True, blank=True)
 
 class Cita(models.Model):
+    ESTADOS = [
+        ('Pendiente', 'Pendiente'),
+        ('Confirmada', 'Confirmada'),
+        ('Cancelada', 'Cancelada'),
+    ]
+
     idCita = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, db_column='Usuario_idUsuario')
-    profesional = models.ForeignKey(Profesional, on_delete=models.CASCADE, db_column='Profesional_idProfesional')
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        db_column='Usuario_idUsuario',
+        related_name='citas'
+    )
+    profesional = models.ForeignKey(
+        Profesional,
+        on_delete=models.CASCADE,
+        db_column='Profesional_idProfesional',
+        null=True,
+        blank=True
+    )
+    motivo = models.CharField(max_length=150, default='Consulta preventiva')
     fecha = models.DateField()
     hora = models.TimeField()
-    estado = models.CharField(max_length=20, null=True, blank=True)
+    notas = models.TextField(blank=True, null=True)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='Pendiente')
+    creada_en = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['fecha', 'hora']
+
+    def __str__(self):
+        return f"{self.motivo} - {self.fecha} {self.hora}"
 
 class HorarioProfesional(models.Model):
     idHorario_Profesional = models.AutoField(primary_key=True)

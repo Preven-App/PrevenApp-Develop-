@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Prevención - Servicios Disponibles</title>
-    <!-- Hoja de estilos externa -->
-    <link rel="stylesheet" href="{% static 'css/servicios.css' %}">
-    <!-- Íconos de FontAwesome -->
+    <link rel="stylesheet" href="{% static 'css/interfazusuario.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -16,33 +14,32 @@
     <aside class="sidebar">
         <div>
             <div class="brand">
-                <i class="fa-solid fa-heart-pulse"></i>
-                <h1>Sistema de Prevención</h1>
+                <img src="{% static 'images/logo.png' %}" alt="PrevenApp" style="height: 32px; object-fit: contain;">
             </div>
 
             <nav class="nav-list">
-                <a href="#" class="nav-item">
-                    <i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión
+                <a href="{% url 'listar_tips' %}" class="nav-item">
+                <i class="fa-solid fa-lightbulb"></i> Tips Publicados
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{% url 'landing' %}" class="nav-item">
                     <i class="fa-solid fa-house"></i> Inicio
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{% url 'registrar_tip' %}" class="nav-item">
                     <i class="fa-solid fa-pen-to-square"></i> Registrar Tip
                 </a>
                 <a href="{% url 'servicios' %}" class="nav-item active">
                     <i class="fa-solid fa-briefcase"></i> Servicios
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{% url 'estadisticas' %}" class="nav-item">
                     <i class="fa-solid fa-chart-line"></i> Estadísticas
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{% url 'citas' %}" class="nav-item">
                     <i class="fa-solid fa-calendar-check"></i> Citas
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{% url 'recursos' %}" class="nav-item">
                     <i class="fa-solid fa-book"></i> Recursos
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{% url 'ajustes' %}" class="nav-item">
                     <i class="fa-solid fa-gear"></i> Ajustes
                 </a>
             </nav>
@@ -60,13 +57,10 @@
     <!-- Contenido Principal -->
     <div class="main-wrapper">
         
-        <!-- Header Superior -->
         <header class="header">
             <div class="header-buttons">
-                <button class="btn-pill primary">Notificaciones</button>
-                <button class="btn-pill">Button</button>
-                <button class="btn-pill">Button</button>
-                <button class="btn-pill">Button</button>
+                <a href="#" class="btn-pill primary" style="text-decoration: none; display: inline-flex; align-items: center;">Notificaciones</a>
+                <a href="#" class="btn-pill" style="background-color: #fee2e2; color: #dc2626; text-decoration: none; display: inline-flex; align-items: center;">Botón Emergencia</a>
             </div>
 
             <div class="header-user">
@@ -83,40 +77,50 @@
             </div>
         </header>
 
-        <!-- Área de Contenido -->
         <main class="content">
-            <div class="page-header">
-                <h2>Servicios disponibles</h2>
-                <p>Encuentra servicios de apoyo para adolescentes en tu localidad</p>
-            </div>
-
-            <!-- Buscador -->
-            <div class="search-container">
-                <input type="text" placeholder="Buscar servicios..." class="search-input">
-                <button class="btn-search">Filtrar</button>
-            </div>
-
-            <!-- Categorías -->
-            <div class="tags-container">
-                <span class="tag active">Orientación psicológica</span>
-                <span class="tag">Atención médica</span>
-                <span class="tag">Educación sexual</span>
-                <span class="tag">Talleres presenciales</span>
-            </div>
-
-            <!-- Grilla de Tarjetas -->
-            <div class="services-grid">
+            <div class="main-content-card">
                 
-                <!-- Tarjeta 1 -->
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <h3 class="card-title">Centro de Apoyo Psicológico</h3>
-                            <span class="badge virtual">Virtual</span>
+                <div class="page-header">
+                    <h2>Servicios disponibles</h2>
+                    <p>Encuentra servicios de apoyo para adolescentes en tu localidad</p>
+                </div>
+
+                <!-- Buscador funcional -->
+                <form method="GET" action="{% url 'servicios' %}" class="search-container">
+                    <input type="text" name="q" placeholder="Buscar servicios..." class="search-input" value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search btn-primary-custom">Filtrar</button>
+                </form>
+
+                <!-- Categorías / Filtros interactivos -->
+                <div class="tags-container">
+                    <a href="{% url 'servicios' %}" class="tag {% if not request.GET.categoria %}active{% endif %}" style="text-decoration: none;">Todos</a>
+                    <a href="?categoria=psicologia" class="tag {% if request.GET.categoria == 'psicologia' %}active{% endif %}" style="text-decoration: none;">Orientación psicológica</a>
+                    <a href="?categoria=medica" class="tag {% if request.GET.categoria == 'medica' %}active{% endif %}" style="text-decoration: none;">Atención médica</a>
+                    <a href="?categoria=sexual" class="tag {% if request.GET.categoria == 'sexual' %}active{% endif %}" style="text-decoration: none;">Educación sexual</a>
+                    <a href="?categoria=talleres" class="tag {% if request.GET.categoria == 'talleres' %}active{% endif %}" style="text-decoration: none;">Talleres presenciales</a>
+                </div>
+
+                <!-- Grilla de Tarjetas -->
+                <div class="services-grid">
+                    <div class="card service-card">
+                        <div>
+                            <div class="card-header">
+                                <h3 class="card-title">Centro de Apoyo Psicológico</h3>
+                                <span class="badge virtual">Virtual</span>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" alt="Apoyo" class="card-img">
+                            <p class="card-description">Servicio de orientación psicológica para adolescentes con profesionales especializados.</p>
+                            <p class="card-schedule"><i class="fa-regular fa-clock"></i> Lunes a Viernes: 8:00 - 01:00</p>
                         </div>
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400" alt="Apoyo" class="card-img">
-                        <p class="card-description">Servicio de orientación psicológica para adolescentes con profesionales especializados.</p>
-                        <p class="card-schedule"><i class="fa-regular fa-clock"></i> Lunes a Viernes: 8:00 - 01:00</p>
+                        <div class="card-actions">
+                            <a href="#" class="btn-card primary" style="text-align: center; text-decoration: none; display: flex; justify-content: center; align-items: center;">Solicitar Cita</a>
+                            <a href="#" class="btn-card" style="text-align: center; text-decoration: none; display: flex; justify-content: center; align-items: center;">Más detalles</a>
+                        </div>
                     </div>
-                    <div class="card-actions">
-                        <button class="btn
+                </div>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

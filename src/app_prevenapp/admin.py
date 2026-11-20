@@ -3,23 +3,17 @@ from django.contrib.auth.admin import UserAdmin
 from .models import *
 
 # ==========================================
-# 1. PERSONALIZACIÓN DEL USUARIO (Muy importante)
+# 1. PERSONALIZACIÓN DEL USUARIO
 # ==========================================
-# Como Usuario hereda de AbstractUser, debemos usar UserAdmin
 @admin.register(Usuario)
 class UsuarioAdmin(UserAdmin):
-    # Columnas que se verán en la tabla principal
     list_display = ('username', 'nombres', 'apellidos', 'correo', 'rol', 'estado')
-    # Filtros laterales
     list_filter = ('rol', 'estado', 'is_staff')
-    # Barra de búsqueda
     search_fields = ('username', 'correo', 'nombres', 'apellidos')
-    
-    # Agregamos nuestros campos personalizados al formulario de edición
+
     fieldsets = UserAdmin.fieldsets + (
         ('Información Adicional', {'fields': ('rol', 'nombres', 'apellidos', 'correo', 'telefono', 'edad', 'sexo', 'eps', 'rh', 'estado')}),
     )
-    # Agregamos campos al formulario de creación
     add_fieldsets = UserAdmin.add_fieldsets + (
         ('Información Adicional', {'fields': ('rol', 'nombres', 'apellidos', 'correo', 'estado')}),
     )
@@ -34,15 +28,33 @@ class ProfesionalAdmin(admin.ModelAdmin):
     list_filter = ('especialidad', 'estado')
 
 # ==========================================
-# 3. REGISTRO DEL RESTO DE MODELOS
+# 3. PERSONALIZACIÓN DEL TIP (Para moderación)
 # ==========================================
-# Para no escribir 20 líneas, usamos un bucle para registrar los demás
+@admin.register(Tip)
+class TipAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'autor', 'estado', 'fecha_creacion')
+    list_filter = ('estado', 'categoria')
+    search_fields = ('titulo', 'contenido', 'autor__username')
+    list_editable = ('estado',)
+
+# ==========================================
+# 4. REGISTRO DEL RESTO DE MODELOS
+# ==========================================
 modelos_a_registrar = [
     Rol, Especialidad, Categoria, Actividad, ParticipacionActividad,
-    Recurso, RecursoFavorito, Tip, Servicio, Chat, UsuarioChat,
-    Mensaje, SalaChat, HistorialChatbot, ContactoEmergencia, Cita,
+    Recurso, RecursoFavorito, Servicio, Chat, UsuarioChat,
+    Mensaje, SalaChat, HistorialChatbot, ContactoEmergencia,
     HorarioProfesional, Inquietud, Reporte
 ]
 
 for modelo in modelos_a_registrar:
     admin.site.register(modelo)
+
+# ==========================================
+# 5. PERSONALIZACIÓN DEL MODELO DE CITA
+# ==========================================
+@admin.register(Cita)
+class CitaAdmin(admin.ModelAdmin):
+    list_display = ('motivo', 'usuario', 'profesional', 'fecha', 'hora', 'estado')
+    list_filter = ('estado', 'fecha')
+    search_fields = ('motivo', 'usuario__username', 'usuario__correo')

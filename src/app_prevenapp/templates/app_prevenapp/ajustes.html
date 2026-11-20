@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Prevención - Ajustes</title>
+    <link rel="stylesheet" href="{% static 'css/interfazusuario.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="brand">
+                <img src="{% static 'images/logo.png' %}" alt="PrevenApp" style="height: 32px; object-fit: contain;">
+            </div>
+
+            <nav class="nav-list">
+                <a href="{% url 'listar_tips' %}" class="nav-item {% if request.resolver_match.url_name == 'listar_tips' %}active{% endif %}">
+                    <i class="fa-solid fa-lightbulb"></i> Tips Publicados
+                </a>
+                <a href="{% url 'landing' %}" class="nav-item">
+                    <i class="fa-solid fa-house"></i> Inicio
+                </a>
+                <a href="{% url 'registrar_tip' %}" class="nav-item {% if request.resolver_match.url_name == 'registrar_tip' %}active{% endif %}">
+                    <i class="fa-solid fa-pen-to-square"></i> Registrar Tip
+                </a>
+                <a href="{% url 'servicios' %}" class="nav-item {% if request.resolver_match.url_name == 'servicios' %}active{% endif %}">
+                    <i class="fa-solid fa-briefcase"></i> Servicios
+                </a>
+                <a href="{% url 'estadisticas' %}" class="nav-item {% if request.resolver_match.url_name == 'estadisticas' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-line"></i> Estadísticas
+                </a>
+                <a href="{% url 'citas' %}" class="nav-item {% if request.resolver_match.url_name == 'citas' %}active{% endif %}">
+                    <i class="fa-solid fa-calendar-check"></i> Citas
+                </a>
+                <a href="{% url 'recursos' %}" class="nav-item {% if request.resolver_match.url_name == 'recursos' %}active{% endif %}">
+                    <i class="fa-solid fa-book"></i> Recursos
+                </a>
+                <a href="{% url 'ajustes' %}" class="nav-item {% if request.resolver_match.url_name == 'ajustes' %}active{% endif %}">
+                    <i class="fa-solid fa-gear"></i> Ajustes
+                </a>
+            </nav>
+        </div>
+
+        <div class="sidebar-card">
+            <div class="sidebar-card-header">
+                <i class="fa-regular fa-bell"></i> Notificación
+            </div>
+            <p>Nuevos recursos educativos disponibles para compartir con adolescentes.</p>
+            <a href="{% url 'recursos' %}">Ver recursos</a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="header">
+            <div class="header-buttons">
+                <a href="#" class="btn-pill primary" style="text-decoration: none; display: inline-flex; align-items: center;">Notificaciones</a>
+                <a href="#" class="btn-pill" style="background-color: #fee2e2; color: #dc2626; text-decoration: none; display: inline-flex; align-items: center;">Botón Emergencia</a>
+            </div>
+
+            <div class="header-user">
+                <div class="user-profile">
+                    <div class="avatar">
+                        {{ user.username|slice:":2"|upper }}
+                    </div>
+                    <div class="user-info">
+                        <p>{% if user.is_authenticated %}{{ user.username }}{% else %}Usuario{% endif %}</p>
+                        <span>PrevenApp</span>
+                    </div>
+                </div>
+                <a href="{% url 'login' %}" class="btn-logout">Cerrar sesión</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="main-content-card">
+                <div class="page-header">
+                    <h2>Ajustes de Cuenta y Perfil</h2>
+                    <p>Actualiza tus datos personales, información básica de salud y contacto de emergencia.</p>
+                </div>
+
+                {% if messages %}
+                    <div style="margin-bottom: 20px;">
+                        {% for message in messages %}
+                            <div style="padding: 12px; border-radius: 8px; background-color: #d1fae5; color: #065f46; margin-bottom: 8px; font-weight: 500;">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Datos Personales y de Salud -->
+                <form method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="seccion" value="perfil">
+
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #1e293b;">Información Personal</h3>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="nombres" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Nombres</label>
+                            <input type="text" id="nombres" name="nombres" value="{{ usuario.nombres|default:'' }}" class="search-input">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="apellidos" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Apellidos</label>
+                            <input type="text" id="apellidos" name="apellidos" value="{{ usuario.apellidos|default:'' }}" class="search-input">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="correo" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Correo electrónico</label>
+                            <input type="email" id="correo" name="correo" value="{{ usuario.correo|default:usuario.email }}" class="search-input">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="telefono" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Teléfono</label>
+                            <input type="text" id="telefono" name="telefono" value="{{ usuario.telefono|default:'' }}" class="search-input">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="edad" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Edad</label>
+                            <input type="number" id="edad" name="edad" min="1" max="120" value="{{ usuario.edad|default:'' }}" class="search-input">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="sexo" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Sexo</label>
+                            <input type="text" id="sexo" name="sexo" value="{{ usuario.sexo|default:'' }}" placeholder="Ej. Masculino / Femenino" class="search-input">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="eps" style="font-weight: 600; font-size: 0.85rem; color: #374151;">EPS</label>
+                            <input type="text" id="eps" name="eps" value="{{ usuario.eps|default:'' }}" class="search-input">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="rh" style="font-weight: 600; font-size: 0.85rem; color: #374151;">RH</label>
+                            <input type="text" id="rh" name="rh" value="{{ usuario.rh|default:'' }}" placeholder="Ej. O+" class="search-input">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-pill primary" style="border: none; cursor: pointer; padding: 10px 20px; font-weight: 600; align-self: flex-start;">
+                        Guardar Cambios de Perfil
+                    </button>
+                </form>
+
+                <!-- Contacto de Emergencia -->
+                <form method="POST" style="margin-top: 36px; padding-top: 24px; border-top: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 15px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="seccion" value="emergencia">
+
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #1e293b;">Contacto de Emergencia</h3>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="contacto_nombre" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Nombre completo</label>
+                            <input type="text" id="contacto_nombre" name="contacto_nombre" value="{{ contacto.nombre|default:'' }}" class="search-input">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="contacto_telefono" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Teléfono</label>
+                            <input type="text" id="contacto_telefono" name="contacto_telefono" value="{{ contacto.telefono|default:'' }}" class="search-input">
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="contacto_correo" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Correo (opcional)</label>
+                            <input type="email" id="contacto_correo" name="contacto_correo" value="{{ contacto.correo|default:'' }}" class="search-input">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-pill primary" style="border: none; cursor: pointer; padding: 10px 20px; font-weight: 600; align-self: flex-start;">
+                        Guardar Contacto de Emergencia
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
