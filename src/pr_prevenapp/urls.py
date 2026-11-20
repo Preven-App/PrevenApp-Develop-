@@ -1,4 +1,9 @@
 from django.contrib import admin
+from django.urls import include, path
+from django.conf.urls.static import static
+
+from django.contrib import admin
+from django.urls import include, path
 from django.urls import path, include
 # 1. Importamos la configuración y la función estática
 from django.conf import settings
@@ -6,6 +11,12 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
+    path('', include('app_prevenapp.urls')),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     path('', include('app_prevenapp.urls')),
     path('accounts/', include('allauth.urls')),
 ]

@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Prevención - Tips Publicados</title>
+    <link rel="stylesheet" href="{% static 'css/interfazusuario.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Menú Lateral (Sidebar) -->
+    <aside class="sidebar">
+        <div>
+            <div class="brand">
+                <img src="{% static 'images/logo.png' %}" alt="PrevenApp" style="height: 32px; object-fit: contain;">
+            </div>
+
+            <nav class="nav-list">
+                <a href="{% url 'listar_tips' %}" class="nav-item active">
+                    <i class="fa-solid fa-lightbulb"></i> Tips Publicados
+                </a>
+                <a href="{% url 'landing' %}" class="nav-item">
+                    <i class="fa-solid fa-house"></i> Inicio
+                </a>
+                <a href="{% url 'registrar_tip' %}" class="nav-item">
+                    <i class="fa-solid fa-pen-to-square"></i> Registrar Tip
+                </a>
+                <a href="{% url 'servicios' %}" class="nav-item">
+                    <i class="fa-solid fa-briefcase"></i> Servicios
+                </a>
+                <a href="{% url 'estadisticas' %}" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Estadísticas
+                </a>
+                <a href="{% url 'citas' %}" class="nav-item">
+                    <i class="fa-solid fa-calendar-check"></i> Citas
+                </a>
+                <a href="{% url 'recursos' %}" class="nav-item">
+                    <i class="fa-solid fa-book"></i> Recursos
+                </a>
+                <a href="{% url 'ajustes' %}" class="nav-item">
+                    <i class="fa-solid fa-gear"></i> Ajustes
+                </a>
+            </nav>
+        </div>
+
+        <div class="sidebar-card">
+            <div class="sidebar-card-header">
+                <i class="fa-regular fa-bell"></i> Notificación
+            </div>
+            <p>Nuevos recursos educativos disponibles para compartir con adolescentes.</p>
+            <a href="#">Ver recursos</a>
+        </div>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <div class="main-wrapper">
+        
+        <header class="header">
+            <div class="header-buttons">
+                <a href="#" class="btn-pill primary" style="text-decoration: none; display: inline-flex; align-items: center;">Notificaciones</a>
+                <a href="#" class="btn-pill" style="background-color: #fee2e2; color: #dc2626; text-decoration: none; display: inline-flex; align-items: center;">Botón Emergencia</a>
+            </div>
+
+            <div class="header-user">
+                <div class="user-profile">
+                    <div class="avatar">
+                        {{ user.username|slice:":2"|upper }}
+                    </div>
+                    <div class="user-info">
+                        <p>{% if user.is_authenticated %}{{ user.username }}{% else %}Dr. Roberto{% endif %}</p>
+                        <span>Profesional de salud</span>
+                    </div>
+                </div>
+                <a href="{% url 'account_logout' %}" class="btn-logout">Cerrar sesión</a>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="main-content-card">
+                
+                <div class="page-header">
+                    <h2>Consejos y Tips Publicados</h2>
+                    <p>Explora contenido verificado sobre salud, prevención y bienestar para adolescentes.</p>
+                </div>
+
+                <!-- Grilla de Tips con el mismo diseño estético -->
+                <div class="services-grid">
+                    {% for tip in tips %}
+                        <div class="card service-card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 24px;">
+                            <div>
+                                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <h3 class="card-title" style="font-size: 18px; font-weight: 700; color: #1f2937;">{{ tip.titulo }}</h3>
+                                    <span class="badge" style="background-color: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                        {{ tip.categoria.nombre|default:"General" }}
+                                    </span>
+                                </div>
+                                <p class="card-description" style="color: #4b5563; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
+                                    {{ tip.contenido }}
+                                </p>
+                            </div>
+                            <div style="border-top: 1px solid #f3f4f6; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #9ca3af;">
+                                <span><i class="fa-regular fa-user"></i> {{ tip.autor.username|default:"Especialista" }}</span>
+                                <span><i class="fa-regular fa-calendar"></i> {{ tip.fecha_creacion|date:"d M, Y" }}</span>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 32px; margin-bottom: 10px; color: #d1d5db;"></i>
+                            <p style="font-size: 16px;">No hay tips aprobados o publicados por el momento.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

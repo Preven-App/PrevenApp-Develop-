@@ -94,6 +94,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
+# Archivos multimedia (subidos por usuarios)
+STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # O la ruta correspondiente dentro de tu estructura 'src/static'
+]
 # Archivos multimedia
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
@@ -107,7 +113,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'servicios'
+LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'app_prevenapp.Usuario'
 
