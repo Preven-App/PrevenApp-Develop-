@@ -1,128 +1,140 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Tip - PrevenApp</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f1fc;
-            margin: 0;
-            padding: 30px;
-        }
-
-        .contenedor {
-            max-width: 650px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
-
-        h1 {
-            color: #6552a3;
-            text-align: center;
-        }
-
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-top: 7px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-
-        textarea {
-            min-height: 120px;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 22px;
-            padding: 13px;
-            background: #7461b5;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background: #59458f;
-        }
-
-        .volver {
-            display: block;
-            margin-top: 18px;
-            text-align: center;
-            color: #6552a3;
-            text-decoration: none;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <!-- Reutilizamos el CSS de crear_tip para mantener el mismo diseño de formulario -->
+    <link rel="stylesheet" href="{% static 'css/crear_tip.css' %}">
 </head>
-
 <body>
 
-<div class="contenedor">
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
 
-    <h1>Editar Tip</h1>
-    <p>Modifica la información de tu publicación.</p>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li><a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li class="active"><a href="{% url 'lista_tips' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
+                <li><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
+                <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
 
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <label for="titulo">Título *</label>
-        <input type="text" id="titulo" name="titulo"
-               value="{{ tip.titulo }}" maxlength="100" required>
-
-        <label for="descripcion">Descripción *</label>
-        <textarea id="descripcion" name="descripcion"
-                  required>{{ tip.descripcion }}</textarea>
-
-        <label for="fuente">Fuente</label>
-        <input type="text" id="fuente" name="fuente"
-               value="{{ tip.fuente }}" maxlength="100">
-
-        {% if tip.archivo %}
-            <p>Archivo actual:
-                <a href="{{ tip.archivo.url }}" target="_blank">
-                    Ver archivo
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar paciente, recurso o reporte...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
+                    </div>
                 </a>
-            </p>
-        {% endif %}
+            </div>
+        </header>
 
-        <label for="archivo">Cambiar archivo adjunto</label>
-        <input type="file" id="archivo" name="archivo">
+        <!-- ÁREA DE TRABAJO -->
+        <div class="dashboard-container">
+            
+            <div class="page-header animate-up">
+                <div>
+                    <h1>Editar Tip</h1>
+                    <p>Modifica la información de tu publicación.</p>
+                </div>
+                <a href="{% url 'lista_tips' %}" class="btn btn-cancel">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a mis Tips
+                </a>
+            </div>
 
-        <label for="fecha">Fecha</label>
-        <input type="date" id="fecha" name="fecha"
-               value="{{ tip.fecha|date:'Y-m-d' }}">
+            <div class="form-container animate-up delay-1">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-        <button type="submit">Guardar cambios</button>
-    </form>
+                    <div class="input-group">
+                        <label for="titulo"><i class="fa-solid fa-heading"></i> Título del tip *</label>
+                        <input type="text" id="titulo" name="titulo" value="{{ tip.titulo }}" maxlength="100" required>
+                    </div>
 
-    <a class="volver" href="{% url 'lista_tips' %}">
-        Volver a mis tips
-    </a>
+                    <div class="input-group">
+                        <label for="descripcion"><i class="fa-solid fa-align-left"></i> Descripción / Contenido *</label>
+                        <!-- Lógica para cargar el texto dependiendo de cómo se llame el campo en la BD -->
+                        <textarea id="descripcion" name="descripcion" rows="5" required>{% if tip.contenido %}{{ tip.contenido }}{% else %}{{ tip.descripcion }}{% endif %}</textarea>
+                    </div>
 
-</div>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="fuente"><i class="fa-solid fa-link"></i> Fuente de información</label>
+                            <input type="text" id="fuente" name="fuente" value="{{ tip.fuente }}" maxlength="100">
+                        </div>
+                        <div class="input-group">
+                            <label for="fecha"><i class="fa-regular fa-calendar"></i> Fecha (Opcional)</label>
+                            <input type="date" id="fecha" name="fecha" value="{{ tip.fecha|date:'Y-m-d' }}">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="archivo"><i class="fa-solid fa-paperclip"></i> Cambiar archivo adjunto</label>
+                        
+                        <!-- Si ya hay un archivo, mostramos el enlace -->
+                        {% if tip.archivo %}
+                            <div class="current-file">
+                                <i class="fa-solid fa-file"></i> Archivo actual: 
+                                <a href="{{ tip.archivo.url }}" target="_blank">Ver archivo</a>
+                            </div>
+                        {% endif %}
+                        
+                        <input type="file" id="archivo" name="archivo" class="file-input">
+                        <small>Si no seleccionas un archivo nuevo, se mantendrá el actual.</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
 
 </body>
 </html>

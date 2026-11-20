@@ -45,10 +45,11 @@ class ProfesionalAdmin(ModelAdmin):
 # ==========================================
 @admin.register(Tip)
 class TipAdmin(ModelAdmin):
-    # Si el modelo Tip NO tiene el campo 'profesional', quítalo de aquí:
-    list_display = ('titulo', 'categoria', 'fecha') 
-    list_filter = ('categoria',)
-    search_fields = ('titulo', 'descripcion')
+    # Ajusta los campos a los que realmente tiene el modelo ahora
+    list_display = ('titulo', 'autor', 'categoria', 'estado')
+    list_filter = ('estado', 'categoria')
+    search_fields = ('titulo', 'contenido')
+    list_editable = ('estado',)
 
 # ==========================================
 # 4. PERSONALIZACIÓN DEL MODELO DE CITA
