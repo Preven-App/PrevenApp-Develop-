@@ -100,15 +100,29 @@ class RecursoFavorito(models.Model):
     class Meta:
         unique_together = ('usuario', 'recurso') # Evita que un usuario guarde el mismo recurso dos veces
 
+
 class Tip(models.Model):
     idTip = models.AutoField(primary_key=True)
-    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, db_column='Categoria_idCategoria')
-    profesional = models.ForeignKey(Profesional, on_delete=models.PROTECT, db_column='Profesional_idProfesional')
+
+    profesional = models.ForeignKey(
+        Profesional,
+        on_delete=models.PROTECT,
+        db_column='Profesional_idProfesional'
+    )
+
     titulo = models.CharField(max_length=100, null=True, blank=True)
     descripcion = models.TextField(null=True, blank=True)
-    archivos_enlaces = models.CharField(max_length=255, null=True, blank=True)
+
+    archivo = models.FileField(
+        upload_to='tips/',
+        null=True,
+        blank=True
+    )
+
     fuente = models.CharField(max_length=100, null=True, blank=True)
     fecha = models.DateField(null=True, blank=True)
+
+    
 
 class Servicio(models.Model):
     idServicio = models.AutoField(primary_key=True)

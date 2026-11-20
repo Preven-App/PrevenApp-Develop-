@@ -1,0 +1,121 @@
+ 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar Tip - PrevenApp</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f1fc;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 650px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #6552a3;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 13px;
+            background: #7461b5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #59458f;
+        }
+
+        .volver {
+            display: block;
+            margin-top: 18px;
+            text-align: center;
+            color: #6552a3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>Publicar un Tip</h1>
+    <p>Comparte información educativa y consejos de salud.</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label for="titulo">Título del tip *</label>
+        <input type="text" id="titulo" name="titulo"
+               maxlength="100" required>
+
+        <label for="descripcion">Descripción *</label>
+        <textarea id="descripcion" name="descripcion"
+                  required></textarea>
+
+        <label for="fuente">Fuente de información</label>
+        <input type="text" id="fuente" name="fuente"
+               maxlength="100">
+
+        <label for="archivo">Adjuntar archivo</label>
+        <input type="file" id="archivo" name="archivo">
+
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha">
+
+        <button type="submit">Publicar Tip</button>
+    </form>
+
+    <a class="volver" href="{% url 'lista_tips' %}">
+        Ver mis tips publicados
+    </a>
+
+</div>
+
+</body>
+</html>
