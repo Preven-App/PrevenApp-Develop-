@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Tips - PrevenApp</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f1fc;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #6552a3;
+            text-align: center;
+        }
+
+        .acciones {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .boton {
+            display: inline-block;
+            background: #7461b5;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .tip {
+            background: white;
+            padding: 22px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+        }
+
+        .tip h2 {
+            color: #6552a3;
+        }
+
+        .boton-editar {
+            background: #7461b5;
+        }
+
+        .boton-eliminar {
+            background: #d95368;
+        }
+
+        .vacio {
+            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>Mis Tips Publicados</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <div class="acciones">
+        <a href="{% url 'crear_tip' %}" class="boton">
+            + Publicar nuevo Tip
+        </a>
+    </div>
+
+    {% for tip in tips %}
+
+        <div class="tip">
+
+            <h2>{{ tip.titulo }}</h2>
+
+            <p><strong>Descripción:</strong></p>
+            <p>{{ tip.descripcion }}</p>
+
+            {% if tip.fuente %}
+                <p><strong>Fuente:</strong> {{ tip.fuente }}</p>
+            {% endif %}
+
+            {% if tip.archivo %}
+                <p><strong>Archivo adjunto:</strong></p>
+                <a href="{{ tip.archivo.url }}" target="_blank">
+                    Ver o descargar archivo
+                </a>
+            {% endif %}
+
+            {% if tip.fecha %}
+                <p><strong>Fecha:</strong> {{ tip.fecha }}</p>
+            {% endif %}
+
+            <br><br>
+
+            <a href="{% url 'editar_tip' tip.idTip %}"
+               class="boton boton-editar">
+                Editar
+            </a>
+
+            <form method="POST"
+                  action="{% url 'eliminar_tip' tip.idTip %}"
+                  style="display:inline;">
+                {% csrf_token %}
+                <button type="submit"
+                        class="boton boton-eliminar"
+                        onclick="return confirm('¿Deseas eliminar este tip?');">
+                    Eliminar
+                </button>
+            </form>
+
+        </div>
+
+    {% empty %}
+
+        <div class="vacio">
+            <h3>Aún no tienes tips publicados.</h3>
+            <p>Publica tu primer tip para compartir información.</p>
+        </div>
+
+    {% endfor %}
+
+    <div class="acciones">
+        <a href="{% url 'dashboard_profesional' %}" class="boton">
+            Volver al panel
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

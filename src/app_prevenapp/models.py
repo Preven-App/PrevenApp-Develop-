@@ -105,6 +105,7 @@ class RecursoFavorito(models.Model):
     class Meta:
         unique_together = ('usuario', 'recurso')
 
+
 class Tip(models.Model):
     ESTADOS = [
         ('Pendiente', 'Pendiente de aprobación'),
@@ -118,12 +119,19 @@ class Tip(models.Model):
     titulo = models.CharField(max_length=200)
     contenido = models.TextField() # Mapeado para el contenido del tip
     descripcion = models.TextField(null=True, blank=True)
-    archivos_enlaces = models.CharField(max_length=255, null=True, blank=True)
+
+    archivo = models.FileField(
+        upload_to='tips/',
+        null=True,
+        blank=True
+    )
+
     fuente = models.CharField(max_length=100, null=True, blank=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='Pendiente')
     fecha_creacion = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     fecha = models.DateField(null=True, blank=True)
 
+    
     def __str__(self):
         return f"{self.titulo} ({self.estado})"
 

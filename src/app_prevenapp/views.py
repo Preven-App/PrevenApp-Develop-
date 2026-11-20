@@ -461,6 +461,117 @@ def perfil_profesional(request):
 
     return render(request, 'app_prevenapp/perfil_profesional.html')
 
+
+@login_required(login_url='login')
+def crear_tip(request):
+
+    try:
+        profesional = request.user.profesional
+    except Profesional.DoesNotExist:
+        messages.error(request, 'No tienes un perfil profesional.')
+        return redirect('dashboard_profesional')
+
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        fuente = request.POST.get('fuente', '').strip()
+        fecha = request.POST.get('fecha') or None
+        archivo = request.FILES.get('archivo')
+
+        if not titulo or not descripcion:
+            messages.error(request, 'Completa los campos obligatorios.')
+        else:
+            Tip.objects.create(
+                profesional=profesional,
+                titulo=titulo,
+                descripcion=descripcion,
+                archivo=archivo,
+                fuente=fuente,
+                fecha=fecha
+            )
+
+            messages.success(request, '¡Tip publicado correctamente!')
+            return redirect('lista_tips')
+
+    return render(request, 'app_prevenapp/crear_tip.html')
+
+
+@login_required(login_url='login')
+def lista_tips(request):
+
+    try:
+        profesional = request.user.profesional
+    except Profesional.DoesNotExist:
+        messages.error(request, 'No tienes un perfil profesional.')
+        return redirect('dashboard_profesional')
+
+    tips = Tip.objects.filter(
+        profesional=profesional
+    ).order_by('-fecha')
+
+    return render(request, 'app_prevenapp/lista_tips.html', {
+        'tips': tips
+    })
+    
+    
+@login_required(login_url='login')
+def editar_tip(request, id):
+
+    try:
+        profesional = request.user.profesional
+    except Profesional.DoesNotExist:
+        messages.error(request, 'No tienes un perfil profesional.')
+        return redirect('dashboard_profesional')
+
+    tip = get_object_or_404(
+        Tip,
+        idTip=id,
+        profesional=profesional
+    )
+
+    if request.method == 'POST':
+        tip.titulo = request.POST.get('titulo', '').strip()
+        tip.descripcion = request.POST.get('descripcion', '').strip()
+        tip.fuente = request.POST.get('fuente', '').strip()
+        tip.fecha = request.POST.get('fecha') or None
+
+        nuevo_archivo = request.FILES.get('archivo')
+
+        if nuevo_archivo:
+            tip.archivo = nuevo_archivo
+
+        if not tip.titulo or not tip.descripcion:
+            messages.error(request, 'Completa los campos obligatorios.')
+        else:
+            tip.save()
+            messages.success(request, '¡Tip actualizado correctamente!')
+            return redirect('lista_tips')
+
+    return render(request, 'app_prevenapp/editar_tip.html', {
+        'tip': tip
+    })
+
+    
+@login_required(login_url='login')
+@require_POST
+def eliminar_tip(request, id):
+
+    try:
+        profesional = request.user.profesional
+    except Profesional.DoesNotExist:
+        messages.error(request, 'No tienes un perfil profesional.')
+        return redirect('dashboard_profesional')
+
+    tip = get_object_or_404(
+        Tip,
+        idTip=id,
+        profesional=profesional
+    )
+
+    tip.delete()
+
+    messages.success(request, 'Tip eliminado correctamente.')
+    return redirect('lista_tips')
 #------------------------------------------------------------------------------------
 @login_required(login_url='login')
 def salas_chat(request, sala_id=None):
