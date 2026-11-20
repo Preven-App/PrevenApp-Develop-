@@ -15,6 +15,21 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 
+#-----------------------------------------------------------
+from django.utils import timezone
+from .models import (
+    Chat,
+    Especialidad,
+    HorarioProfesional,
+    Mensaje,
+    Profesional,
+    Rol,
+    SalaChat,
+    Usuario,
+    UsuarioChat,
+)
+#-------------------------------------------------------------
+
 def login_view(request):
     if request.method == 'POST':
         email_input = request.POST.get('email') # Lo que el usuario escribió
@@ -257,3 +272,93 @@ def perfil_profesional(request):
         return redirect('perfil_profesional')
 
     return render(request, 'app_prevenapp/perfil_profesional.html')
+
+#------------------------------------------------------------------------------------
+@login_required(login_url='login')
+def salas_chat(request, sala_id=None):
+    salas = SalaChat.objects.select_related('profesional', 'profesional__usuario').order_by('-idSala_chat')
+
+    # Permitir crear una nueva sala si el usuario tiene perfil de Profesional
+    if request.method == 'POST' and request.POST.get('accion') == 'crear_sala':
+        tema = (request.POST.get('tema') or '').strip()
+        descripcion = (request.POST.get('descripcion') or '').strip()
+        profesional = getattr(request.user, 'profesional', None)
+
+        if not profesional:
+            messages.error(request, 'Solo los usuarios con perfil profesional pueden crear nuevas salas.')
+            return redirect('salas_chat')
+
+        if not tema:
+            messages.error(request, 'Debes escribir un tema para la sala.')
+            return redirect('salas_chat')
+
+        nueva_sala = SalaChat.objects.create(
+            profesional=profesional,
+            tema=tema,
+            descripcion=descripcion,
+            estado='Activa',
+            fecha=timezone.now(),
+        )
+        _obtener_o_crear_chat_de_sala(nueva_sala, request.user)
+        messages.success(request, 'Sala creada correctamente.')
+        return redirect('detalle_sala_chat', sala_id=nueva_sala.idSala_chat)
+
+    sala_activa = None
+    chat_activo = None
+    mensajes_sala = []
+
+    if sala_id is not None:
+        sala_activa = get_object_or_404(SalaChat, idSala_chat=sala_id)
+    elif salas.exists():
+        sala_activa = salas.first()
+
+    if sala_activa is not None:
+        chat_activo = _obtener_o_crear_chat_de_sala(sala_activa, request.user)
+
+        if request.method == 'POST' and request.POST.get('accion') == 'enviar_mensaje':
+            contenido = (request.POST.get('mensaje') or '').strip()
+            if contenido:
+                Mensaje.objects.create(
+                    chat=chat_activo,
+                    usuario=request.user,
+                    mensaje=contenido,
+                    fecha=timezone.now(),
+                )
+            return redirect('detalle_sala_chat', sala_id=sala_activa.idSala_chat)
+
+        mensajes_sala = (
+            Mensaje.objects.filter(chat=chat_activo)
+            .select_related('usuario')
+            .order_by('fecha', 'idMensaje')
+        )
+
+    contexto = {
+        'salas': salas,
+        'sala_activa': sala_activa,
+        'mensajes_sala': mensajes_sala,
+        'es_profesional': hasattr(request.user, 'profesional'),
+    }
+    return render(request, 'app_prevenapp/salas_chat.html', contexto)
+def _obtener_o_crear_chat_de_sala(sala, usuario):
+    """Obtiene o crea un Chat asociado a una SalaChat y vincula al usuario."""
+    titulo_sala = f"Sala #{sala.idSala_chat}: {sala.tema or 'General'}"
+    chat = Chat.objects.filter(titulo=titulo_sala, tipo='sala').first()
+
+    if chat is None:
+        creador_id = (
+            sala.profesional.usuario.idUsuario
+            if sala.profesional and sala.profesional.usuario
+            else None
+        )
+        chat = Chat.objects.create(
+            titulo=titulo_sala,
+            tipo='sala',
+            creado_por=creador_id,
+            fecha=timezone.now(),
+        )
+
+    if usuario.is_authenticated:
+        UsuarioChat.objects.get_or_create(chat=chat, usuario=usuario)
+
+    return chat
+#-----------------------------------------------------------------------------------------------------
