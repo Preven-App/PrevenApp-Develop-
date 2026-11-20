@@ -1,11 +1,15 @@
 """
 Django settings for pr_prevenapp project.
 """
+import os
 from pathlib import Path
 
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ai7)%991s6i3*zwt#56=6kf0v4m8b-d%hq-t7l*x2$t8$39bcy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = []
 
@@ -56,16 +60,20 @@ ROOT_URLCONF = 'pr_prevenapp.urls'
 SOCIALACCOUNT_ADAPTER = 'app_prevenapp.adapters.MySocialAccountAdapter'
 
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],  
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-            "prompt": "select_account",
+    "google": {
+        "APP": {
+            "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+            "secret": os.environ.get("GOOGLE_SECRET_KEY"),
+            "key": ""
         },
-        'OAUTH_PKCE_ENABLED': True,
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+            "prompt": "select_account", # Para que siempre pregunte con qué cuenta entrar
+        },
     }
 }
 
@@ -124,7 +132,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-SITE_ID = 4
+SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 
 AUTH_USER_MODEL = 'app_prevenapp.Usuario'
