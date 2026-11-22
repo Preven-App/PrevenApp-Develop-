@@ -24,7 +24,6 @@ class Usuario(AbstractUser):
     sexo = models.CharField(max_length=20, null=True, blank=True)
     eps = models.CharField(max_length=45, null=True, blank=True)
     rh = models.CharField(max_length=10, null=True, blank=True)
-    estado = models.CharField(max_length=20, null=True, blank=True)
     foto_perfil = models.ImageField(upload_to='perfiles/', null=True, blank=True)
 
     ESTADOS_USUARIO = [
@@ -35,18 +34,12 @@ class Usuario(AbstractUser):
     estado = models.CharField(max_length=20, choices=ESTADOS_USUARIO, default='Activo', null=True, blank=True)
 
     def save(self, *args, **kwargs):
-            # Si el usuario no tiene un rol asignado, le damos uno por defecto
         if not self.rol_id:
             try:
-                # Buscamos el rol de Adolescente
                 rol_default = Rol.objects.get(nombre__iexact='Adolescente')
             except Rol.DoesNotExist:
-                # Si no existe (por si acaso), lo creamos
                 rol_default = Rol.objects.create(nombre='Adolescente')
-            
             self.rol = rol_default
-        
-        # Finalmente, guardamos el usuario
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -65,7 +58,6 @@ class Profesional(models.Model):
     especialidad = models.ForeignKey(Especialidad, on_delete=models.PROTECT, db_column='Especialidad_idEspecialidad')
     documento_identidad = models.CharField(max_length=20)
     credencial_profesional = models.CharField(max_length=50)
-    estado = models.CharField(max_length=20, null=True, blank=True)
 
     ESTADOS = [
         ('Pendiente', 'Pendiente'),
@@ -78,7 +70,7 @@ class Profesional(models.Model):
         return f"Profesional: {self.usuario.nombres} {self.usuario.apellidos}"
 
 # ==========================================
-# 2. CATEGORÍAS Y CONTENIDO (Actividades, Recursos, Tips)
+# 2. CATEGORÍAS Y CONTENIDO
 # ==========================================
 
 class Categoria(models.Model):
@@ -127,7 +119,6 @@ class RecursoFavorito(models.Model):
     class Meta:
         unique_together = ('usuario', 'recurso')
 
-
 class Tip(models.Model):
     ESTADOS = [
         ('Pendiente', 'Pendiente de aprobación'),
@@ -139,21 +130,13 @@ class Tip(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, db_column='Categoria_idCategoria', null=True, blank=True)
     autor = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
     titulo = models.CharField(max_length=200)
-    contenido = models.TextField() # Mapeado para el contenido del tip
-    descripcion = models.TextField(null=True, blank=True)
-
-    archivo = models.FileField(
-        upload_to='tips/',
-        null=True,
-        blank=True
-    )
-
+    contenido = models.TextField() 
+    archivo = models.FileField(upload_to='tips/', null=True, blank=True)
     fuente = models.CharField(max_length=100, null=True, blank=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='Pendiente')
     fecha_creacion = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     fecha = models.DateField(null=True, blank=True)
 
-    
     def __str__(self):
         return f"{self.titulo} ({self.estado})"
 
@@ -224,19 +207,8 @@ class Cita(models.Model):
     ]
 
     idCita = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        db_column='Usuario_idUsuario',
-        related_name='citas'
-    )
-    profesional = models.ForeignKey(
-        Profesional,
-        on_delete=models.CASCADE,
-        db_column='Profesional_idProfesional',
-        null=True,
-        blank=True
-    )
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, db_column='Usuario_idUsuario', related_name='citas')
+    profesional = models.ForeignKey(Profesional, on_delete=models.CASCADE, db_column='Profesional_idProfesional', null=True, blank=True)
     motivo = models.CharField(max_length=150, default='Consulta preventiva')
     fecha = models.DateField()
     hora = models.TimeField()
@@ -253,8 +225,8 @@ class Cita(models.Model):
 class HorarioProfesional(models.Model):
     idHorario_Profesional = models.AutoField(primary_key=True)
     profesional = models.ForeignKey(Profesional, on_delete=models.CASCADE, db_column='Profesional_idProfesional')
-    fecha_inicio = models.DateField(null=True, blank=True) # <-- Nuevo campo
-    fecha_fin = models.DateField(null=True, blank=True)    # <-- Nuevo campo
+    fecha_inicio = models.DateField(null=True, blank=True)
+    fecha_fin = models.DateField(null=True, blank=True)
     dias_semana = models.CharField(max_length=100, null=True, blank=True)
     hora_inicio = models.TimeField(null=True, blank=True)
     hora_fin = models.TimeField(null=True, blank=True)

@@ -6,6 +6,7 @@ from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.db.models import Q
 
 from .models import (
     Categoria, Cita, ContactoEmergencia, Especialidad, Profesional,
@@ -23,24 +24,30 @@ def landing_page(request):
 
 def login_view(request):
     if request.method == 'POST':
-        email_input = request.POST.get('email')
+        # Capturamos lo que el usuario escribió (puede ser un correo o un username como 'admin')
+        login_input = request.POST.get('email') 
         password = request.POST.get('password')
         
-        # 1. Intentar autenticar con el username
-        user = authenticate(request, username=email_input, password=password)
+        # 1. PRIMER INTENTO: Autenticación estándar
+        # Esto funciona si el usuario escribió su 'username' (ej. 'admin')
+        user = authenticate(request, username=login_input, password=password)
         
-        # 2. Si falla, intentar buscar por el campo 'correo'
+        # 2. SEGUNDO INTENTO: Si falla, buscamos si lo que escribió es un correo
         if user is None:
             try:
-                user_obj = Usuario.objects.get(correo=email_input)
-                user = authenticate(request, username=user_obj.username, password=password)
-            except Usuario.DoesNotExist:
+                # Buscamos en el campo 'correo' personalizado o en el 'email' por defecto de Django
+                user_obj = Usuario.objects.filter(Q(correo=login_input) | Q(email=login_input)).first()
+                if user_obj:
+                    # Si encontramos al usuario, intentamos autenticarlo con su username real
+                    user = authenticate(request, username=user_obj.username, password=password)
+            except Exception:
                 pass
 
+        # 3. VERIFICACIÓN Y REDIRECCIÓN
         if user is not None:
             login(request, user)
             
-            # 3. REDIRECCIÓN POR ROLES
+            # Evaluamos los roles
             if user.is_superuser or user.is_staff:
                 return redirect('/admin/')
                 
@@ -48,23 +55,21 @@ def login_view(request):
                 if user.is_staff:
                     return redirect('/admin/')
                 else:
-                    messages.error(request, 'No tienes permisos de Staff.')
+                    messages.error(request, 'Tienes rol de Admin, pero no permisos de Staff.')
                     return redirect('login')
                     
             elif user.rol and user.rol.nombre.lower() == 'profesional':
-                # Redirigimos al panel del profesional
                 return redirect('dashboard_profesional')
                 
             else:
-                # Si es un adolescente o no tiene rol, va a la página principal o servicios
-                messages.success(request, '¡Bienvenido!')
-                return redirect('landing') # O puedes usar redirect('servicios')
+                messages.success(request, '¡Bienvenido a PrevenApp!')
+                return redirect('servicios')
         else:
-            messages.error(request, 'Correo o contraseña incorrectos.')
+            # Si después de ambos intentos no se autenticó
+            messages.error(request, 'Usuario, correo o contraseña incorrectos. Intenta de nuevo.')
             return redirect('login')
 
     return render(request, 'app_prevenapp/login.html')
-
 
 def register_view(request):
     if request.method == 'POST':
@@ -129,10 +134,17 @@ def register_view(request):
                         credencial_profesional=licencia,
                         estado='Pendiente'
                     )
+                    nuevo_profesional.save()
 
+            # Autenticamos al usuario inmediatamente después del registro
             login(request, nuevo_usuario, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, '¡Registro exitoso!')
-            return redirect('servicios')
+            
+            # 🔴 AQUÍ ESTÁ LA CORRECCIÓN: Evaluamos el rol antes de redirigir
+            if role_select == 'profesional':
+                return redirect('dashboard_profesional')
+            else:
+                return redirect('servicios')
 
         except Exception as e:
             messages.error(request, f'Ocurrió un error al registrarse: {str(e)}')
@@ -343,8 +355,7 @@ def crear_tip(request):
 
     if request.method == 'POST':
         titulo = request.POST.get('titulo', '').strip()
-        # Capturamos 'descripcion' del HTML, pero lo guardaremos en el campo que exista en la BD
-        contenido = request.POST.get('descripcion', '').strip() 
+        contenido = request.POST.get('descripcion', '').strip() # Recibimos el texto del HTML
         categoria_id = request.POST.get('categoria')
         fuente = request.POST.get('fuente', '').strip()
         fecha = request.POST.get('fecha') or None
@@ -355,22 +366,21 @@ def crear_tip(request):
         else:
             categoria_obj = Categoria.objects.filter(idCategoria=categoria_id).first()
             
-            # 🔴 CORREGIDO: Usamos 'autor' y 'contenido' que son los campos que existen en el modelo actual
+            # Guardamos en el campo 'contenido' del modelo
             Tip.objects.create(
                 autor=request.user, 
                 titulo=titulo, 
                 contenido=contenido, 
                 categoria=categoria_obj, 
-                archivo=archivo, # Si el modelo lo tiene
+                archivo=archivo, 
                 fuente=fuente, 
                 fecha=fecha,
-                estado='Pendiente' # Importante para que el admin lo apruebe
+                estado='Pendiente'
             )
             messages.success(request, '¡Tip publicado correctamente!')
             return redirect('lista_tips')
             
     return render(request, 'app_prevenapp/crear_tip.html', {'categorias': categorias})
-
 
 @login_required(login_url='login')
 def lista_tips(request):

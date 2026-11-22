@@ -28,18 +28,15 @@
                 <li>
                     <a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a>
                 </li>
-                <!-- 🔴 CORREGIDO: Enlace a Salas de Chat -->
                 <li>
                     <a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
                 </li>
-                <!-- 🔴 CORREGIDO: Enlace a Publicar Tips -->
                 <li>
                     <a href="{% url 'crear_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a>
                 </li>
                 <li>
                     <a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a>
                 </li>
-                <!-- 🔴 CORREGIDO: Enlace a Recursos Educativos -->
                 <li>
                     <a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a>
                 </li>
@@ -139,21 +136,19 @@
                     <p>Define tus días y horas de disponibilidad para citas.</p>
                 </a>
                 
-                <!-- 🔴 CORREGIDO: Enlace a Salas de Chat -->
                 <a href="{% url 'salas_chat' %}" class="action-card animate-up delay-4">
                     <i class="fa-solid fa-plus-circle"></i>
                     <h3>Crear Sala de Chat</h3>
                     <p>Abre un espacio seguro para orientar a los usuarios.</p>
                 </a>
 
-                <!-- 🔴 CORREGIDO: Enlace a Publicar Tip -->
-                <a href="{% url 'registrar_tip' %}" class="action-card animate-up delay-4">
+                <!-- 🔴 CORREGIDO: Apuntar a crear_tip en lugar de registrar_tip -->
+                <a href="{% url 'crear_tip' %}" class="action-card animate-up delay-4">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <h3>Publicar un Tip</h3>
                     <p>Comparte información verificada sobre salud y prevención.</p>
                 </a>
 
-                <!-- 🔴 CORREGIDO: Enlace a Reportes -->
                 <a href="{% url 'reportes_profesional' %}" class="action-card animate-up delay-4">
                     <i class="fa-solid fa-clipboard-list"></i>
                     <h3>Nuevo Reporte</h3>
