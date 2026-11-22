@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Espacio - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <!-- Usaremos el mismo CSS del profesional como base, y este para detalles del usuario -->
+    <link rel="stylesheet" href="{% static 'css/dashboard_usuario.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge bg-pink">Mi Espacio</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active">
+                    <a href="{% url 'dashboard_usuario' %}"><i class="fa-solid fa-house"></i> Inicio</a>
+                </li>
+                <li>
+                    <a href="{% url 'servicios' %}"><i class="fa-solid fa-hand-holding-heart"></i> Servicios</a>
+                </li>
+                <li>
+                    <a href="{% url 'citas' %}"><i class="fa-solid fa-calendar-check"></i> Mis Citas</a>
+                </li>
+                <li>
+                    <a href="{% url 'recursos' %}"><i class="fa-solid fa-book-open"></i> Recursos</a>
+                </li>
+                <!-- NUEVO: Opción del Chatbot -->
+                <li>
+                    <a href="{% url 'chatbot' %}"><i class="fa-solid fa-robot"></i> Asistente Virtual</a>
+                </li>
+                <!-- Renombrado de Ajustes a Mi Perfil -->
+                <li>
+                    <a href="{% url 'ajustes' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar recursos, servicios...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">1</span>
+                </div>
+                <a href="{% url 'ajustes' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">Adolescente</span>
+                    </div>
+                    <div class="avatar bg-pink">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user"></i>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <!-- ÁREA DE TRABAJO (DASHBOARD) -->
+        <div class="dashboard-container">
+            
+            <!-- Banner de Bienvenida -->
+            <div class="welcome-banner animate-up" style="background: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%);">
+                <div>
+                    <h1>¡Hola, {{ request.user.nombres }}!</h1>
+                    <p>Este es tu espacio seguro. ¿Con qué te gustaría empezar hoy?</p>
+                </div>
+                <i class="fa-solid fa-star banner-icon"></i>
+            </div>
+
+            <!-- Tarjetas de Estadísticas (KPIs) -->
+            <div class="stats-grid">
+                <div class="stat-card animate-up delay-1">
+                    <div class="stat-icon bg-blue">
+                        <i class="fa-solid fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Próximas Citas</h3>
+                        <p class="stat-number">1</p>
+                    </div>
+                </div>
+                <div class="stat-card animate-up delay-2">
+                    <div class="stat-icon bg-pink">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Favoritos</h3>
+                        <p class="stat-number">5</p>
+                    </div>
+                </div>
+                <div class="stat-card animate-up delay-3">
+                    <div class="stat-icon bg-green">
+                        <i class="fa-solid fa-comment-dots"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3>Chats</h3>
+                        <p class="stat-number">2</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones Principales -->
+            <h2 class="section-title animate-up delay-3">¿Qué necesitas hoy?</h2>
+            <div class="actions-grid">
+                
+                <a href="{% url 'servicios' %}" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-hand-holding-heart" style="color: #F59E0B;"></i>
+                    <h3>Buscar Ayuda</h3>
+                    <p>Encuentra servicios de salud y líneas de apoyo.</p>
+                </a>
+                
+                <a href="{% url 'recursos' %}" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-book-medical" style="color: #3B82F6;"></i>
+                    <h3>Aprender</h3>
+                    <p>Lee artículos y guías sobre tu salud.</p>
+                </a>
+
+                <a href="{% url 'chatbot' %}" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-robot" style="color: #8B5CF6;"></i>
+                    <h3>Hablar con el Asistente</h3>
+                    <p>Resuelve tus dudas de forma anónima 24/7.</p>
+                </a>
+
+                <a href="{% url 'citas' %}" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-calendar-plus" style="color: #10B981;"></i>
+                    <h3>Agendar Cita</h3>
+                    <p>Solicita una consulta con un profesional.</p>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 🔴 BOTÓN DE EMERGENCIA FLOTANTE (Visible siempre) -->
+    <a href="{% url 'ajustes' %}#emergencia" class="btn-emergency" title="Atención Inmediata">
+        <i class="fa-solid fa-phone-volume"></i>
+        <span>Ayuda Urgente</span>
+    </a>
+
+</body>
+</html>

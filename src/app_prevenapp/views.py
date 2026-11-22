@@ -24,33 +24,33 @@ def landing_page(request):
 
 def login_view(request):
     if request.method == 'POST':
-        # Capturamos lo que el usuario escribió (puede ser un correo o un username como 'admin')
+        # Capturamos lo que el usuario escribió (puede ser correo o username)
         login_input = request.POST.get('email') 
         password = request.POST.get('password')
         
-        # 1. PRIMER INTENTO: Autenticación estándar
-        # Esto funciona si el usuario escribió su 'username' (ej. 'admin')
+        # 1. PRIMER INTENTO: Autenticación estándar (por username)
         user = authenticate(request, username=login_input, password=password)
         
-        # 2. SEGUNDO INTENTO: Si falla, buscamos si lo que escribió es un correo
+        # 2. SEGUNDO INTENTO: Si falla, buscar por el campo 'correo' o 'email'
         if user is None:
             try:
-                # Buscamos en el campo 'correo' personalizado o en el 'email' por defecto de Django
+                # Busca coincidencia en el campo 'correo' del modelo o en el 'email' de Django
                 user_obj = Usuario.objects.filter(Q(correo=login_input) | Q(email=login_input)).first()
                 if user_obj:
-                    # Si encontramos al usuario, intentamos autenticarlo con su username real
+                    # Autenticamos usando el username real de ese usuario
                     user = authenticate(request, username=user_obj.username, password=password)
             except Exception:
                 pass
 
-        # 3. VERIFICACIÓN Y REDIRECCIÓN
+        # 3. VERIFICACIÓN Y REDIRECCIÓN POR ROLES
         if user is not None:
             login(request, user)
             
-            # Evaluamos los roles
+            # Si es Administrador o Superusuario
             if user.is_superuser or user.is_staff:
                 return redirect('/admin/')
                 
+            # Si tiene el rol explícito de Administrador
             elif user.rol and user.rol.nombre.lower() in ['administrador', 'admin']:
                 if user.is_staff:
                     return redirect('/admin/')
@@ -58,14 +58,16 @@ def login_view(request):
                     messages.error(request, 'Tienes rol de Admin, pero no permisos de Staff.')
                     return redirect('login')
                     
+            # Si es Profesional
             elif user.rol and user.rol.nombre.lower() == 'profesional':
                 return redirect('dashboard_profesional')
                 
+            # Si es Adolescente / Usuario (Redirigimos a su nuevo Dashboard)
             else:
-                messages.success(request, '¡Bienvenido a PrevenApp!')
-                return redirect('servicios')
+                messages.success(request, f'¡Bienvenido a tu espacio seguro, {user.nombres}!')
+                return redirect('dashboard_usuario') # <-- AQUÍ ESTÁ EL CAMBIO PRINCIPAL
         else:
-            # Si después de ambos intentos no se autenticó
+            # Si no se pudo autenticar
             messages.error(request, 'Usuario, correo o contraseña incorrectos. Intenta de nuevo.')
             return redirect('login')
 
@@ -81,11 +83,11 @@ def register_view(request):
 
         if Usuario.objects.filter(email=email).exists():
             messages.error(request, 'Este correo ya está registrado.')
-            return redirect('register')
+            return redirect('login') # Redirigimos al login
 
         if len(password) < 10 or not re.search(r'[A-Z]', password) or len(re.findall(r'\d', password)) < 5 or not re.search(r'[^A-Za-z0-9]', password):
             messages.error(request, 'La contraseña no cumple con los requisitos de seguridad.')
-            return redirect('register')
+            return redirect('login') # Redirigimos al login
 
         try:
             with transaction.atomic():
@@ -111,7 +113,10 @@ def register_view(request):
                     rh = request.POST.get('rh_factor')
 
                     nuevo_usuario.telefono = telefono if telefono else None
-                    nuevo_usuario.edad = int(edad) if edad and edad.isdigit() else None
+                    try:
+                        nuevo_usuario.edad = int(edad) if edad else None
+                    except ValueError:
+                        nuevo_usuario.edad = None
                     nuevo_usuario.rh = rh if rh else None
 
                 nuevo_usuario.save()
@@ -122,7 +127,7 @@ def register_view(request):
                     licencia = request.POST.get('license')
 
                     if not nombre_especialidad or not documento or not licencia:
-                        raise ValueError("Los campos de profesional están incompletos. Revisa el formulario.")
+                        raise ValueError("Faltan campos obligatorios de profesional.")
                     
                     nombre_especialidad_limpio = nombre_especialidad.strip().capitalize()
                     especialidad_db, _ = Especialidad.objects.get_or_create(nombre=nombre_especialidad_limpio)
@@ -136,21 +141,20 @@ def register_view(request):
                     )
                     nuevo_profesional.save()
 
-            # Autenticamos al usuario inmediatamente después del registro
             login(request, nuevo_usuario, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, '¡Registro exitoso!')
             
-            # 🔴 AQUÍ ESTÁ LA CORRECCIÓN: Evaluamos el rol antes de redirigir
             if role_select == 'profesional':
                 return redirect('dashboard_profesional')
             else:
-                return redirect('servicios')
+                return redirect('dashboard_usuario')
 
         except Exception as e:
             messages.error(request, f'Ocurrió un error al registrarse: {str(e)}')
-            return redirect('register')
+            return redirect('login') # Redirigimos al login si falla
 
-    return render(request, 'app_prevenapp/register.html')
+    # 🔴 AQUÍ ESTABA EL ERROR: Cambiamos register.html por login.html
+    return render(request, 'app_prevenapp/login.html')
 
 # ==========================================
 # 2. VISTAS DE USUARIOS (ADOLESCENTES)
@@ -497,3 +501,12 @@ def _obtener_o_crear_chat_de_sala(sala, usuario):
         UsuarioChat.objects.get_or_create(chat=chat, usuario=usuario)
 
     return chat
+
+@login_required(login_url='login')
+def dashboard_usuario(request):
+    return render(request, 'app_prevenapp/dashboard_usuario.html')
+
+# Vista temporal para el chatbot
+@login_required(login_url='login')
+def chatbot_view(request):
+    return render(request, 'app_prevenapp/chatbot.html') # Tendrás que crear este HTML luego
