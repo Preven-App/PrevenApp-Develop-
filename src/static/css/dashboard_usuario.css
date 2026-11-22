@@ -1,0 +1,61 @@
+/* Colores específicos para el usuario */
+.bg-pink { background: #FDF2F8; color: #EC4899; }
+.role-badge.bg-pink { background: #FCE7F3; color: #BE185D; }
+
+.avatar.bg-pink {
+    background: linear-gradient(135deg, #EC4899, #8B5CF6);
+    color: white;
+}
+
+/* Ajustes al banner de bienvenida */
+.welcome-banner h1 { color: #fff; }
+.welcome-banner p { color: rgba(255, 255, 255, 0.9); }
+
+/* ==========================================
+   BOTÓN DE EMERGENCIA (Flotante)
+   ========================================== */
+.btn-emergency {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #EF4444; /* Rojo de alerta */
+    color: white;
+    padding: 15px 25px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+    z-index: 9999;
+    transition: all 0.3s ease;
+    animation: pulse-danger 2s infinite;
+}
+
+.btn-emergency:hover {
+    background-color: #DC2626;
+    transform: scale(1.05);
+    color: white;
+}
+
+/* Animación de pulso para llamar la atención */
+@keyframes pulse-danger {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* Responsive para el botón en móviles */
+@media (max-width: 768px) {
+    .btn-emergency span {
+        display: none; /* En móviles, solo se ve el icono para no estorbar */
+    }
+    .btn-emergency {
+        padding: 18px;
+        border-radius: 50%;
+        bottom: 20px;
+        right: 20px;
+    }
+}

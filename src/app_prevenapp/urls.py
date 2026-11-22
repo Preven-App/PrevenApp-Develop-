@@ -20,6 +20,8 @@ urlpatterns = [
     path('ajustes/', views.ajustes_view, name='ajustes'),
     path('salas/', views.salas_chat, name='salas_chat'),
     path('salas/<int:sala_id>/', views.salas_chat, name='detalle_sala_chat'),
+    path('dashboard/usuario/', views.dashboard_usuario, name='dashboard_usuario'),
+    path('chatbot/', views.chatbot_view, name='chatbot'),
 
     # Rutas del Profesional (Dashboard)
     path('dashboard/profesional/', views.dashboard_profesional, name='dashboard_profesional'),
@@ -38,6 +40,8 @@ urlpatterns = [
     path('dashboard/profesional/tips/editar/<int:id>/', views.editar_tip, name='editar_tip'),
     path('dashboard/profesional/tips/eliminar/<int:id>/', views.eliminar_tip, name='eliminar_tip'),
 ]
+
+
 
 # Servir archivos multimedia en desarrollo
 if settings.DEBUG:
