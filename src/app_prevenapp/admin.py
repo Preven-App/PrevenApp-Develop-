@@ -11,7 +11,7 @@ from .models import *
 # 1. PERSONALIZACIÓN DEL USUARIO
 # ==========================================
 @admin.register(Usuario)
-class UsuarioAdmin(BaseUserAdmin, ModelAdmin):
+class UsuarioAdmin(BaseUserAdmin, ModelAdmin): # <-- Hereda de BaseUserAdmin (el alias) y ModelAdmin
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
@@ -48,12 +48,12 @@ class ProfesionalAdmin(ModelAdmin):
     # Le decimos a Django que el 'usuario' sea el enlace para abrir la ventana de edición completa
     list_display_links = ('usuario',) 
 # ==========================================
-# 3. REGISTRO DEL RESTO DE MODELOS CON UNFOLD
+# 5. REGISTRO DEL RESTO DE MODELOS CON UNFOLD
 # ==========================================
 modelos_a_registrar = [
     Rol, Especialidad, Categoria, Actividad, ParticipacionActividad,
-    Recurso, RecursoFavorito, Tip, Servicio, Chat, UsuarioChat,
-    Mensaje, SalaChat, HistorialChatbot, ContactoEmergencia, Cita,
+    Recurso, RecursoFavorito, Servicio, Chat, UsuarioChat,
+    Mensaje, SalaChat, HistorialChatbot, ContactoEmergencia,
     HorarioProfesional, Inquietud, Reporte
 ]
 

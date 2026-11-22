@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar Tip - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/crear_tip.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li><a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li class="active"><a href="{% url 'crear_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
+                <li><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
+                <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar paciente, recurso o reporte...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <!-- ÁREA DE TRABAJO -->
+        <div class="dashboard-container">
+            
+            <!-- SISTEMA DE NOTIFICACIONES -->
+            {% if messages %}
+            <div id="toast-container">
+                {% for message in messages %}
+                    <div class="toast {% if message.tags == 'error' %}toast-error{% else %}toast-success{% endif %}">
+                        <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="page-header animate-up">
+                <div>
+                    <h1>Publicar un Nuevo Tip</h1>
+                    <p>Comparte información verificada y consejos de salud con la comunidad.</p>
+                </div>
+                <a href="{% url 'lista_tips' %}" class="btn btn-cancel">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a mis Tips
+                </a>
+            </div>
+
+            <div class="form-container animate-up delay-1">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="titulo"><i class="fa-solid fa-heading"></i> Título del tip *</label>
+                            <input type="text" id="titulo" name="titulo" maxlength="100" placeholder="Ej: La importancia de los métodos anticonceptivos" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="categoria"><i class="fa-solid fa-tags"></i> Categoría *</label>
+                            <select id="categoria" name="categoria" required>
+                                <option value="" disabled selected>Selecciona una categoría</option>
+                                <!-- Aquí se renderizarán las categorías desde Django -->
+                                {% for categoria in categorias %}
+                                    <option value="{{ categoria.idCategoria }}">{{ categoria.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="descripcion"><i class="fa-solid fa-align-left"></i> Descripción / Contenido *</label>
+                        <textarea id="descripcion" name="descripcion" rows="5" placeholder="Escribe el consejo o información que deseas compartir..." required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="fuente"><i class="fa-solid fa-link"></i> Fuente de información</label>
+                            <input type="text" id="fuente" name="fuente" maxlength="100" placeholder="Ej: Organización Mundial de la Salud">
+                        </div>
+                        <div class="input-group">
+                            <label for="fecha"><i class="fa-regular fa-calendar"></i> Fecha (Opcional)</label>
+                            <input type="date" id="fecha" name="fecha">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="archivo"><i class="fa-solid fa-paperclip"></i> Adjuntar archivo (Opcional)</label>
+                        <input type="file" id="archivo" name="archivo" class="file-input">
+                        <small>Puedes adjuntar una imagen o un PDF (Máx. 5MB).</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save">
+                            <i class="fa-solid fa-paper-plane"></i> Publicar Tip
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts para notificaciones -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { toast.remove(); }, 400);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+</html>

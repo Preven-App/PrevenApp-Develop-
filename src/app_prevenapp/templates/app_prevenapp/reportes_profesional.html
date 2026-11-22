@@ -25,8 +25,8 @@
             <ul>
                 <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
                 <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
-                <li><a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
-                <li><a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li><a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li><a href="{% url 'crear_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
                 <li class="active"><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
                 <li><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
                 <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
@@ -83,59 +83,51 @@
                     <div class="kpi-icon bg-blue"><i class="fa-solid fa-users"></i></div>
                     <div class="kpi-data">
                         <h3>Pacientes Asignados</h3>
-                        <p>24</p>
+                        <p>{{ kpis.pacientes_asignados }}</p>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon bg-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
                     <div class="kpi-data">
                         <h3>En Riesgo Alto</h3>
-                        <p>3</p>
+                        <p>{{ kpis.en_riesgo_alto }}</p>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon bg-orange"><i class="fa-solid fa-clipboard-list"></i></div>
                     <div class="kpi-data">
                         <h3>Reportes Pendientes</h3>
-                        <p>2</p>
+                        <p>{{ kpis.reportes_pendientes }}</p>
                     </div>
-                </div>
-            </div>
-
-            <!-- Filtros de Búsqueda -->
-            <div class="filters-container animate-up delay-2">
-                <div class="filter-group">
-                    <label>Filtrar por Nivel de Riesgo:</label>
-                    <select class="form-select">
-                        <option value="todos">Todos los niveles</option>
-                        <option value="alto">Riesgo Alto</option>
-                        <option value="medio">Riesgo Medio</option>
-                        <option value="bajo">Riesgo Bajo</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Filtrar por Seguimiento:</label>
-                    <select class="form-select">
-                        <option value="todos">Todos</option>
-                        <option value="reciente">Reciente (últimos 7 días)</option>
-                        <option value="antiguo">Requiere atención (+15 días)</option>
-                    </select>
                 </div>
             </div>
 
             <!-- Lista de Pacientes (Expedientes) -->
             <div class="pacientes-list animate-up delay-3">
-                <!-- Tarjeta de Paciente 1 -->
+                {% for reporte in reportes %}
                 <div class="paciente-card">
                     <div class="paciente-header">
                         <div class="paciente-avatar">
-                            <i class="fa-solid fa-user"></i>
+                            {% if reporte.usuario.foto_perfil %}
+                                <img src="{{ reporte.usuario.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            {% else %}
+                                <i class="fa-solid fa-user"></i>
+                            {% endif %}
                         </div>
                         <div class="paciente-info">
-                            <h3>Ana María Rodríguez</h3>
-                            <p>15 años • Último seguimiento: Hace 2 días</p>
+                            <h3>{{ reporte.usuario.nombres }} {{ reporte.usuario.apellidos }}</h3>
+                            <p>{{ reporte.usuario.edad|default:"-" }} años • Último reporte: {{ reporte.fecha|date:"d M Y" }}</p>
                         </div>
-                        <div class="riesgo-badge alto">Riesgo Alto</div>
+                        
+                        {% if reporte.nivel_riesgo == 'Alto' %}
+                            <div class="riesgo-badge alto">Riesgo Alto</div>
+                        {% elif reporte.nivel_riesgo == 'Medio' %}
+                            <div class="riesgo-badge medio">Riesgo Medio</div>
+                        {% elif reporte.nivel_riesgo == 'Bajo' %}
+                            <div class="riesgo-badge bajo">Riesgo Bajo</div>
+                        {% else %}
+                            <div class="riesgo-badge medio">Sin evaluar</div>
+                        {% endif %}
                     </div>
                     <div class="paciente-actions">
                         <button class="btn-action"><i class="fa-solid fa-file-medical"></i> Crear Reporte</button>
@@ -143,44 +135,13 @@
                         <button class="btn-action"><i class="fa-solid fa-calendar-plus"></i> Agendar Cita</button>
                     </div>
                 </div>
-
-                <!-- Tarjeta de Paciente 2 -->
-                <div class="paciente-card">
-                    <div class="paciente-header">
-                        <div class="paciente-avatar">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <div class="paciente-info">
-                            <h3>Laura Sofía Gómez</h3>
-                            <p>16 años • Último seguimiento: Hace 10 días</p>
-                        </div>
-                        <div class="riesgo-badge medio">Riesgo Medio</div>
-                    </div>
-                    <div class="paciente-actions">
-                        <button class="btn-action"><i class="fa-solid fa-file-medical"></i> Crear Reporte</button>
-                        <button class="btn-action"><i class="fa-solid fa-clock-rotate-left"></i> Ver Historial</button>
-                        <button class="btn-action"><i class="fa-solid fa-calendar-plus"></i> Agendar Cita</button>
-                    </div>
+                {% empty %}
+                <div class="empty-state" style="text-align: center; padding: 40px; background: white; border-radius: 16px; border: 1px dashed #CBD5E1;">
+                    <i class="fa-regular fa-folder-open" style="font-size: 3rem; color: #94A3B8; margin-bottom: 15px;"></i>
+                    <h3 style="color: #1E293B; margin-bottom: 10px;">No hay reportes registrados</h3>
+                    <p style="color: #64748B;">Aún no has creado reportes de seguimiento para ningún adolescente.</p>
                 </div>
-
-                <!-- Tarjeta de Paciente 3 -->
-                <div class="paciente-card">
-                    <div class="paciente-header">
-                        <div class="paciente-avatar">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <div class="paciente-info">
-                            <h3>Valentina Pérez</h3>
-                            <p>14 años • Último seguimiento: Ayer</p>
-                        </div>
-                        <div class="riesgo-badge bajo">Riesgo Bajo</div>
-                    </div>
-                    <div class="paciente-actions">
-                        <button class="btn-action"><i class="fa-solid fa-file-medical"></i> Crear Reporte</button>
-                        <button class="btn-action"><i class="fa-solid fa-clock-rotate-left"></i> Ver Historial</button>
-                        <button class="btn-action"><i class="fa-solid fa-calendar-plus"></i> Agendar Cita</button>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </main>

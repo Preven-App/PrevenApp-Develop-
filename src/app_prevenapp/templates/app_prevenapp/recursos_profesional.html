@@ -25,8 +25,8 @@
             <ul>
                 <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
                 <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
-                <li><a href="#"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
-                <li><a href="#"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li><a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li><a href="{% url 'crear_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
                 <li><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
                 <li class="active"><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
                 <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
@@ -42,14 +42,11 @@
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
-        
-        <!-- BARRA SUPERIOR (TOPBAR) -->
         <header class="topbar">
             <div class="search-bar">
                 <i class="fa-solid fa-search"></i>
                 <input type="text" placeholder="Buscar recurso, guía o artículo...">
             </div>
-            
             <div class="user-profile">
                 <div class="notifications">
                     <i class="fa-regular fa-bell"></i>
@@ -71,7 +68,6 @@
             </div>
         </header>
 
-        <!-- ÁREA DE TRABAJO -->
         <div class="dashboard-container">
             <div class="page-header animate-up">
                 <div>
@@ -87,20 +83,17 @@
                     <button class="pill">Artículos</button>
                     <button class="pill">Guías PDF</button>
                     <button class="pill">Infografías</button>
-                    <button class="pill">Videos</button>
                 </div>
                 <select class="category-select">
                     <option>Todas las categorías</option>
                     <option>Métodos Anticonceptivos</option>
                     <option>Infecciones (ITS)</option>
                     <option>Prevención del Embarazo</option>
-                    <option>Salud Mental</option>
                 </select>
             </div>
 
             <!-- Grid de Recursos -->
             <div class="recursos-grid animate-up delay-2">
-                
                 <!-- Recurso 1 -->
                 <div class="recurso-card">
                     <div class="recurso-image bg-blue-light">
@@ -109,10 +102,10 @@
                     <div class="recurso-content">
                         <span class="recurso-category">Guía PDF</span>
                         <h3>Guía Completa de Métodos Anticonceptivos</h3>
-                        <p>Documento detallado sobre eficacia, uso y efectos secundarios de cada método.</p>
+                        <p>Documento detallado sobre eficacia, uso y efectos secundarios.</p>
                         <div class="recurso-footer">
-                            <span><i class="fa-regular fa-clock"></i> 5 min de lectura</span>
-                            <button class="btn-download" title="Descargar"><i class="fa-solid fa-download"></i></button>
+                            <span><i class="fa-regular fa-clock"></i> 5 min</span>
+                            <button class="btn-download"><i class="fa-solid fa-download"></i></button>
                         </div>
                     </div>
                 </div>

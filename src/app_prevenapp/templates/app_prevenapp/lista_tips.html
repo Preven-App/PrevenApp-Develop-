@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Tips - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/lista_tips.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li><a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li class="active"><a href="{% url 'lista_tips' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
+                <li><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
+                <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar tip...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <!-- ÁREA DE TRABAJO -->
+        <div class="dashboard-container">
+            
+            <!-- SISTEMA DE NOTIFICACIONES -->
+            {% if messages %}
+            <div id="toast-container">
+                {% for message in messages %}
+                    <div class="toast {% if message.tags == 'error' %}toast-error{% else %}toast-success{% endif %}">
+                        <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="page-header animate-up">
+                <div>
+                    <h1>Mis Tips Publicados</h1>
+                    <p>Gestiona los consejos e información que has compartido.</p>
+                </div>
+                <a href="{% url 'crear_tip' %}" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Publicar nuevo Tip
+                </a>
+            </div>
+
+            <!-- Grid de Tips -->
+            <div class="tips-grid animate-up delay-1">
+                {% for tip in tips %}
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <span class="tip-category">{{ tip.categoria.nombre|default:"General" }}</span>
+                        <span class="tip-date"><i class="fa-regular fa-calendar"></i> {{ tip.fecha|default:"Sin fecha" }}</span>
+                    </div>
+                    
+                    <h3 class="tip-title">{{ tip.titulo }}</h3>
+                    <p class="tip-desc">{{ tip.descripcion|truncatechars:120 }}</p>
+                    
+                    {% if tip.fuente %}
+                    <p class="tip-source"><i class="fa-solid fa-link"></i> <strong>Fuente:</strong> {{ tip.fuente }}</p>
+                    {% endif %}
+
+                    {% if tip.archivo %}
+                    <a href="{{ tip.archivo.url }}" target="_blank" class="tip-file">
+                        <i class="fa-solid fa-paperclip"></i> Ver archivo adjunto
+                    </a>
+                    {% endif %}
+
+                    <div class="tip-actions">
+                        <a href="{% url 'editar_tip' tip.idTip %}" class="btn-action btn-edit">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </a>
+                        <form method="POST" action="{% url 'eliminar_tip' tip.idTip %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-action btn-delete" onclick="return confirm('¿Deseas eliminar este tip?');">
+                                <i class="fa-solid fa-trash-can"></i> Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% empty %}
+                <!-- Estado vacío -->
+                <div class="empty-state">
+                    <i class="fa-regular fa-lightbulb"></i>
+                    <h3>Aún no tienes tips publicados</h3>
+                    <p>Comparte tu primer consejo de salud y ayuda a la comunidad.</p>
+                    <a href="{% url 'crear_tip' %}" class="btn btn-primary">Publicar mi primer Tip</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts para notificaciones -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { toast.remove(); }, 400);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+</html>

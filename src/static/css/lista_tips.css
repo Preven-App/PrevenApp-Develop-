@@ -1,0 +1,181 @@
+/* ==========================================
+   GRID DE TIPS
+   ========================================== */
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.tip-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tip-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    border-color: #CBD5E1;
+}
+
+/* Cabecera de la tarjeta (Categoría y Fecha) */
+.tip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.tip-category {
+    background: #EEF2FF;
+    color: var(--primary-color);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tip-date {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Contenido */
+.tip-title {
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.tip-desc {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 15px;
+    flex: 1; /* Empuja los botones hacia abajo */
+}
+
+/* Metadatos (Fuente y Archivo) */
+.tip-source {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    background: #F8FAFC;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+}
+
+.tip-source i {
+    color: var(--primary-color);
+    margin-right: 5px;
+}
+
+.tip-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: color 0.3s;
+}
+
+.tip-file:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* Botones de Acción */
+.tip-actions {
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+    margin-top: auto;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-edit {
+    background: #EFF6FF;
+    color: #3B82F6;
+}
+
+.btn-edit:hover {
+    background: #3B82F6;
+    color: var(--white);
+}
+
+.btn-delete {
+    background: #FEF2F2;
+    color: #EF4444;
+}
+
+.btn-delete:hover {
+    background: #EF4444;
+    color: var(--white);
+}
+
+/* ==========================================
+   ESTADO VACÍO
+   ========================================== */
+.empty-state {
+    grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
+    background: var(--white);
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 60px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #CBD5E1;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: var(--text-light);
+    margin-bottom: 25px;
+    max-width: 400px;
+}

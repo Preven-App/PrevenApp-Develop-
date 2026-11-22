@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salas de Chat - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/salas_chat.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li class="active"><a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li><a href="{% url 'crear_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
+                <li><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
+                <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar paciente, recurso o reporte...">
+            </div>
+            
+            <div class="user-profile">
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <a href="{% url 'perfil_profesional' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+                        <span class="specialty">{{ request.user.profesional.especialidad.nombre|default:"Profesional" }}</span>
+                    </div>
+                    <div class="avatar">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user-doctor"></i>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <!-- ÁREA DE CHAT -->
+        <div class="chat-container animate-up">
+            
+            <!-- Panel Izquierdo: Lista de Salas -->
+            <aside class="chat-sidebar">
+                <div class="chat-sidebar-header">
+                    <h2>Salas Activas</h2>
+                    {% if es_profesional %}
+                        <button class="btn-icon-new" onclick="toggleModal()"><i class="fa-solid fa-plus"></i></button>
+                    {% endif %}
+                </div>
+
+                <!-- Formulario para crear sala (Oculto por defecto) -->
+                {% if es_profesional %}
+                <div id="modal-crear-sala" class="crear-sala-form" style="display: none;">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="crear_sala">
+                        <input type="text" name="tema" placeholder="Nombre de la sala..." required>
+                        <textarea name="descripcion" rows="2" placeholder="Descripción breve..."></textarea>
+                        <button type="submit" class="btn-small">Crear</button>
+                    </form>
+                </div>
+                {% endif %}
+
+                <!-- Lista de Salas -->
+                <ul class="room-list">
+                    {% for sala in salas %}
+                        <li class="room-item {% if sala_activa and sala.idSala_chat == sala_activa.idSala_chat %}active{% endif %}">
+                            <a href="{% url 'detalle_sala_chat' sala.idSala_chat %}">
+                                <div class="room-avatar"><i class="fa-solid fa-users"></i></div>
+                                <div class="room-info">
+                                    <h3>{{ sala.tema|default:"Sala sin título" }}</h3>
+                                    <p>{% if sala.profesional and sala.profesional.usuario %}{{ sala.profesional.usuario.nombres }}{% else %}Sistema{% endif %}</p>
+                                </div>
+                                <span class="room-status">{{ sala.estado|default:"Activa" }}</span>
+                            </a>
+                        </li>
+                    {% empty %}
+                        <li class="no-rooms">No hay salas disponibles. {% if es_profesional %}¡Crea una nueva!{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </aside>
+
+            <!-- Panel Derecho: Área de Mensajes -->
+            <section class="chat-main">
+                {% if sala_activa %}
+                    <!-- Cabecera del Chat -->
+                    <div class="chat-header">
+                        <div class="chat-header-info">
+                            <h2>{{ sala_activa.tema|default:"Sala de Chat" }}</h2>
+                            <p>{{ sala_activa.descripcion|default:"Sin descripción" }}</p>
+                        </div>
+                        <div class="chat-header-actions">
+                            <button class="btn-icon-header" title="Ver Participantes"><i class="fa-solid fa-user-group"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Mensajes -->
+                    <div class="chat-messages" id="chat-mensajes">
+                        {% for msg in mensajes_sala %}
+                            <div class="message-row {% if msg.usuario == request.user %}message-own{% else %}message-other{% endif %}">
+                                {% if msg.usuario != request.user %}
+                                    <div class="msg-avatar">
+                                        {% if msg.usuario.foto_perfil %}
+                                            <img src="{{ msg.usuario.foto_perfil.url }}" alt="Avatar">
+                                        {% else %}
+                                            <i class="fa-solid fa-user"></i>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                <div class="message-content">
+                                    <span class="msg-author">{{ msg.usuario.nombres|default:msg.usuario.username }}</span>
+                                    <div class="message-bubble">
+                                        {{ msg.mensaje }}
+                                    </div>
+                                    <span class="msg-time">{{ msg.fecha|date:"H:i A" }}</span>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="chat-empty">
+                                <i class="fa-regular fa-comments"></i>
+                                <p>No hay mensajes aún. ¡Rompe el hielo!</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Input para enviar mensaje -->
+                    <form method="POST" class="chat-input-area">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="enviar_mensaje">
+                        <button type="button" class="btn-attach"><i class="fa-solid fa-paperclip"></i></button>
+                        <input type="text" name="mensaje" placeholder="Escribe un mensaje seguro..." required autocomplete="off">
+                        <button type="submit" class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                {% else %}
+                    <!-- Estado vacío cuando no hay sala seleccionada -->
+                    <div class="chat-empty-state">
+                        <i class="fa-regular fa-comments"></i>
+                        <h2>Bienvenido a las Salas de Chat</h2>
+                        <p>Selecciona una sala de la izquierda para comenzar a orientar a los adolescentes.</p>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Auto-scroll al final del chat
+        const contenedorMensajes = document.getElementById('chat-mensajes');
+        if (contenedorMensajes) {
+            contenedorMensajes.scrollTop = contenedorMensajes.scrollHeight;
+        }
+
+        // Mostrar/Ocultar formulario de crear sala
+        function toggleModal() {
+            const modal = document.getElementById('modal-crear-sala');
+            if (modal.style.display === 'none') {
+                modal.style.display = 'block';
+            } else {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
