@@ -1,0 +1,40 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="p-8">
+    <h2 class="text-3xl font-bold text-white mb-8">Resumen de PrevenApp</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Tarjeta 1 -->
+        <div class="glass-card p-6 relative overflow-hidden">
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <h3 class="text-gray-300 text-sm font-medium uppercase tracking-wider">Usuarios Registrados</h3>
+                    <p class="text-5xl font-bold text-white mt-3">{{ kpi.total_usuarios|default:"0" }}</p>
+                </div>
+                <!-- Icono con fondo azul -->
+                <div class="p-4 bg-blue-500/20 rounded-full text-blue-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2 -->
+        <div class="glass-card p-6 relative overflow-hidden">
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <h3 class="text-gray-300 text-sm font-medium uppercase tracking-wider">Profesionales de la Salud</h3>
+                    <p class="text-5xl font-bold text-white mt-3">{{ kpi.total_profesionales|default:"0" }}</p>
+                </div>
+                <!-- Icono con fondo morado -->
+                <div class="p-4 bg-purple-500/20 rounded-full text-purple-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

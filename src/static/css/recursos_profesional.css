@@ -165,4 +165,7 @@
         gap: 15px;
         align-items: flex-start;
     }
+    .filter-pills {
+        flex-wrap: wrap;
+    }
 }

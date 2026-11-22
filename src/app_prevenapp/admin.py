@@ -19,8 +19,12 @@ class UsuarioAdmin(BaseUserAdmin, ModelAdmin): # <-- Hereda de BaseUserAdmin (el
     list_display = ('username', 'nombres', 'apellidos', 'correo', 'rol', 'estado')
     list_filter = ('rol', 'estado', 'is_staff')
     search_fields = ('username', 'correo', 'nombres', 'apellidos')
-    list_editable = ('rol', 'estado')
-    list_display_links = ('username',)
+    
+    # 🔴 ESTO ES LO NUEVO: Permite editar estos campos directamente en la tabla
+    list_editable = ('rol', 'estado') 
+    
+    # Le decimos a Django que el username sea el enlace para entrar a editar todo
+    list_display_links = ('username',) 
 
     fieldsets = BaseUserAdmin.fieldsets + (
         ('Información Adicional', {'fields': ('rol', 'nombres', 'apellidos', 'correo', 'telefono', 'edad', 'sexo', 'eps', 'rh', 'estado')}),
@@ -33,33 +37,16 @@ class UsuarioAdmin(BaseUserAdmin, ModelAdmin): # <-- Hereda de BaseUserAdmin (el
 # 2. PERSONALIZACIÓN DEL PROFESIONAL
 # ==========================================
 @admin.register(Profesional)
-class ProfesionalAdmin(ModelAdmin):
+class ProfesionalAdmin(ModelAdmin): 
     list_display = ('usuario', 'especialidad', 'documento_identidad', 'estado')
     search_fields = ('usuario__nombres', 'usuario__apellidos', 'documento_identidad')
     list_filter = ('especialidad', 'estado')
-    list_editable = ('estado',)
-    list_display_links = ('usuario',)
-
-# ==========================================
-# 3. PERSONALIZACIÓN DEL TIP (Para moderación)
-# ==========================================
-@admin.register(Tip)
-class TipAdmin(ModelAdmin):
-    # Ajusta los campos a los que realmente tiene el modelo ahora
-    list_display = ('titulo', 'autor', 'categoria', 'estado')
-    list_filter = ('estado', 'categoria')
-    search_fields = ('titulo', 'contenido')
-    list_editable = ('estado',)
-
-# ==========================================
-# 4. PERSONALIZACIÓN DEL MODELO DE CITA
-# ==========================================
-@admin.register(Cita)
-class CitaAdmin(ModelAdmin): # <-- Cambiado a ModelAdmin de Unfold
-    list_display = ('usuario', 'profesional', 'fecha', 'hora', 'estado')
-    list_filter = ('estado', 'fecha')
-    search_fields = ('usuario__nombres', 'usuario__apellidos')
-
+    
+    # 🔴 LO NUEVO: Permite editar el estado directamente en la tabla
+    list_editable = ('estado',) 
+    
+    # Le decimos a Django que el 'usuario' sea el enlace para abrir la ventana de edición completa
+    list_display_links = ('usuario',) 
 # ==========================================
 # 5. REGISTRO DEL RESTO DE MODELOS CON UNFOLD
 # ==========================================
