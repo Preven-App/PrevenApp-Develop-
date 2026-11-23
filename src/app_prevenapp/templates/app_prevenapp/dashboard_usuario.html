@@ -71,7 +71,13 @@
                 </div>
                 <a href="{% url 'ajustes' %}" class="profile-info" style="text-decoration: none; color: inherit;">
                     <div class="text">
-                        <span class="name">{{ request.user.nombres }} {{ request.user.apellidos }}</span>
+<span class="name">
+    {% if request.user.nombres %}
+        {{ request.user.nombres }} {{ request.user.apellidos }}
+    {% else %}
+        {{ request.user.username }}
+    {% endif %}
+</span>
                         <span class="specialty">Adolescente</span>
                     </div>
                     <div class="avatar bg-pink">
@@ -91,7 +97,7 @@
             <!-- Banner de Bienvenida -->
             <div class="welcome-banner animate-up" style="background: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%);">
                 <div>
-                    <h1>¡Hola, {{ request.user.nombres }}!</h1>
+<h1>¡Hola, {{ request.user.nombres|default:request.user.username }}!</h1>
                     <p>Este es tu espacio seguro. ¿Con qué te gustaría empezar hoy?</p>
                 </div>
                 <i class="fa-solid fa-star banner-icon"></i>
