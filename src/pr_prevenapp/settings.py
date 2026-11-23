@@ -11,6 +11,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# settings.py
+
+# Configuración del backend SMTP de Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = f'PrevenApp <{EMAIL_HOST_USER}>'
+
+# Redirección por defecto después del login (fallback)
+LOGIN_REDIRECT_URL = '/'
+# Redirección por defecto después del login social (Google)
+SOCIALACCOUNT_LOGIN_REDIRECT_URL = '/'
+# settings.py
+ACCOUNT_ADAPTER = 'app_prevenapp.adapters.MyAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'app_prevenapp.adapters.MySocialAccountAdapter'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +45,7 @@ ALLOWED_HOSTS = []
 # Application definition
 INSTALLED_APPS = [
     'unfold', # <-- Debe ir antes de django.contrib.admin
-     'app_prevenapp',
+    'app_prevenapp.apps.AppPrevenappConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,7 +61,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google', # Descomenta cuando configures Google
     
     # Apps propias
-   
+ 
 ]
 
 MIDDLEWARE = [
@@ -131,7 +151,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Email (Corregido el nombre de la variable a EMAIL_BACKEND)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
