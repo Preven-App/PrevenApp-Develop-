@@ -4,170 +4,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Prevención - Recursos</title>
-    <link rel="stylesheet" href="{% static 'css/interfazusuario.css' %}">
+    <title>Recursos Educativos - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard_usuario.css' %}">
+    <link rel="stylesheet" href="{% static 'css/interfaz_usuario_moderna.css' %}">
 </head>
 <body>
 
     <aside class="sidebar">
-        <div>
-            <div class="brand">
-                <img src="{% static 'images/logo.png' %}" alt="PrevenApp" style="height: 32px; object-fit: contain;">
-            </div>
-
-            <nav class="nav-list">
-                <a href="{% url 'listar_tips' %}" class="nav-item {% if request.resolver_match.url_name == 'listar_tips' %}active{% endif %}">
-                    <i class="fa-solid fa-lightbulb"></i> Tips Publicados
-                </a>
-                <a href="{% url 'landing' %}" class="nav-item">
-                    <i class="fa-solid fa-house"></i> Inicio
-                </a>
-                <a href="{% url 'registrar_tip' %}" class="nav-item {% if request.resolver_match.url_name == 'registrar_tip' %}active{% endif %}">
-                    <i class="fa-solid fa-pen-to-square"></i> Registrar Tip
-                </a>
-                <a href="{% url 'servicios' %}" class="nav-item {% if request.resolver_match.url_name == 'servicios' %}active{% endif %}">
-                    <i class="fa-solid fa-briefcase"></i> Servicios
-                </a>
-                <a href="{% url 'estadisticas' %}" class="nav-item {% if request.resolver_match.url_name == 'estadisticas' %}active{% endif %}">
-                    <i class="fa-solid fa-chart-line"></i> Estadísticas
-                </a>
-                <a href="{% url 'citas' %}" class="nav-item {% if request.resolver_match.url_name == 'citas' %}active{% endif %}">
-                    <i class="fa-solid fa-calendar-check"></i> Citas
-                </a>
-                <a href="{% url 'recursos' %}" class="nav-item {% if request.resolver_match.url_name == 'recursos' %}active{% endif %}">
-                    <i class="fa-solid fa-book"></i> Recursos
-                </a>
-                <a href="{% url 'ajustes' %}" class="nav-item {% if request.resolver_match.url_name == 'ajustes' %}active{% endif %}">
-                    <i class="fa-solid fa-gear"></i> Ajustes
-                </a>
-            </nav>
+        <div class="sidebar-header">
+            <div class="logo"><i class="fa-solid fa-shield-heart"></i> Preven<span>App</span></div>
+            <p class="role-badge bg-pink">Mi Espacio</p>
         </div>
-
-        <div class="sidebar-card">
-            <div class="sidebar-card-header">
-                <i class="fa-regular fa-bell"></i> Notificación
-            </div>
-            <p>Nuevos recursos educativos disponibles para compartir con adolescentes.</p>
-            <a href="{% url 'recursos' %}">Ver recursos</a>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_usuario' %}"><i class="fa-solid fa-house"></i> Inicio</a></li>
+                <li><a href="{% url 'servicios' %}"><i class="fa-solid fa-hand-holding-heart"></i> Servicios</a></li>
+                <li><a href="{% url 'citas' %}"><i class="fa-solid fa-calendar-check"></i> Mis Citas</a></li>
+                <li class="active"><a href="{% url 'recursos' %}"><i class="fa-solid fa-book-open"></i> Recursos</a></li>
+                <li><a href="{% url 'chatbot' %}"><i class="fa-solid fa-robot"></i> Asistente Virtual</a></li>
+                <li><a href="{% url 'ajustes' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a>
         </div>
     </aside>
 
-    <div class="main-wrapper">
-        <header class="header">
-            <div class="header-buttons">
-                <a href="#" class="btn-pill primary" style="text-decoration: none; display: inline-flex; align-items: center;">Notificaciones</a>
-                <a href="#" class="btn-pill" style="background-color: #fee2e2; color: #dc2626; text-decoration: none; display: inline-flex; align-items: center;">Botón Emergencia</a>
-            </div>
-
-            <div class="header-user">
-                <div class="user-profile">
-                    <div class="avatar">
-                        {{ user.username|slice:":2"|upper }}
-                    </div>
-                    <div class="user-info">
-                        <p>{% if user.is_authenticated %}{{ user.username }}{% else %}Usuario{% endif %}</p>
-                        <span>PrevenApp</span>
-                    </div>
-                </div>
-                <a href="{% url 'login' %}" class="btn-logout">Cerrar sesión</a>
+    <main class="main-content">
+        <header class="topbar">
+            <div class="search-bar"><i class="fa-solid fa-search"></i><input type="text" placeholder="Buscar..."></div>
+            <div class="user-profile">
+                <div class="notifications"><i class="fa-regular fa-bell"></i><span class="badge">1</span></div>
+                <a href="{% url 'ajustes' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text"><span class="name">{{ request.user.nombres|default:request.user.username }}</span><span class="specialty">Adolescente</span></div>
+                    <div class="avatar bg-pink"><i class="fa-solid fa-user"></i></div>
+                </a>
             </div>
         </header>
 
-        <main class="content">
-            <div class="main-content-card">
-                <div class="page-header">
-                    <h2>Recursos Educativos</h2>
-                    <p>Explora guías, materiales preventivos y contenidos de apoyo para adolescentes y profesionales.</p>
-                </div>
+        <div class="dashboard-container">
+            <div class="page-header animate-up">
+                <h1>Recursos Educativos</h1>
+                <p>Explora guías, materiales preventivos y contenidos de apoyo.</p>
+            </div>
 
-                {% if messages %}
-                    <div style="margin-bottom: 20px;">
-                        {% for message in messages %}
-                            <div style="padding: 12px; border-radius: 8px; background-color: #d1fae5; color: #065f46; margin-bottom: 8px; font-weight: 500;">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <!-- Buscador y filtro por categoría -->
-                <form method="GET" class="search-container">
-                    <input type="text" name="q" value="{{ buscar }}" placeholder="Buscar recurso por título o descripción..." class="search-input">
-                    <select name="categoria" class="search-input" style="max-width: 220px; background: white;">
-                        <option value="">Todas las categorías</option>
+            <!-- Buscador -->
+            <div class="search-container animate-up delay-1">
+                <form method="GET" style="display: flex; gap: 10px; width: 100%;">
+                    <input type="text" name="q" value="{{ buscar }}" placeholder="Buscar recurso..." class="form-input">
+                    <select name="categoria" class="form-input" style="max-width: 200px;">
+                        <option value="">Categorías</option>
                         {% for cat in categorias %}
-                            <option value="{{ cat.idCategoria }}" {% if categoria_seleccionada == cat.idCategoria|stringformat:"s" %}selected{% endif %}>
-                                {{ cat.nombre }}
-                            </option>
+                            <option value="{{ cat.idCategoria }}" {% if categoria_seleccionada == cat.idCategoria|stringformat:"s" %}selected{% endif %}>{{ cat.nombre }}</option>
                         {% endfor %}
                     </select>
-                    <button type="submit" class="btn-search">Buscar</button>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
                 </form>
-
-                <!-- Listado de Recursos -->
-                <div class="services-grid" style="margin-top: 20px;">
-                    {% for recurso in recursos %}
-                        <div class="card">
-                            <div>
-                                <div class="card-header">
-                                    <h3 class="card-title">{{ recurso.titulo|default:"Recurso sin título" }}</h3>
-                                    <span class="badge virtual">{{ recurso.tipo|default:"Material" }}</span>
-                                </div>
-                                <p class="card-schedule">
-                                    <i class="fa-solid fa-tag"></i> {{ recurso.categoria.nombre|default:"General" }}
-                                    {% if recurso.fecha %} &nbsp;|&nbsp; <i class="fa-regular fa-calendar"></i> {{ recurso.fecha|date:"d M, Y" }}{% endif %}
-                                </p>
-                                <p class="card-description">{{ recurso.descripcion|default:"Sin descripción disponible." }}</p>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div style="grid-column: 1 / -1; text-align: center; padding: 28px; color: #64748b;">
-                            <p>No hay recursos registrados que coincidan con tu búsqueda.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                <!-- Formulario rápido para agregar recurso -->
-                <div style="margin-top: 36px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 12px;">Agregar Nuevo Recurso</h3>
-                    <form method="POST" style="display: flex; flex-direction: column; gap: 14px;">
-                        {% csrf_token %}
-
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
-                            <div style="display: flex; flex-direction: column; gap: 5px;">
-                                <label for="titulo" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Título</label>
-                                <input type="text" id="titulo" name="titulo" required placeholder="Ej. Guía de salud sexual y prevención" class="search-input">
-                            </div>
-
-                            <div style="display: flex; flex-direction: column; gap: 5px;">
-                                <label for="categoria" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Categoría</label>
-                                <select id="categoria" name="categoria" required class="search-input" style="background: white;">
-                                    <option value="">Selecciona una categoría</option>
-                                    {% for cat in categorias %}
-                                        <option value="{{ cat.idCategoria }}">{{ cat.nombre }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div style="display: flex; flex-direction: column; gap: 5px;">
-                                <label for="tipo" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Tipo de recurso</label>
-                                <input type="text" id="tipo" name="tipo" placeholder="Ej. PDF, Guía, Infografía, Video" class="search-input">
-                            </div>
-                        </div>
-
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label for="descripcion" style="font-weight: 600; font-size: 0.85rem; color: #374151;">Descripción</label>
-                            <textarea id="descripcion" name="descripcion" rows="3" placeholder="Resume de qué trata el recurso..." class="search-input"></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-pill primary" style="border: none; cursor: pointer; padding: 10px 20px; font-weight: 600; align-self: flex-start;">
-                            Guardar Recurso
-                        </button>
-                    </form>
-                </div>
             </div>
-        </main>
-    </div>
+
+            <!-- Grid de Recursos -->
+            <div class="services-grid animate-up delay-2">
+                {% for recurso in recursos %}
+                    <div class="card-modern">
+                        <div class="card-header">
+                            <h3>{{ recurso.titulo }}</h3>
+                            <span class="badge-status virtual">{{ recurso.tipo|default:"Material" }}</span>
+                        </div>
+                        <p class="card-meta"><i class="fa-solid fa-tag"></i> {{ recurso.categoria.nombre }}</p>
+                        <p class="card-desc">{{ recurso.descripcion|default:"Sin descripción." }}</p>
+                    </div>
+                {% empty %}
+                    <div class="empty-state">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <p>No hay recursos disponibles.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+
+    <a href="{% url 'ajustes' %}#emergencia" class="btn-emergency" title="Atención Inmediata">
+        <i class="fa-solid fa-phone-volume"></i><span>Ayuda Urgente</span>
+    </a>
 </body>
 </html>
