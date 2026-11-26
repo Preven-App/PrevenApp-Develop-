@@ -343,6 +343,52 @@ def reportes_profesional(request):
     return render(request, 'app_prevenapp/reportes_profesional.html', {'reportes': reportes, 'kpis': kpis})
 
 @login_required(login_url='login')
+def crear_reporte(request):
+    try:
+        profesional = request.user.profesional
+    except Profesional.DoesNotExist:
+        messages.error(request, 'No tienes un perfil profesional.')
+        return redirect('dashboard_profesional')
+
+    pacientes = Usuario.objects.exclude(pk=request.user.pk).order_by('nombres', 'apellidos')
+
+    if request.method == 'POST':
+        usuario_id = request.POST.get('usuario')
+        nivel_riesgo = (request.POST.get('nivel_riesgo') or '').strip()
+        observaciones = (request.POST.get('observaciones') or '').strip()
+        indicadores_seguimiento = (request.POST.get('indicadores_seguimiento') or '').strip()
+        fecha_raw = request.POST.get('fecha')
+
+        paciente = Usuario.objects.filter(pk=usuario_id).first() if usuario_id else None
+
+        if not paciente:
+            messages.error(request, 'Debes seleccionar un paciente.')
+        else:
+            fecha_reporte = timezone.now()
+            if fecha_raw:
+                fecha_parseada = timezone.datetime.fromisoformat(fecha_raw)
+                if timezone.is_naive(fecha_parseada):
+                    fecha_reporte = timezone.make_aware(fecha_parseada)
+                else:
+                    fecha_reporte = fecha_parseada
+
+            Reporte.objects.create(
+                usuario=paciente,
+                profesional=profesional,
+                nivel_riesgo=nivel_riesgo or None,
+                observaciones=observaciones or None,
+                indicadores_seguimiento=indicadores_seguimiento or None,
+                fecha=fecha_reporte,
+            )
+            messages.success(request, '¡Reporte guardado correctamente!')
+            return redirect('reportes_profesional')
+
+    return render(request, 'app_prevenapp/crear_reporte.html', {
+        'pacientes': pacientes,
+        'fecha_sugerida': timezone.localtime(timezone.now()).strftime('%Y-%m-%dT%H:%M'),
+    })
+    
+@login_required(login_url='login')
 def recursos_profesional(request):
     return render(request, 'app_prevenapp/recursos_profesional.html')
 

@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Reporte - PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/reportes_profesional.css' %}">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge">Profesional de la Salud</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'dashboard_profesional' %}"><i class="fa-solid fa-chart-pie"></i> Resumen</a></li>
+                <li><a href="{% url 'ver_horarios' %}"><i class="fa-solid fa-calendar-days"></i> Mis Horarios</a></li>
+                <li><a href="{% url 'salas_chat' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a></li>
+                <li><a href="{% url 'crear_tip' %}"><i class="fa-solid fa-lightbulb"></i> Publicar Tips</a></li>
+                <li class="active"><a href="{% url 'reportes_profesional' %}"><i class="fa-solid fa-file-medical"></i> Reportes y Seguimiento</a></li>
+                <li><a href="{% url 'recursos_profesional' %}"><i class="fa-solid fa-book-open"></i> Recursos Educativos</a></li>
+                <li><a href="{% url 'perfil_profesional' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="dashboard-container">
+            <div class="page-header">
+                <div>
+                    <h1>Nuevo Reporte</h1>
+                    <p>Registra la evaluación y el seguimiento del paciente.</p>
+                </div>
+                <a href="{% url 'reportes_profesional' %}" class="btn-action" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; background: #FEE2E2; color: #991B1B;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" style="background: var(--white); padding: 24px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 18px;">
+                {% csrf_token %}
+
+                <div class="filter-group">
+                    <label for="id_usuario">Paciente *</label>
+                    <select name="usuario" id="id_usuario" class="form-select" required>
+                        <option value="">Selecciona un paciente</option>
+                        {% for paciente in pacientes %}
+                            <option value="{{ paciente.pk }}">{{ paciente.nombres }} {{ paciente.apellidos }} ({{ paciente.email|default:paciente.username }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="id_nivel_riesgo">Nivel de riesgo</label>
+                    <select name="nivel_riesgo" id="id_nivel_riesgo" class="form-select">
+                        <option value="">Sin evaluar</option>
+                        <option value="Bajo">Bajo</option>
+                        <option value="Medio">Medio</option>
+                        <option value="Alto">Alto</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="id_fecha">Fecha y hora del reporte</label>
+                    <input type="datetime-local" name="fecha" id="id_fecha" value="{{ fecha_sugerida }}" style="padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Poppins', sans-serif;">
+                </div>
+
+                <div class="filter-group">
+                    <label for="id_observaciones">Observaciones</label>
+                    <textarea name="observaciones" id="id_observaciones" rows="4" placeholder="Describe los hallazgos o situación observada..." style="padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Poppins', sans-serif;"></textarea>
+                </div>
+
+                <div class="filter-group">
+                    <label for="id_indicadores_seguimiento">Indicadores de seguimiento</label>
+                    <textarea name="indicadores_seguimiento" id="id_indicadores_seguimiento" rows="3" placeholder="Señales de alerta, plan de seguimiento o próximos pasos..." style="padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Poppins', sans-serif;"></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                    <a href="{% url 'reportes_profesional' %}" class="btn-action" style="text-decoration: none;">Cancelar</a>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Guardar Reporte</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

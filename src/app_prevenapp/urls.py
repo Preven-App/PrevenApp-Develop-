@@ -27,6 +27,7 @@ urlpatterns = [
     path('dashboard/profesional/', views.dashboard_profesional, name='dashboard_profesional'),
     path('dashboard/profesional/perfil/', views.perfil_profesional, name='perfil_profesional'),
     path('dashboard/profesional/reportes/', views.reportes_profesional, name='reportes_profesional'),
+    path('dashboard/profesional/reportes/nuevo/', views.crear_reporte, name='crear_reporte'),
     path('dashboard/profesional/recursos/', views.recursos_profesional, name='recursos_profesional'),
     
     # Horarios
