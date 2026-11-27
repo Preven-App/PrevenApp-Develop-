@@ -11,7 +11,7 @@ from django.db.models import Q
 from .models import (
     Categoria, Cita, ContactoEmergencia, Especialidad, Profesional,
     Recurso, Rol, Tip, Usuario, Reporte, HorarioProfesional,
-    Chat, Mensaje, SalaChat, UsuarioChat
+    Chat, Mensaje, SalaChat, UsuarioChat, Servicio
 )
 
 # ==========================================
@@ -162,7 +162,23 @@ def register_view(request):
 
 @login_required
 def servicios_view(request):
-    return render(request, 'app_prevenapp/servicios.html')
+    categoria = request.GET.get('categoria')
+    query = request.GET.get('q')
+
+    servicios = Servicio.objects.all()
+
+    if categoria:
+        # Asumiendo que tu modelo Servicio tiene un campo 'categoria'
+        servicios = servicios.filter(categoria__nombre__iexact=categoria)
+    
+    if query:
+        servicios = servicios.filter(nombre__icontains=query) | servicios.filter(descripcion__icontains=query)
+
+    context = {
+        'servicios': servicios,
+        # ... otros datos ...
+    }
+    return render(request, 'app_prevenapp/servicios.html', context)
 
 @login_required
 def estadisticas(request):
