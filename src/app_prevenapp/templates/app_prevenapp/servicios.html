@@ -58,31 +58,169 @@
         <div class="dashboard-container">
             <div class="page-header animate-up">
                 <h1>Servicios disponibles</h1>
-                <p>Encuentra servicios de apoyo para adolescentes en tu localidad.</p>
+                <p>Encuentra servicios de apoyo para adolescentes en Popayán y sus alrededores.</p>
             </div>
 
             <!-- Buscador y Filtros -->
             <div class="search-container animate-up delay-1">
-                <input type="text" name="q" placeholder="Buscar servicios..." class="form-input" value="{{ request.GET.q }}">
-                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <input type="text" id="inputBuscar" name="q" placeholder="Buscar por nombre o descripción..." class="form-input" onkeyup="aplicarFiltros()">
+                <button type="button" onclick="aplicarFiltros()" class="btn btn-primary">Filtrar</button>
             </div>
 
+            <!-- TAGS (Ahora con onclick para JS) -->
             <div class="tags-container animate-up delay-2">
-                <a href="{% url 'servicios' %}" class="tag active">Todos</a>
-                <a href="?categoria=psicologia" class="tag">Orientación psicológica</a>
-                <a href="?categoria=medica" class="tag">Atención médica</a>
-                <a href="?categoria=sexual" class="tag">Educación sexual</a>
+                <a href="javascript:void(0);" class="tag active" onclick="filtrarServicios('todos', this)">Todos</a>
+                <a href="javascript:void(0);" class="tag" onclick="filtrarServicios('psicologia', this)">Orientación psicológica</a>
+                <a href="javascript:void(0);" class="tag" onclick="filtrarServicios('medica', this)">Atención médica</a>
+                <a href="javascript:void(0);" class="tag" onclick="filtrarServicios('sexual', this)">Educación sexual</a>
             </div>
 
             <!-- Grilla de Servicios -->
             <div class="services-grid animate-up delay-3">
+                
+                <!-- 🔴 CATEGORÍA: ORIENTACIÓN PSICOLÓGICA -->
+                <div class="card-modern" data-categoria="psicologia">
+                    <div class="card-header">
+                        <h3>Centro de Atención Psicosocial (CAPS) - FUP</h3>
+                        <span class="badge-status virtual">Orientación Psicológica</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=400" alt="Psicología" class="card-img">
+                    <p class="card-desc">Acompañamiento psicológico individual y gratuito para la comunidad, con espacios de escucha activa y confidencial.</p>
+                    <p class="card-meta"><i class="fa-solid fa-location-dot"></i> Calle 5 # 8-58, Claustro San José, Popayán</p>
+                    <p class="card-meta"><i class="fa-solid fa-clock"></i> Lunes a Viernes: 8:00 a.m. - 6:00 p.m.</p>
+                    <p class="card-meta"><i class="fa-brands fa-whatsapp"></i> 320 737 1576 | caps@fup.edu.co</p>
+                    <div class="card-actions">
+                        <a href="https://wa.me/573207371576" target="_blank" class="btn btn-primary">Solicitar Cita</a>
+                        <a href="https://maps.google.com/?q=Calle+5+%238-58,+Popayán" target="_blank" class="btn btn-secondary">Cómo llegar</a>
+                    </div>
+                </div>
+
+                <div class="card-modern" data-categoria="psicologia">
+                    <div class="card-header">
+                        <h3>Dr. Diego Velasco Illera (Psicólogo)</h3>
+                        <span class="badge-status virtual">Orientación Psicológica</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400" alt="Consulta Psicológica" class="card-img">
+                    <p class="card-desc">Consulta psicológica y psicoterapia para niños, adolescentes y adultos. Tarifas preferenciales para asociados.</p>
+                    <p class="card-meta"><i class="fa-solid fa-location-dot"></i> Consultorio 210, Centro de Especialistas Valle de Pubenza, Carrera 3 Bis # 15AN-12, Popayán</p>
+                    <p class="card-meta"><i class="fa-solid fa-phone"></i> 300 625 1401 - 316 847 9660</p>
+                    <div class="card-actions">
+                        <a href="tel:3006251401" class="btn btn-primary">Llamar</a>
+                        <a href="https://maps.google.com/?q=Carrera+3+Bis+15AN-12,+Popayán" target="_blank" class="btn btn-secondary">Cómo llegar</a>
+                    </div>
+                </div>
+
+                <!-- 🔴 CATEGORÍA: ATENCIÓN MÉDICA -->
+                <div class="card-modern" data-categoria="medica">
+                    <div class="card-header">
+                        <h3>Unidad de Servicios Amigables - Comfacauca</h3>
+                        <span class="badge-status virtual">Atención Médica</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=400" alt="Atención Médica" class="card-img">
+                    <p class="card-desc">Servicios de salud adaptados para adolescentes y jóvenes, con atención en medicina general y orientación.</p>
+                    <p class="card-meta"><i class="fa-solid fa-location-dot"></i> IPS Comfacauca Popayán, Calle 2 con Carrera 10 esquina</p>
+                    <p class="card-meta"><i class="fa-solid fa-clock"></i> Horario diferenciado: Lunes a Jueves 7:00 a.m. - 12:00 p.m.</p>
+                    <p class="card-meta"><i class="fa-solid fa-phone"></i> Citas: 8207033 | Conmutador: 8206860</p>
+                    <div class="card-actions">
+                        <a href="tel:8207033" class="btn btn-primary">Pedir Cita</a>
+                        <a href="https://maps.google.com/?q=Calle+2+con+Carrera+10,+Popayán" target="_blank" class="btn btn-secondary">Cómo llegar</a>
+                    </div>
+                </div>
+
+                <div class="card-modern" data-categoria="medica">
+                    <div class="card-header">
+                        <h3>Hospital Universitario San José</h3>
+                        <span class="badge-status virtual">Atención Médica</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400" alt="Hospital" class="card-img">
+                    <p class="card-desc">Atención médica integral y servicios de salud sexual y reproductiva para la comunidad.</p>
+                    <p class="card-meta"><i class="fa-solid fa-location-dot"></i> Carrera 6 # 10N-142, Popayán</p>
+                    <p class="card-meta"><i class="fa-solid fa-phone"></i> 602 823 4508 (Ext. 283) | Celular: 320 665 1134</p>
+                    <div class="card-actions">
+                        <a href="tel:6028234508" class="btn btn-primary">Llamar</a>
+                        <a href="https://maps.google.com/?q=Carrera+6+%2310N-142,+Popayán" target="_blank" class="btn btn-secondary">Cómo llegar</a>
+                    </div>
+                </div>
+
+                <!-- 🔴 CATEGORÍA: EDUCACIÓN SEXUAL -->
+                <div class="card-modern" data-categoria="sexual">
+                    <div class="card-header">
+                        <h3>Oriéntame en Popayán</h3>
+                        <span class="badge-status virtual">Educación Sexual</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=400" alt="Educación Sexual" class="card-img">
+                    <p class="card-desc">Centro especializado en salud sexual y reproductiva. Pruebas de ITS, asesoría en anticoncepción y educación sexual.</p>
+                    <p class="card-meta"><i class="fa-solid fa-check-circle"></i> Pruebas de VIH, sífilis, clamidia y hepatitis B y C.</p>
+                    <p class="card-meta"><i class="fa-solid fa-check-circle"></i> Asesoría y suministro de métodos anticonceptivos.</p>
+                    <div class="card-actions">
+                        <a href="https://orientame.org.co/orientame-en-popayan/" target="_blank" class="btn btn-primary">Más Información</a>
+                    </div>
+                </div>
+
+                <div class="card-modern" data-categoria="sexual">
+                    <div class="card-header">
+                        <h3>Unidad de Salud - Universidad del Cauca</h3>
+                        <span class="badge-status virtual">Educación Sexual</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400" alt="Salud Universitaria" class="card-img">
+                    <p class="card-desc">Promoción de la prevención del embarazo en la adolescencia a través de educación y autocuidado.</p>
+                    <p class="card-meta"><i class="fa-solid fa-location-dot"></i> Calle 4 # 3-57, Popayán, Cauca</p>
+                    <p class="card-meta"><i class="fa-solid fa-clock"></i> Lunes a Jueves: 8:00 a.m. - 12:00 p.m. y 1:00 p.m. - 5:00 p.m. | Viernes: 8:00 a.m. - 12:00 p.m. y 1:00 p.m. - 4:00 p.m.</p>
+                    <p class="card-meta"><i class="fa-solid fa-phone"></i> +57 602 820-9900 (Ext. 1600)</p>
+                    <div class="card-actions">
+                        <a href="tel:+576028209900" class="btn btn-primary">Contactar</a>
+                        <a href="https://maps.google.com/?q=Calle+4+%233-57,+Popayán" target="_blank" class="btn btn-secondary">Cómo llegar</a>
+                    </div>
+                </div>
+
             </div>
-            </main>
-           
+        </div>
+    </main>
 
     <!-- BOTÓN DE EMERGENCIA -->
     <a href="{% url 'ajustes' %}#emergencia" class="btn-emergency" title="Atención Inmediata">
         <i class="fa-solid fa-phone-volume"></i><span>Ayuda Urgente</span>
     </a>
+
+    <!-- 🔴 SCRIPT DE FILTRADO Y BÚSQUEDA (ACTUALIZADO) -->
+       <!-- 🔴 SCRIPT DE FILTRADO Y BÚSQUEDA (ACTUALIZADO) -->
+    <script>
+        let categoriaActual = 'todos';
+
+        // Función para los botones de categoría (Orientación, Médica, etc.)
+        function filtrarServicios(categoria, element) {
+            categoriaActual = categoria;
+            
+            // Cambiar el color del botón activo
+            document.querySelectorAll('.tag').forEach(tag => tag.classList.remove('active'));
+            element.classList.add('active');
+            
+            aplicarFiltros();
+        }
+
+        // Función principal que filtra por Categoría Y por Texto
+        function aplicarFiltros() {
+            const textoBusqueda = document.getElementById('inputBuscar').value.toLowerCase();
+            const tarjetas = document.querySelectorAll('.card-modern');
+            
+            tarjetas.forEach(tarjeta => {
+                const categoriaTarjeta = tarjeta.getAttribute('data-categoria');
+                const textoTarjeta = tarjeta.innerText.toLowerCase(); // Todo el texto de la tarjeta
+                
+                // Condición 1: ¿Coincide la categoría?
+                const coincideCategoria = (categoriaActual === 'todos' || categoriaTarjeta === categoriaActual);
+                
+                // Condición 2: ¿El texto buscado está en la tarjeta?
+                const coincideTexto = textoTarjeta.includes(textoBusqueda);
+                
+                // Si cumple AMBAS condiciones, se muestra. Si no, se oculta.
+                if (coincideCategoria && coincideTexto) {
+                    tarjeta.style.display = ''; // Deja que el CSS decida cómo mostrarla
+                } else {
+                    tarjeta.style.display = 'none'; // Oculta
+                }
+            });
+        }
+    </script>
 </body>
 </html>

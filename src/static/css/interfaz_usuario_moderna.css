@@ -1,7 +1,6 @@
 /* ==========================================
-   ESTILOS DE FORMULARIOS Y TARJETAS
+   ESTILOS DE FORMULARIOS
    ========================================== */
-
 .form-container {
     background: var(--white);
     border-radius: 16px;
@@ -10,6 +9,17 @@
     border: 1px solid var(--border-color);
     max-width: 900px;
 }
+
+.form-title {
+    margin-bottom: 20px;
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.text-danger { color: #EF4444; }
 
 .form-row {
     display: grid;
@@ -53,17 +63,133 @@
     background-color: var(--white);
 }
 
-.search-container {
+.form-actions {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    justify-content: flex-end;
+    margin-top: 10px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
 }
 
-.tags-container {
+/* ==========================================
+   ESTILOS DE BOTONES (Unificados)
+   ========================================== */
+.btn, 
+a.btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none !important; /* Quita el subrayado azul de los enlaces */
+}
+
+.btn-primary, 
+a.btn-primary {
+    background-color: var(--primary-color, #4F46E5) !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+}
+
+.btn-primary:hover, 
+a.btn-primary:hover {
+    background-color: var(--primary-hover, #4338CA) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
+}
+
+.btn-secondary, 
+a.btn-secondary {
+    background-color: #F1F5F9 !important;
+    color: #1F2937 !important;
+    border: 1px solid #E2E8F0 !important;
+}
+
+.btn-secondary:hover, 
+a.btn-secondary:hover {
+    background-color: #E2E8F0 !important;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: #EF4444 !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger:hover {
+    background-color: #DC2626 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
+}
+
+/* ==========================================
+   FOTO DE PERFIL
+   ========================================== */
+.profile-pic-section {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 25px;
     margin-bottom: 30px;
-    flex-wrap: wrap;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.avatar-preview-container {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #F1F5F9;
+    border: 3px solid var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.avatar-preview-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    font-size: 2.5rem;
+    color: #CBD5E1;
+}
+
+.avatar-upload-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ==========================================
+   BUSCADOR Y TAGS
+   ========================================== */
+.search-container { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+}
+
+.search-container .btn-primary {
+    padding: 0 25px;
+}
+
+.tags-container { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 30px; 
+    flex-wrap: wrap; 
 }
 
 .tag {
@@ -84,7 +210,16 @@
     font-weight: 600;
 }
 
-/* Tarjetas Modernas */
+/* ==========================================
+   TARJETAS (Cards)
+   ========================================== */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
 .card-modern {
     background: var(--white);
     border-radius: 16px;
@@ -140,14 +275,18 @@
 .card-meta {
     font-size: 0.85rem;
     color: #94A3B8;
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Reducido para que se vea mejor con varias líneas de texto */
 }
 
 .card-actions {
     display: flex;
     gap: 10px;
+    margin-top: 20px;
 }
 
+/* ==========================================
+   ESTADO VACÍO
+   ========================================== */
 .empty-state {
     grid-column: 1 / -1;
     text-align: center;
