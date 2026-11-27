@@ -132,24 +132,48 @@
                     <!-- Mensajes -->
                     <div class="chat-messages" id="chat-mensajes">
                         {% for msg in mensajes_sala %}
-                            <div class="message-row {% if msg.usuario == request.user %}message-own{% else %}message-other{% endif %}">
-                                {% if msg.usuario != request.user %}
+                            {% if msg.usuario == request.user %}
+                                <div class="message-row message-own">
                                     <div class="msg-avatar">
                                         {% if msg.usuario.foto_perfil %}
                                             <img src="{{ msg.usuario.foto_perfil.url }}" alt="Avatar">
                                         {% else %}
-                                            <i class="fa-solid fa-user"></i>
+                                            <i class="fa-solid fa-user-doctor"></i>
                                         {% endif %}
                                     </div>
-                                {% endif %}
-                                <div class="message-content">
-                                    <span class="msg-author">{{ msg.usuario.nombres|default:msg.usuario.username }}</span>
-                                    <div class="message-bubble">
-                                        {{ msg.mensaje }}
+                                    <div class="message-content">
+                                        <span class="msg-author">Tú ({{ msg.usuario.nombres|default:msg.usuario.username }})</span>
+                                        <div class="message-bubble">
+                                            {{ msg.mensaje }}
+                                        </div>
+                                        <span class="msg-time">{{ msg.fecha|date:"H:i A" }}</span>
                                     </div>
-                                    <span class="msg-time">{{ msg.fecha|date:"H:i A" }}</span>
                                 </div>
-                            </div>
+                            {% else %}
+                                <div class="message-row message-other {% if msg.usuario.profesional %}is-pro{% else %}is-user{% endif %}">
+                                    <div class="msg-avatar">
+                                        {% if msg.usuario.foto_perfil %}
+                                            <img src="{{ msg.usuario.foto_perfil.url }}" alt="Avatar">
+                                        {% else %}
+                                            <i class="fa-solid {% if msg.usuario.profesional %}fa-user-doctor{% else %}fa-user{% endif %}"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="message-content">
+                                        <span class="msg-author">
+                                            <span>{{ msg.usuario.nombres|default:msg.usuario.username }}</span>
+                                            {% if msg.usuario.profesional %}
+                                                <span class="role-tag-chat role-tag-pro">Profesional</span>
+                                            {% else %}
+                                                <span class="role-tag-chat role-tag-user">Adolescente</span>
+                                            {% endif %}
+                                        </span>
+                                        <div class="message-bubble">
+                                            {{ msg.mensaje }}
+                                        </div>
+                                        <span class="msg-time">{{ msg.fecha|date:"H:i A" }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
                         {% empty %}
                             <div class="chat-empty">
                                 <i class="fa-regular fa-comments"></i>
@@ -179,13 +203,11 @@
     </main>
 
     <script>
-        // Auto-scroll al final del chat
         const contenedorMensajes = document.getElementById('chat-mensajes');
         if (contenedorMensajes) {
             contenedorMensajes.scrollTop = contenedorMensajes.scrollHeight;
         }
 
-        // Mostrar/Ocultar formulario de crear sala
         function toggleModal() {
             const modal = document.getElementById('modal-crear-sala');
             if (modal.style.display === 'none') {

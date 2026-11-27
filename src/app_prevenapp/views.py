@@ -482,14 +482,17 @@ def eliminar_tip(request, id):
     return redirect('lista_tips')
 
 # ==========================================
-# 4. VISTAS DE CHAT (SALAS)
+# 4. VISTAS DE CHAT (SALAS) -> INICIA EN LÍNEA 343
 # ==========================================
 
-@login_required(login_url='login')
-def salas_chat(request, sala_id=None):
+def _procesar_vista_sala_chat(request, sala_id, template_name, url_detalle_name, permitir_crear_sala):
     salas = SalaChat.objects.select_related('profesional', 'profesional__usuario').order_by('-idSala_chat')
 
     if request.method == 'POST' and request.POST.get('accion') == 'crear_sala':
+        if not permitir_crear_sala:
+            messages.error(request, 'Solo los profesionales pueden crear salas.')
+            return redirect(url_detalle_name.replace('detalle_', '') if 'detalle_' in url_detalle_name else 'salas_chat_usuario')
+
         tema = (request.POST.get('tema') or '').strip()
         descripcion = (request.POST.get('descripcion') or '').strip()
         profesional = getattr(request.user, 'profesional', None)
@@ -502,10 +505,16 @@ def salas_chat(request, sala_id=None):
             messages.error(request, 'Debes escribir un tema para la sala.')
             return redirect('salas_chat')
 
-        nueva_sala = SalaChat.objects.create(profesional=profesional, tema=tema, descripcion=descripcion, estado='Activa', fecha=timezone.now())
+        nueva_sala = SalaChat.objects.create(
+            profesional=profesional,
+            tema=tema,
+            descripcion=descripcion,
+            estado='Activa',
+            fecha=timezone.now()
+        )
         _obtener_o_crear_chat_de_sala(nueva_sala, request.user)
         messages.success(request, 'Sala creada correctamente.')
-        return redirect('detalle_sala_chat', sala_id=nueva_sala.idSala_chat)
+        return redirect(url_detalle_name, sala_id=nueva_sala.idSala_chat)
 
     sala_activa = None
     chat_activo = None
@@ -521,8 +530,13 @@ def salas_chat(request, sala_id=None):
         if request.method == 'POST' and request.POST.get('accion') == 'enviar_mensaje':
             contenido = (request.POST.get('mensaje') or '').strip()
             if contenido:
-                Mensaje.objects.create(chat=chat_activo, usuario=request.user, mensaje=contenido, fecha=timezone.now())
-            return redirect('detalle_sala_chat', sala_id=sala_activa.idSala_chat)
+                Mensaje.objects.create(
+                    chat=chat_activo,
+                    usuario=request.user,
+                    mensaje=contenido,
+                    fecha=timezone.now()
+                )
+            return redirect(url_detalle_name, sala_id=sala_activa.idSala_chat)
 
         mensajes_sala = Mensaje.objects.filter(chat=chat_activo).select_related('usuario').order_by('fecha', 'idMensaje')
 
@@ -532,7 +546,30 @@ def salas_chat(request, sala_id=None):
         'mensajes_sala': mensajes_sala,
         'es_profesional': hasattr(request.user, 'profesional'),
     }
-    return render(request, 'app_prevenapp/salas_chat.html', contexto)
+    return render(request, template_name, contexto)
+
+
+@login_required(login_url='login')
+def salas_chat(request, sala_id=None):
+    return _procesar_vista_sala_chat(
+        request=request,
+        sala_id=sala_id,
+        template_name='app_prevenapp/salas_chat.html',
+        url_detalle_name='detalle_sala_chat',
+        permitir_crear_sala=True,
+    )
+
+
+@login_required(login_url='login')
+def salas_chat_usuario(request, sala_id=None):
+    return _procesar_vista_sala_chat(
+        request=request,
+        sala_id=sala_id,
+        template_name='app_prevenapp/sala_chat_usuarios.html',
+        url_detalle_name='detalle_sala_chat_usuario',
+        permitir_crear_sala=False,
+    )
+
 
 def _obtener_o_crear_chat_de_sala(sala, usuario):
     """Obtiene o crea un Chat asociado a una SalaChat y vincula al usuario."""
