@@ -13,6 +13,7 @@
 </head>
 <body>
 
+    <!-- BARRA LATERAL (SIDEBAR) -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo"><i class="fa-solid fa-shield-heart"></i> Preven<span>App</span></div>
@@ -33,6 +34,7 @@
         </div>
     </aside>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
         <header class="topbar">
             <div class="search-bar"><i class="fa-solid fa-search"></i><input type="text" placeholder="Buscar..."></div>
@@ -40,7 +42,13 @@
                 <div class="notifications"><i class="fa-regular fa-bell"></i><span class="badge">1</span></div>
                 <a href="{% url 'ajustes' %}" class="profile-info" style="text-decoration: none; color: inherit;">
                     <div class="text"><span class="name">{{ request.user.nombres|default:request.user.username }}</span><span class="specialty">Adolescente</span></div>
-                    <div class="avatar bg-pink"><i class="fa-solid fa-user"></i></div>
+                    <div class="avatar bg-pink">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user"></i>
+                        {% endif %}
+                    </div>
                 </a>
             </div>
         </header>
@@ -51,13 +59,32 @@
                 <p>Actualiza tus datos personales y contacto de emergencia.</p>
             </div>
 
+            <!-- FORMULARIO 1: PERFIL Y FOTO -->
             <div class="form-container animate-up delay-1">
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data"> <!-- ENCTYPE ES VITAL -->
                     {% csrf_token %}
                     <input type="hidden" name="seccion" value="perfil">
                     
-                    <h3 style="margin-bottom: 20px; color: var(--text-dark);"><i class="fa-solid fa-user"></i> Información Personal</h3>
+                    <h3 class="form-title"><i class="fa-solid fa-user"></i> Información Personal</h3>
                     
+                    <!-- SECCIÓN DE FOTO DE PERFIL -->
+                    <div class="profile-pic-section">
+                        <div class="avatar-preview-container">
+                            {% if request.user.foto_perfil %}
+                                <img src="{{ request.user.foto_perfil.url }}" id="avatarPreview" alt="Foto de perfil">
+                            {% else %}
+                                <div id="avatarPlaceholder" class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+                                <img src="" id="avatarPreview" style="display: none;" alt="Foto de perfil">
+                            {% endif %}
+                        </div>
+                        <div class="avatar-upload-btn">
+                            <label for="foto_perfil" class="btn btn-secondary">
+                                <i class="fa-solid fa-camera"></i> Cambiar Foto
+                            </label>
+                            <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                        </div>
+                    </div>
+
                     <div class="form-row">
                         <div class="input-group">
                             <label>Nombres</label>
@@ -88,19 +115,20 @@
                             <input type="text" name="rh" value="{{ usuario.rh|default:'' }}" placeholder="Ej. O+">
                         </div>
                     </div>
+                    
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-save"><i class="fa-solid fa-floppy-disk"></i> Guardar Perfil</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Perfil</button>
                     </div>
                 </form>
             </div>
 
-            <!-- Contacto de Emergencia -->
+            <!-- FORMULARIO 2: CONTACTO DE EMERGENCIA -->
             <div class="form-container animate-up delay-2" id="emergencia" style="margin-top: 30px;">
                 <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="seccion" value="emergencia">
                     
-                    <h3 style="margin-bottom: 20px; color: #EF4444;"><i class="fa-solid fa-phone-volume"></i> Contacto de Emergencia</h3>
+                    <h3 class="form-title text-danger"><i class="fa-solid fa-phone-volume"></i> Contacto de Emergencia</h3>
                     
                     <div class="form-row">
                         <div class="input-group">
@@ -112,8 +140,9 @@
                             <input type="text" name="contacto_telefono" value="{{ contacto.telefono|default:'' }}">
                         </div>
                     </div>
+                    
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-save" style="background: #EF4444;"><i class="fa-solid fa-floppy-disk"></i> Guardar Contacto</button>
+                        <button type="submit" class="btn btn-danger"><i class="fa-solid fa-floppy-disk"></i> Guardar Contacto</button>
                     </div>
                 </form>
             </div>
@@ -123,5 +152,24 @@
     <a href="#emergencia" class="btn-emergency" title="Atención Inmediata">
         <i class="fa-solid fa-phone-volume"></i><span>Ayuda Urgente</span>
     </a>
+
+    <!-- SCRIPT PARA VISTA PREVIA DE LA IMAGEN -->
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('avatarPreview');
+                output.src = reader.result;
+                output.style.display = 'block';
+                
+                // Ocultar el placeholder si existe
+                var placeholder = document.getElementById('avatarPlaceholder');
+                if (placeholder) {
+                    placeholder.style.display = 'none';
+                }
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
 </body>
 </html>

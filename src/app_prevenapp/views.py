@@ -230,27 +230,56 @@ def recursos_view(request):
 
 @login_required
 def ajustes_view(request):
-    # (Tu lógica existente para ajustes)
     usuario = request.user
     contacto = ContactoEmergencia.objects.filter(usuario=usuario).first()
+    
     if request.method == 'POST':
         seccion = request.POST.get('seccion', 'perfil')
+        
         if seccion == 'perfil':
+            # 1. Actualizamos los campos de texto
             usuario.nombres = request.POST.get('nombres', '').strip()
             usuario.apellidos = request.POST.get('apellidos', '').strip()
             usuario.correo = request.POST.get('correo', '').strip()
             usuario.telefono = request.POST.get('telefono', '').strip()
             usuario.eps = request.POST.get('eps', '').strip()
             usuario.rh = request.POST.get('rh', '').strip()
+            
             edad_raw = request.POST.get('edad', '').strip()
             usuario.edad = int(edad_raw) if edad_raw.isdigit() else None
             usuario.sexo = request.POST.get('sexo', '').strip() or None
+            
+            # 🔴 2. CAPTURAMOS LA FOTO DE PERFIL
+            # Verificamos si el usuario subió un archivo en el input con name="foto_perfil"
+            if 'foto_perfil' in request.FILES:
+                usuario.foto_perfil = request.FILES['foto_perfil']
+                
+            # 3. Guardamos todos los cambios en la base de datos
             usuario.save()
-            messages.success(request, 'Perfil actualizado.')
+            messages.success(request, 'Perfil actualizado correctamente.')
             return redirect('ajustes')
+            
         elif seccion == 'emergencia':
-            # (lógica de emergencia)
-            pass
+            # Lógica para guardar el contacto de emergencia
+            nombre_contacto = request.POST.get('contacto_nombre', '').strip()
+            telefono_contacto = request.POST.get('contacto_telefono', '').strip()
+            
+            if contacto:
+                # Si ya existe, actualizamos
+                contacto.nombre = nombre_contacto
+                contacto.telefono = telefono_contacto
+                contacto.save()
+            else:
+                # Si no existe, creamos uno nuevo vinculado al usuario
+                ContactoEmergencia.objects.create(
+                    usuario=usuario,
+                    nombre=nombre_contacto,
+                    telefono=telefono_contacto
+                )
+                
+            messages.success(request, 'Contacto de emergencia actualizado.')
+            return redirect('ajustes')
+
     return render(request, 'app_prevenapp/ajustes.html', {'usuario': usuario, 'contacto': contacto})
 
 # Tips (Público/Adolescentes)
