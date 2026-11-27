@@ -13,9 +13,24 @@
 </head>
 <body>
 
+    <!-- SISTEMA DE NOTIFICACIONES (TOASTS) -->
+    {% if messages %}
+    <div id="toast-container">
+        {% for message in messages %}
+            <div class="toast {% if message.tags == 'error' %}toast-error{% else %}toast-success{% endif %}">
+                <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- BARRA LATERAL (SIDEBAR) -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo"><i class="fa-solid fa-shield-heart"></i> Preven<span>App</span></div>
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
             <p class="role-badge bg-pink">Mi Espacio</p>
         </div>
         <nav class="sidebar-nav">
@@ -33,18 +48,37 @@
         </div>
     </aside>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (TOPBAR) -->
         <header class="topbar">
-            <div class="search-bar"><i class="fa-solid fa-search"></i><input type="text" placeholder="Buscar..."></div>
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar...">
+            </div>
             <div class="user-profile">
-                <div class="notifications"><i class="fa-regular fa-bell"></i><span class="badge">1</span></div>
+                <div class="notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">1</span>
+                </div>
                 <a href="{% url 'ajustes' %}" class="profile-info" style="text-decoration: none; color: inherit;">
-                    <div class="text"><span class="name">{{ request.user.nombres|default:request.user.username }}</span><span class="specialty">Adolescente</span></div>
-                    <div class="avatar bg-pink"><i class="fa-solid fa-user"></i></div>
+                    <div class="text">
+                        <span class="name">{{ request.user.nombres|default:request.user.username }}</span>
+                        <span class="specialty">Adolescente</span>
+                    </div>
+                    <div class="avatar bg-pink">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user"></i>
+                        {% endif %}
+                    </div>
                 </a>
             </div>
         </header>
 
+        <!-- ÁREA DE TRABAJO -->
         <div class="dashboard-container">
             <div class="page-header animate-up">
                 <h1>Gestión de Citas</h1>
@@ -55,12 +89,27 @@
             <div class="form-container animate-up delay-1">
                 <form method="POST">
                     {% csrf_token %}
+                    
+                    <h3 class="form-title"><i class="fa-solid fa-calendar-plus" style="color: var(--primary-color);"></i> Solicitar Nueva Cita</h3>
+                    
                     <div class="form-row">
                         <div class="input-group">
                             <label>Motivo de la cita</label>
-                            <input type="text" name="motivo" required placeholder="Ej. Orientación preventiva">
+                            <input type="text" name="motivo" required placeholder="Ej. Orientación preventiva o duda sobre métodos anticonceptivos">
+                        </div>
+                        <div class="input-group">
+                            <label>Selecciona un Profesional</label>
+                            <select name="profesional" required>
+                                <option value="" disabled selected>Elige con quién hablar</option>
+                                {% for prof in profesionales %}
+                                    <option value="{{ prof.idProfesional }}">
+                                        Dr(a). {{ prof.usuario.nombres }} {{ prof.usuario.apellidos }} - {{ prof.especialidad.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
+                    
                     <div class="form-row">
                         <div class="input-group">
                             <label>Fecha</label>
@@ -71,21 +120,23 @@
                             <input type="time" name="hora" required>
                         </div>
                     </div>
+                    
                     <div class="input-group">
-                        <label>Notas (Opcional)</label>
-                        <textarea name="notas" rows="3" placeholder="Detalles adicionales..."></textarea>
+                        <label>Notas adicionales (Opcional)</label>
+                        <textarea name="notas" rows="3" placeholder="Escribe algún detalle que el profesional deba saber antes de la cita..."></textarea>
                     </div>
+                    
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-save"><i class="fa-solid fa-calendar-plus"></i> Solicitar Cita</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Solicitar Cita</button>
                     </div>
                 </form>
             </div>
 
-            <!-- Lista de Citas -->
-            <h2 class="section-title animate-up delay-2" style="margin-top: 30px;">Mis Citas Agendadas</h2>
+            <!-- Lista de Citas Agendadas -->
+            <h2 class="section-title animate-up delay-2" style="margin-top: 40px;">Mis Citas Agendadas</h2>
             <div class="services-grid animate-up delay-3">
                 {% for cita in citas %}
-                    <div class="card-modern">
+                    <div class="card-modern" style="border-left: 4px solid {% if cita.estado == 'Pendiente' %}#F59E0B{% elif cita.estado == 'Confirmada' %}#10B981{% else %}#EF4444{% endif %};">
                         <div class="card-header">
                             <h3>{{ cita.motivo }}</h3>
                             <span class="badge-status 
@@ -95,26 +146,49 @@
                                 {{ cita.estado }}
                             </span>
                         </div>
+                        
                         <p class="card-meta">
                             <i class="fa-regular fa-calendar"></i> {{ cita.fecha|date:"d M, Y" }} &nbsp;|&nbsp;
                             <i class="fa-regular fa-clock"></i> {{ cita.hora|time:"H:i" }}
                         </p>
+                        
+                        <p class="card-meta">
+                            <i class="fa-solid fa-user-doctor"></i> Profesional: Dr(a). {{ cita.profesional.usuario.nombres|default:"Por asignar" }}
+                        </p>
+                        
                         {% if cita.notas %}
-                            <p class="card-desc">{{ cita.notas }}</p>
+                            <div class="card-desc" style="background: #F8FAFC; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <strong>Tus notas:</strong> {{ cita.notas }}
+                            </div>
                         {% endif %}
                     </div>
                 {% empty %}
                     <div class="empty-state">
                         <i class="fa-regular fa-calendar-xmark"></i>
-                        <p>Aún no tienes citas registradas.</p>
+                        <h3>No tienes citas registradas</h3>
+                        <p>Usa el formulario de arriba para agendar tu primera consulta con un profesional.</p>
                     </div>
                 {% endfor %}
             </div>
         </div>
     </main>
 
+    <!-- BOTÓN DE EMERGENCIA FLOTANTE -->
     <a href="{% url 'ajustes' %}#emergencia" class="btn-emergency" title="Atención Inmediata">
         <i class="fa-solid fa-phone-volume"></i><span>Ayuda Urgente</span>
     </a>
+
+    <!-- Script para ocultar los toasts después de 4 segundos -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.classList.add('hiding');
+                    setTimeout(() => { toast.remove(); }, 400);
+                }, 4000);
+            });
+        });
+    </script>
 </body>
 </html>

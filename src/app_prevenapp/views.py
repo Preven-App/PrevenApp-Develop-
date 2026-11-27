@@ -191,15 +191,29 @@ def citas_view(request):
         fecha = request.POST.get('fecha')
         hora = request.POST.get('hora')
         notas = request.POST.get('notas', '').strip()
+        profesional_id = request.POST.get('profesional') # <-- Capturamos el profesional
 
-        if motivo and fecha and hora:
-            Cita.objects.create(usuario=request.user, motivo=motivo, fecha=fecha, hora=hora, notas=notas)
-            messages.success(request, 'Tu cita ha sido registrada con estado Pendiente.')
+        if motivo and fecha and hora and profesional_id:
+            profesional_obj = Profesional.objects.filter(idProfesional=profesional_id).first()
+            
+            Cita.objects.create(
+                usuario=request.user,
+                profesional=profesional_obj, # <-- Asignamos el profesional
+                motivo=motivo,
+                fecha=fecha,
+                hora=hora,
+                notas=notas,
+                estado='Pendiente'
+            )
+            messages.success(request, 'Tu cita ha sido solicitada. Espera la confirmación del profesional.')
             return redirect('citas')
-        messages.error(request, 'Por favor completa el motivo, la fecha y la hora.')
+        messages.error(request, 'Por favor completa todos los campos.')
 
-    citas = Cita.objects.filter(usuario=request.user)
-    return render(request, 'app_prevenapp/citas.html', {'citas': citas})
+    # Obtenemos las citas del usuario y la lista de profesionales para el formulario
+    citas = Cita.objects.filter(usuario=request.user).order_by('-fecha', '-hora')
+    profesionales = Profesional.objects.filter(estado='Activo') # Solo mostramos los aprobados
+    
+    return render(request, 'app_prevenapp/citas.html', {'citas': citas, 'profesionales': profesionales})
 
 @login_required
 def recursos_view(request):
@@ -638,3 +652,32 @@ def dashboard_usuario(request):
 @login_required(login_url='login')
 def chatbot_view(request):
     return render(request, 'app_prevenapp/chatbot.html') # Tendrás que crear este HTML luego
+
+@login_required(login_url='login')
+def citas_profesional(request):
+    try:
+        profesional = request.user.profesional
+    except Profesional.DoesNotExist:
+        messages.error(request, 'No tienes un perfil profesional.')
+        return redirect('dashboard_profesional')
+
+    # Si el profesional presiona un botón de Confirmar o Cancelar
+    if request.method == 'POST':
+        cita_id = request.POST.get('cita_id')
+        accion = request.POST.get('accion') # 'confirmar' o 'cancelar'
+        
+        cita = Cita.objects.filter(idCita=cita_id, profesional=profesional).first()
+        if cita:
+            if accion == 'confirmar':
+                cita.estado = 'Confirmada'
+                messages.success(request, 'Cita confirmada exitosamente.')
+            elif accion == 'cancelar':
+                cita.estado = 'Cancelada'
+                messages.warning(request, 'Cita cancelada.')
+            cita.save()
+        return redirect('citas_profesional')
+
+    # Traemos todas las citas de este profesional, ordenadas por las pendientes primero
+    citas = Cita.objects.filter(profesional=profesional).select_related('usuario').order_by('estado', '-fecha', '-hora')
+    
+    return render(request, 'app_prevenapp/citas_profesional.html', {'citas': citas})

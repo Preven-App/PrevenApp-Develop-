@@ -42,6 +42,7 @@ urlpatterns = [
     path('dashboard/profesional/tips/crear/', views.crear_tip, name='crear_tip'),
     path('dashboard/profesional/tips/editar/<int:id>/', views.editar_tip, name='editar_tip'),
     path('dashboard/profesional/tips/eliminar/<int:id>/', views.eliminar_tip, name='eliminar_tip'),
+    path('dashboard/profesional/citas/', views.citas_profesional, name='citas_profesional'),
 ]
 
 # Servir archivos multimedia en desarrollo
