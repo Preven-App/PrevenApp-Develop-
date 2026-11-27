@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salas de Chat - Mi Espacio | PrevenApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard_profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard_usuario.css' %}">
+    <link rel="stylesheet" href="{% static 'css/salas_chat_usuarios.css' %}">
+</head>
+<body>
+
+    <!-- BARRA LATERAL (SIDEBAR DEL USUARIO) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-shield-heart"></i> Preven<span>App</span>
+            </div>
+            <p class="role-badge bg-pink">Mi Espacio</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{% url 'dashboard_usuario' %}"><i class="fa-solid fa-house"></i> Inicio</a>
+                </li>
+                <li>
+                    <a href="{% url 'servicios' %}"><i class="fa-solid fa-hand-holding-heart"></i> Servicios</a>
+                </li>
+                <li>
+                    <a href="{% url 'citas' %}"><i class="fa-solid fa-calendar-check"></i> Mis Citas</a>
+                </li>
+                <li class="active">
+                    <a href="{% url 'salas_chat_usuario' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
+                </li>
+                <li>
+                    <a href="{% url 'recursos' %}"><i class="fa-solid fa-book-open"></i> Recursos</a>
+                </li>
+                <li>
+                    <a href="{% url 'chatbot' %}"><i class="fa-solid fa-robot"></i> Asistente Virtual</a>
+                </li>
+                <li>
+                    <a href="{% url 'ajustes' %}"><i class="fa-solid fa-user-gear"></i> Mi Perfil</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'account_logout' %}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Buscar salas o mensajes...">
+            </div>
+
+            <div class="user-profile">
+                <a href="{% url 'dashboard_usuario' %}" style="text-decoration: none; font-size: 0.9rem; margin-right: 12px;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a Mi Espacio
+                </a>
+                <a href="{% url 'ajustes' %}" class="profile-info" style="text-decoration: none; color: inherit;">
+                    <div class="text">
+                        <span class="name">
+                            {% if request.user.nombres %}
+                                {{ request.user.nombres }} {{ request.user.apellidos }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+                        </span>
+                        <span class="specialty">Adolescente</span>
+                    </div>
+                    <div class="avatar bg-pink">
+                        {% if request.user.foto_perfil %}
+                            <img src="{{ request.user.foto_perfil.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <i class="fa-solid fa-user"></i>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <div class="chat-container">
+            <!-- Panel izquierdo: Lista de salas -->
+            <aside class="chat-sidebar">
+                <div class="chat-sidebar-header">
+                    <h2>Salas Disponibles</h2>
+                </div>
+                <ul class="room-list">
+                    {% if salas %}
+                        {% for sala in salas %}
+                            <li class="room-item {% if sala_activa and sala.idSala_chat == sala_activa.idSala_chat %}active{% endif %}">
+                                <a href="{% url 'detalle_sala_chat_usuario' sala.idSala_chat %}">
+                                    <div class="room-avatar">
+                                        <i class="fa-solid fa-users"></i>
+                                    </div>
+                                    <div class="room-info">
+                                        <h3>{{ sala.tema|default:"Sala General" }}</h3>
+                                        <p>{{ sala.descripcion|default:"Conversación de apoyo" }}</p>
+                                    </div>
+                                    {% if sala.estado %}
+                                        <span class="room-status">{{ sala.estado }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="no-rooms">Aún no hay salas creadas.</li>
+                    {% endif %}
+                </ul>
+            </aside>
+
+            <!-- Panel derecho: Conversación -->
+            <section class="chat-main">
+                {% if sala_activa %}
+                    <div class="chat-header">
+                        <div class="chat-header-info">
+                            <h2>{{ sala_activa.tema|default:"Sala General" }}</h2>
+                            <p>{{ sala_activa.descripcion|default:"Espacio seguro de conversación" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chat-mensajes-usuario">
+                        {% if mensajes_sala %}
+                            {% for msg in mensajes_sala %}
+                                {% if msg.usuario == request.user %}
+                                    <div class="message-row message-own">
+                                        <div class="msg-avatar">
+                                            {% if msg.usuario.foto_perfil %}
+                                                <img src="{{ msg.usuario.foto_perfil.url }}" alt="Tú">
+                                            {% else %}
+                                                <i class="fa-solid fa-user"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="message-content">
+                                            <div class="msg-author">
+                                                <span>Tú ({{ msg.usuario.nombres|default:msg.usuario.username }})</span>
+                                            </div>
+                                            <div class="message-bubble">{{ msg.mensaje }}</div>
+                                            {% if msg.fecha %}
+                                                <span class="msg-time">{{ msg.fecha|date:"d/m H:i" }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="message-row message-other {% if msg.usuario.profesional %}is-pro{% endif %}">
+                                        <div class="msg-avatar">
+                                            {% if msg.usuario.foto_perfil %}
+                                                <img src="{{ msg.usuario.foto_perfil.url }}" alt="{{ msg.usuario.username }}">
+                                            {% else %}
+                                                <i class="fa-solid fa-user-doctor"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="message-content">
+                                            <div class="msg-author">
+                                                <span>{{ msg.usuario.nombres|default:msg.usuario.username }}</span>
+                                                {% if msg.usuario.profesional %}
+                                                    <span class="role-badge-chat role-badge-pro">Profesional</span>
+                                                {% else %}
+                                                    <span class="role-badge-chat role-badge-user">Adolescente</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="message-bubble">{{ msg.mensaje }}</div>
+                                            {% if msg.fecha %}
+                                                <span class="msg-time">{{ msg.fecha|date:"d/m H:i" }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="chat-empty-state">
+                                <i class="fa-regular fa-comments"></i>
+                                <h2>Sin mensajes todavía</h2>
+                                <p>Escribe el primer mensaje para iniciar la conversación en esta sala.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <form method="post" class="chat-input-area">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="enviar_mensaje">
+                        <input type="text" name="mensaje" placeholder="Escribe un mensaje seguro..." autocomplete="off" required>
+                        <button type="submit" class="btn-send" title="Enviar mensaje">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="chat-empty-state">
+                        <i class="fa-regular fa-comments"></i>
+                        <h2>Selecciona una sala</h2>
+                        <p>Elige una sala de chat en el panel izquierdo para comenzar.</p>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const contenedorUsuario = document.getElementById('chat-mensajes-usuario');
+        if (contenedorUsuario) {
+            contenedorUsuario.scrollTop = contenedorUsuario.scrollHeight;
+        }
+    </script>
+</body>
+</html>

@@ -33,6 +33,10 @@
                 <li>
                     <a href="{% url 'citas' %}"><i class="fa-solid fa-calendar-check"></i> Mis Citas</a>
                 </li>
+                <!-- MODIFICADO: Apunta a salas_chat_usuario en lugar de salas_chat -->
+                <li>
+                    <a href="{% url 'salas_chat_usuario' %}"><i class="fa-solid fa-comments"></i> Salas de Chat</a>
+                </li>
                 <li>
                     <a href="{% url 'recursos' %}"><i class="fa-solid fa-book-open"></i> Recursos</a>
                 </li>
@@ -71,13 +75,13 @@
                 </div>
                 <a href="{% url 'ajustes' %}" class="profile-info" style="text-decoration: none; color: inherit;">
                     <div class="text">
-<span class="name">
-    {% if request.user.nombres %}
-        {{ request.user.nombres }} {{ request.user.apellidos }}
-    {% else %}
-        {{ request.user.username }}
-    {% endif %}
-</span>
+                        <span class="name">
+                            {% if request.user.nombres %}
+                                {{ request.user.nombres }} {{ request.user.apellidos }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+                        </span>
                         <span class="specialty">Adolescente</span>
                     </div>
                     <div class="avatar bg-pink">
@@ -97,7 +101,7 @@
             <!-- Banner de Bienvenida -->
             <div class="welcome-banner animate-up" style="background: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%);">
                 <div>
-<h1>¡Hola, {{ request.user.nombres|default:request.user.username }}!</h1>
+                    <h1>¡Hola, {{ request.user.nombres|default:request.user.username }}!</h1>
                     <p>Este es tu espacio seguro. ¿Con qué te gustaría empezar hoy?</p>
                 </div>
                 <i class="fa-solid fa-star banner-icon"></i>
@@ -123,7 +127,8 @@
                         <p class="stat-number">5</p>
                     </div>
                 </div>
-                <div class="stat-card animate-up delay-3">
+                <!-- MODIFICADO: Enlace a salas_chat_usuario desde tarjeta KPI -->
+                <a href="{% url 'salas_chat_usuario' %}" class="stat-card animate-up delay-3" style="text-decoration: none; color: inherit;">
                     <div class="stat-icon bg-green">
                         <i class="fa-solid fa-comment-dots"></i>
                     </div>
@@ -131,7 +136,7 @@
                         <h3>Chats</h3>
                         <p class="stat-number">2</p>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Acciones Principales -->
@@ -160,6 +165,13 @@
                     <i class="fa-solid fa-calendar-plus" style="color: #10B981;"></i>
                     <h3>Agendar Cita</h3>
                     <p>Solicita una consulta con un profesional.</p>
+                </a>
+
+                <!-- AGREGADO: Tarjeta de acción rápida a salas_chat_usuario -->
+                <a href="{% url 'salas_chat_usuario' %}" class="action-card animate-up delay-4">
+                    <i class="fa-solid fa-comments" style="color: #EC4899;"></i>
+                    <h3>Salas de Chat</h3>
+                    <p>Conversa en tiempo real con profesionales y otros jóvenes.</p>
                 </a>
             </div>
         </div>

@@ -3,11 +3,11 @@
    ========================================== */
 .chat-container {
     display: flex;
-    height: calc(100vh - 80px); /* Resta la altura del topbar */
+    height: calc(100vh - 80px);
     background: var(--white);
     margin: 20px;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--border-color);
     overflow: hidden;
 }
@@ -47,16 +47,18 @@
     transition: background 0.3s;
 }
 
-.btn-icon-new:hover { background: var(--primary-hover); }
+.btn-icon-new:hover {
+    background: var(--primary-hover);
+}
 
-/* Formulario de creación */
 .crear-sala-form {
     padding: 15px;
     background: var(--white);
     border-bottom: 1px solid var(--border-color);
 }
 
-.crear-sala-form input, .crear-sala-form textarea {
+.crear-sala-form input,
+.crear-sala-form textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -67,7 +69,8 @@
     outline: none;
 }
 
-.crear-sala-form input:focus, .crear-sala-form textarea:focus {
+.crear-sala-form input:focus,
+.crear-sala-form textarea:focus {
     border-color: var(--primary-color);
 }
 
@@ -82,7 +85,6 @@
     font-weight: 600;
 }
 
-/* Lista de salas */
 .room-list {
     list-style: none;
     overflow-y: auto;
@@ -100,8 +102,14 @@
     transition: background 0.2s;
 }
 
-.room-item:hover a { background: #EEF2FF; }
-.room-item.active a { background: #EEF2FF; border-left: 4px solid var(--primary-color); }
+.room-item:hover a {
+    background: #EEF2FF;
+}
+
+.room-item.active a {
+    background: #EEF2FF;
+    border-left: 4px solid var(--primary-color);
+}
 
 .room-avatar {
     width: 45px;
@@ -112,11 +120,23 @@
     justify-content: center;
     align-items: center;
     color: var(--text-light);
+    flex-shrink: 0;
 }
 
-.room-info { flex: 1; }
-.room-info h3 { font-size: 0.95rem; margin-bottom: 3px; }
-.room-info p { font-size: 0.8rem; color: var(--text-light); }
+.room-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.room-info h3 {
+    font-size: 0.95rem;
+    margin-bottom: 3px;
+}
+
+.room-info p {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
 
 .room-status {
     font-size: 0.7rem;
@@ -152,11 +172,20 @@
     align-items: center;
 }
 
-.chat-header-info h2 { font-size: 1.2rem; color: var(--text-dark); margin-bottom: 5px; }
-.chat-header-info p { font-size: 0.85rem; color: var(--text-light); }
+.chat-header-info h2 {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.chat-header-info p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
 
 .btn-icon-header {
-    width: 40px; height: 40px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
     border: 1px solid var(--border-color);
     background: #F8FAFC;
@@ -171,19 +200,25 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     background: #F8FAFC;
 }
 
 .message-row {
     display: flex;
-    gap: 12px;
-    max-width: 70%;
+    gap: 10px;
+    max-width: 72%;
+    align-items: flex-end;
 }
 
 .message-own {
     align-self: flex-end;
     flex-direction: row-reverse;
+}
+
+.message-other {
+    align-self: flex-start;
+    flex-direction: row;
 }
 
 .msg-avatar {
@@ -197,36 +232,91 @@
     overflow: hidden;
     font-size: 0.9rem;
     color: var(--text-light);
+    flex-shrink: 0;
 }
 
-.msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.msg-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-.message-content { display: flex; flex-direction: column; }
-.message-own .message-content { align-items: flex-end; }
+.message-content {
+    display: flex;
+    flex-direction: column;
+}
 
-.msg-author { font-size: 0.75rem; color: var(--text-light); margin-bottom: 5px; margin-left: 5px; }
+.message-own .message-content {
+    align-items: flex-end;
+}
+
+.message-other .message-content {
+    align-items: flex-start;
+}
+
+.msg-author {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.role-tag-chat {
+    font-size: 0.68rem;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+.role-tag-pro {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.role-tag-user {
+    background: #fce7f3;
+    color: #be185d;
+}
 
 .message-bubble {
     padding: 12px 16px;
-    border-radius: 12px;
+    border-radius: 14px;
     font-size: 0.9rem;
     line-height: 1.5;
     color: var(--text-dark);
+    word-break: break-word;
+}
+
+.message-own .message-bubble {
+    background: #4F46E5;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
 }
 
 .message-other .message-bubble {
     background: var(--white);
     border: 1px solid var(--border-color);
-    border-top-left-radius: 2px;
+    border-bottom-left-radius: 4px;
 }
 
-.message-own .message-bubble {
-    background: var(--primary-color);
-    color: var(--white);
-    border-top-right-radius: 2px;
+.message-other.is-pro .message-bubble {
+    background: #eef2ff;
+    border-color: #c7d2fe;
 }
 
-.msg-time { font-size: 0.7rem; color: #94A3B8; margin-top: 5px; margin-right: 5px; }
+.message-other.is-user .message-bubble {
+    background: #fdf2f8;
+    border-color: #fbcfe8;
+}
+
+.msg-time {
+    font-size: 0.7rem;
+    color: #94A3B8;
+    margin-top: 4px;
+}
 
 /* Input de mensaje */
 .chat-input-area {
@@ -246,7 +336,10 @@
     cursor: pointer;
     transition: color 0.3s;
 }
-.btn-attach:hover { color: var(--primary-color); }
+
+.btn-attach:hover {
+    color: var(--primary-color);
+}
 
 .chat-input-area input[type="text"] {
     flex: 1;
@@ -285,7 +378,8 @@
 }
 
 /* Estados vacíos */
-.chat-empty, .chat-empty-state {
+.chat-empty,
+.chat-empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -295,10 +389,14 @@
     text-align: center;
 }
 
-.chat-empty i, .chat-empty-state i {
+.chat-empty i,
+.chat-empty-state i {
     font-size: 4rem;
     color: #CBD5E1;
     margin-bottom: 20px;
 }
 
-.chat-empty-state h2 { color: var(--text-dark); margin-bottom: 10px; }  
+.chat-empty-state h2 {
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
