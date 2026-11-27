@@ -1,171 +1,5 @@
 /* ==========================================
-   ESTILOS DE FORMULARIOS Y TARJETAS
-   ========================================== */
-
-.form-container {
-    background: var(--white);
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    border: 1px solid var(--border-color);
-    max-width: 900px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.input-group {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.input-group label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.input-group input, 
-.input-group textarea, 
-.input-group select,
-.form-input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.95rem;
-    color: var(--text-dark);
-    outline: none;
-    background-color: #F8FAFC;
-    transition: all 0.3s ease;
-}
-
-.input-group input:focus, 
-.form-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    background-color: var(--white);
-}
-
-.search-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.tags-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-
-.tag {
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    color: var(--text-light);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.tag.active, .tag:hover {
-    background: #E0E7FF;
-    color: var(--primary-color);
-    border-color: #E0E7FF;
-    font-weight: 600;
-}
-
-/* Tarjetas Modernas */
-.card-modern {
-    background: var(--white);
-    border-radius: 16px;
-    padding: 25px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card-modern:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.card-header h3 {
-    font-size: 1.1rem;
-    color: var(--text-dark);
-}
-
-.badge-status {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 5px 12px;
-    border-radius: 20px;
-}
-
-.badge-status.virtual { background: #EFF6FF; color: #3B82F6; }
-.badge-status.pendiente { background: #FEF3C7; color: #D97706; }
-.badge-status.cancelada { background: #FEE2E2; color: #EF4444; }
-
-.card-img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 15px;
-}
-
-.card-desc {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-.card-meta {
-    font-size: 0.85rem;
-    color: #94A3B8;
-    margin-bottom: 20px;
-}
-
-.card-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 40px;
-    background: var(--white);
-    border-radius: 16px;
-    border: 2px dashed var(--border-color);
-    color: var(--text-light);
-}
-
-.empty-state i {
-    font-size: 3rem;
-    color: #CBD5E1;
-    margin-bottom: 15px;
-}
-
-/* ==========================================
-   ESTILOS DE FORMULARIOS Y TARJETAS
+   ESTILOS DE FORMULARIOS
    ========================================== */
 .form-container {
     background: var(--white);
@@ -229,18 +63,16 @@
     background-color: var(--white);
 }
 
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
 /* ==========================================
-   ESTILOS DE BOTONES (NUEVOS)
-   ========================================== */
-.btn {
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-   ESTILOS DE BOTONES (CORREGIDOS)
+   ESTILOS DE BOTONES (Unificados)
    ========================================== */
 .btn, 
 a.btn {
@@ -256,52 +88,50 @@ a.btn {
     gap: 8px;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
+    text-decoration: none !important; /* Quita el subrayado azul de los enlaces */
 }
 
-.btn-primary {
-    background: var(--primary-color);
-    color: var(--white);
+.btn-primary, 
+a.btn-primary {
+    background-color: var(--primary-color, #4F46E5) !important;
+    color: white !important;
     box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
 }
 
-.btn-primary:hover {
-    background: var(--primary-hover);
+.btn-primary:hover, 
+a.btn-primary:hover {
+    background-color: var(--primary-hover, #4338CA) !important;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
 }
 
-.btn-secondary {
-    background: #F1F5F9;
-    color: var(--text-dark);
-    border: 1px solid var(--border-color);
+.btn-secondary, 
+a.btn-secondary {
+    background-color: #F1F5F9 !important;
+    color: #1F2937 !important;
+    border: 1px solid #E2E8F0 !important;
 }
 
-.btn-secondary:hover {
-    background: #E2E8F0;
+.btn-secondary:hover, 
+a.btn-secondary:hover {
+    background-color: #E2E8F0 !important;
+    transform: translateY(-2px);
 }
 
 .btn-danger {
-    background: #EF4444;
-    color: var(--white);
+    background-color: #EF4444 !important;
+    color: white !important;
     box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
 }
 
 .btn-danger:hover {
-    background: #DC2626;
+    background-color: #DC2626 !important;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
 }
 
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-}
-
 /* ==========================================
-   SECCIÓN DE FOTO DE PERFIL
+   FOTO DE PERFIL
    ========================================== */
 .profile-pic-section {
     display: flex;
@@ -343,10 +173,25 @@ a.btn {
 }
 
 /* ==========================================
-   OTROS ESTILOS (TAGS, TARJETAS)
+   BUSCADOR Y TAGS
    ========================================== */
-.search-container { display: flex; gap: 10px; margin-bottom: 20px; }
-.tags-container { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+.search-container { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+}
+
+.search-container .btn-primary {
+    padding: 0 25px;
+}
+
+.tags-container { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 30px; 
+    flex-wrap: wrap; 
+}
+
 .tag {
     background: var(--white);
     border: 1px solid var(--border-color);
@@ -357,53 +202,103 @@ a.btn {
     text-decoration: none;
     transition: all 0.3s ease;
 }
+
 .tag.active, .tag:hover {
     background: #E0E7FF;
     color: var(--primary-color);
     border-color: #E0E7FF;
     font-weight: 600;
-    text-decoration: none !important; /* 🔴 Quita el subrayado azul */
 }
 
-.btn-primary, 
-a.btn-primary {
-    background-color: var(--primary-color, #4F46E5) !important;
-    color: white !important;
-}
-
-.btn-primary:hover, 
-a.btn-primary:hover {
-    background-color: var(--primary-hover, #4338CA) !important;
-    transform: translateY(-2px);
-}
-
-.btn-secondary, 
-a.btn-secondary {
-    background-color: #F1F5F9 !important;
-    color: #1F2937 !important;
-    border: 1px solid #E2E8F0 !important;
-}
-
-.btn-secondary:hover, 
-a.btn-secondary:hover {
-    background-color: #E2E8F0 !important;
-}
-
-/* Corregir el buscador para que el botón no se vea feo */
-.search-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.search-container .btn-primary {
-    padding: 0 25px;
-}
-
-/* Asegurar que las tarjetas se muestren en cuadrícula */
+/* ==========================================
+   TARJETAS (Cards)
+   ========================================== */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 25px;
     margin-top: 20px;
+}
+
+.card-modern {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-modern:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.card-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+}
+
+.badge-status {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.badge-status.virtual { background: #EFF6FF; color: #3B82F6; }
+.badge-status.pendiente { background: #FEF3C7; color: #D97706; }
+.badge-status.cancelada { background: #FEE2E2; color: #EF4444; }
+
+.card-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.card-desc {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.card-meta {
+    font-size: 0.85rem;
+    color: #94A3B8;
+    margin-bottom: 10px; /* Reducido para que se vea mejor con varias líneas de texto */
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* ==========================================
+   ESTADO VACÍO
+   ========================================== */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    background: var(--white);
+    border-radius: 16px;
+    border: 2px dashed var(--border-color);
+    color: var(--text-light);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #CBD5E1;
+    margin-bottom: 15px;
 }
